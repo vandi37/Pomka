@@ -1,0 +1,16 @@
+{
+    "protoc": {
+        "options": [
+            "--proto_path=proto"
+        ]
+    },
+    "protoc3.includePaths": [
+        "${workspaceFolder}/proto"
+    ],
+    "dotnet.defaultSolution": "UserService/UserService.csproj",
+    "grpc.protocOptions": {
+        "proto_paths": [
+            "proto"
+        ]
+    },
+}
