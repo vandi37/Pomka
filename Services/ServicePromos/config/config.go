@@ -6,8 +6,6 @@ import (
 	"promos/internal/transport/grpc/server"
 	"promos/pkg/postgres"
 	"strconv"
-
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -16,14 +14,16 @@ type Config struct {
 }
 
 func NewConfig() (Config, error) {
-	godotenv.Load("./env")
 
 	// Config server
 	srvNet, srvPort :=
 		os.Getenv("SERVER_NETWORK"),
 		os.Getenv("SERVER_PORT")
-	if srvNet == "" || srvPort == "" {
-		return Config{}, fmt.Errorf("config: NewConfig: error missing server env params")
+	if srvNet == "" {
+		srvNet = "tcp"
+	}
+	if srvPort == "" {
+		srvPort = "50123"
 	}
 
 	// Config db
@@ -35,8 +35,26 @@ func NewConfig() (Config, error) {
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_MAX_ATMPS"),
 		os.Getenv("DB_DELAY_ATMPS_S")
-	if dbHost == "" || dbPort == "" || dbUser == "" || dbPassword == "" || dbName == "" || dbMaxAtmps == "" || dbDelayAtmps == "" {
-		return Config{}, fmt.Errorf("config: NewConfig: error missing db env params")
+	if dbHost == "" {
+		dbHost = "postgres"
+	}
+	if dbPort == "" {
+		dbPort = "5432"
+	}
+	if dbUser == "" {
+		dbUser = "postgres"
+	}
+	if dbPassword == "" {
+		dbPassword = "postgres"
+	}
+	if dbName == "" {
+		dbName = "postgres"
+	}
+	if dbMaxAtmps == "" {
+		dbMaxAtmps = "5"
+	}
+	if dbDelayAtmps == "" {
+		dbDelayAtmps = "5"
 	}
 
 	dbMaxAtmpsInt, err1 := strconv.Atoi(dbMaxAtmps)
