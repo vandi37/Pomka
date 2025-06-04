@@ -1,6 +1,6 @@
 module promos
 
-go 1.24.2
+go 1.23.4
 
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect

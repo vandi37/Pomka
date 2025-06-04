@@ -15,28 +15,18 @@ type Config struct {
 	DB     postgres.DBConfig
 }
 
-func parseEnv(filename string) error {
-	if err := godotenv.Load(filename); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func NewConfig() (Config, error) {
-	if err := parseEnv("./config/.env"); err != nil {
-		return Config{}, fmt.Errorf("config: NewConfig: %s", err)
-	}
+	godotenv.Load("./env")
 
 	// Config server
 	srvNet, srvPort :=
-		os.Getenv("ServerNetwork"),
-		os.Getenv("ServerPort")
+		os.Getenv("SERVER_NETWORK"),
+		os.Getenv("SERVER_PORT")
 	if srvNet == "" || srvPort == "" {
-		return Config{}, fmt.Errorf("config: NewConfig: error missing env params")
+		return Config{}, fmt.Errorf("config: NewConfig: error missing server env params")
 	}
 
-	// Config postgres
+	// Config db
 	dbHost, dbPort, dbUser, dbPassword, dbName, dbMaxAtmps, dbDelayAtmps :=
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
@@ -45,6 +35,9 @@ func NewConfig() (Config, error) {
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_MAX_ATMPS"),
 		os.Getenv("DB_DELAY_ATMPS_S")
+	if dbHost == "" || dbPort == "" || dbUser == "" || dbPassword == "" || dbName == "" || dbMaxAtmps == "" || dbDelayAtmps == "" {
+		return Config{}, fmt.Errorf("config: NewConfig: error missing db env params")
+	}
 
 	dbMaxAtmpsInt, err1 := strconv.Atoi(dbMaxAtmps)
 	dbDelayAtmpsInt, err2 := strconv.Atoi(dbDelayAtmps)

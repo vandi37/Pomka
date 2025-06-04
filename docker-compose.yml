@@ -1,0 +1,37 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+
+    ports:
+      - "${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}"
+
+    restart: always
+
+  promos:
+    container_name: service-promos
+
+    build: ./Services/ServicePromos
+
+    environment:
+      - SERVER_NETWORK=${SERVER_NETWORK:-tcp}
+      - SERVER_PORT=${SERVER_PORT:-50123}
+
+      - DB_HOST=${POSTGRES_HOST:-postgres}
+      - DB_PORT=${POSTGRES_PORT:-5432}
+      - DB_MAX_ATMPS=${DB_MAX_ATMPS:-5}
+      - DB_DELAY_ATMPS_S=${DB_DELAY_ATMPS_S:-3}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_NAME=${POSTGRES_DB:-postgres}
+
+    ports:
+     - "${PORT:-8080}:${PORT:-8080}"
+
+    depends_on:
+     - postgres
