@@ -20,7 +20,7 @@ services:
 
     environment:
       - SERVER_NETWORK=${SERVER_NETWORK:-tcp}
-      - SERVER_PORT=${SERVER_PORT:-50123}
+      - SERVER_PORT=${SERVER_PORT:-3000}
 
       - DB_HOST=${POSTGRES_HOST:-postgres}
       - DB_PORT=${POSTGRES_PORT:-5432}
@@ -31,7 +31,7 @@ services:
       - DB_NAME=${POSTGRES_DB:-postgres}
 
     ports:
-     - "${PORT:-8080}:${PORT:-8080}"
+     - "${SERVER_PORT:-3000}:${SERVER_PORT:-3000}"
 
     depends_on:
      - postgres

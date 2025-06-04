@@ -10,6 +10,6 @@ RUN go mod tidy && go build -o ./bin/app ./cmd/app.go
 FROM alpine:latest
 COPY --from=builder /app/bin/app /
 
-EXPOSE 8080
+EXPOSE 3000
 
 ENTRYPOINT ["/app"]
