@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package promocodes;
+
+import "common/types.proto";
+import "users/service.proto";
+
+import "google/protobuf/timestamp.proto";
+option go_package = "./promos"; // для Go
+
+// Promocode/s <=> Promo/s
+
+service Promos {
+    rpc Create(CreatePromoIn) returns (CreatePromoOut);
+    rpc Delete(PromoName) returns (common.Response);
+    rpc Use(PromoName) returns (users.TransactionResponse);
+}
+
+message CreatePromoIn {
+    string name = 1;
+    int64 amount = 2;
+    common.Currency currency = 3;
+    int64 creator = 4;
+}
+
+message CreatePromoOut {
+    optional PromoCode promoCode = 1;
+    optional common.Failure failure = 2;
+}
+
+message PromoName {
+    string name = 1;
+}
+
+message PromoCode {
+    string name = 1;
+    int64 value = 2;
+    common.Currency currency = 3;
+    google.protobuf.Timestamp expAt = 4;
+    int64 creator = 5;
+    google.protobuf.Timestamp createdAt = 6;
+}
+

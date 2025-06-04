@@ -7,12 +7,6 @@ import (
 	"promos/internal/models/users"
 )
 
-type ServicePromos struct {
-}
-
-type RepositoryPromos interface {
-}
-
 func (sp *ServicePromos) Create(ctx context.Context, in *promos.CreatePromoIn) (*promos.CreatePromoOut, error) {
 	return nil, nil
 }
