@@ -26,6 +26,9 @@ func Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if err := pool.Ping(context.TODO()); err != nil {
+		log.Fatal(err)
+	}
 
 	// GRPC server
 	grpcSrv := grpc.NewServer()
