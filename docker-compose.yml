@@ -16,7 +16,7 @@ services:
   promos:
     container_name: service-promos
 
-    build: ./ServicePromos
+    build: ./service
 
     environment:
       - SERVER_NETWORK=${SERVER_NETWORK:-tcp}

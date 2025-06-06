@@ -36,7 +36,7 @@ func NewConfig() (Config, error) {
 		os.Getenv("DB_MAX_ATMPS"),
 		os.Getenv("DB_DELAY_ATMPS_S")
 	if dbHost == "" {
-		dbHost = "postgres"
+		dbHost = "localhost"
 	}
 	if dbPort == "" {
 		dbPort = "5432"
@@ -45,7 +45,7 @@ func NewConfig() (Config, error) {
 		dbUser = "postgres"
 	}
 	if dbPassword == "" {
-		dbPassword = "postgres"
+		dbPassword = "mAz0H1zm"
 	}
 	if dbName == "" {
 		dbName = "postgres"

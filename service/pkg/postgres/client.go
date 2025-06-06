@@ -11,7 +11,7 @@ import (
 )
 
 func NewPool(ctx context.Context, cfg DBConfig) (pool *pgxpool.Pool, err error) {
-	time.Sleep(time.Duration(cfg.DelayAtmpsS))
+	time.Sleep(time.Duration(cfg.DelayAtmpsS) * time.Second)
 
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
 		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database)

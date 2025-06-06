@@ -21,6 +21,7 @@ type ServerConfig struct {
 }
 
 func (s *Server) Run(cfg ServerConfig) error {
+
 	lis, err := net.Listen(cfg.Network, ":"+cfg.Port)
 	if err != nil {
 		return fmt.Errorf("server: Run: %s", err)
@@ -31,4 +32,8 @@ func (s *Server) Run(cfg ServerConfig) error {
 	}
 
 	return nil
+}
+
+func (s *Server) Stop() {
+	s.grpc.GracefulStop()
 }
