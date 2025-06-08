@@ -29,7 +29,7 @@ type CreatePromoIn struct {
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Value         int64                  `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
 	Currency      common.Currency        `protobuf:"varint,3,opt,name=currency,proto3,enum=common.Currency" json:"currency,omitempty"`
-	Creator       string                 `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+	Creator       int64                  `protobuf:"varint,4,opt,name=creator,proto3" json:"creator,omitempty"`
 	ExpAt         *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expAt,proto3" json:"expAt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -86,11 +86,11 @@ func (x *CreatePromoIn) GetCurrency() common.Currency {
 	return common.Currency(0)
 }
 
-func (x *CreatePromoIn) GetCreator() string {
+func (x *CreatePromoIn) GetCreator() int64 {
 	if x != nil {
 		return x.Creator
 	}
-	return ""
+	return 0
 }
 
 func (x *CreatePromoIn) GetExpAt() *timestamppb.Timestamp {
@@ -202,7 +202,7 @@ type PromoCode struct {
 	Value         int64                  `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
 	Currency      common.Currency        `protobuf:"varint,3,opt,name=currency,proto3,enum=common.Currency" json:"currency,omitempty"`
 	ExpAt         *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=expAt,proto3" json:"expAt,omitempty"`
-	Creator       string                 `protobuf:"bytes,5,opt,name=creator,proto3" json:"creator,omitempty"`
+	Creator       int64                  `protobuf:"varint,5,opt,name=creator,proto3" json:"creator,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -266,11 +266,11 @@ func (x *PromoCode) GetExpAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *PromoCode) GetCreator() string {
+func (x *PromoCode) GetCreator() int64 {
 	if x != nil {
 		return x.Creator
 	}
-	return ""
+	return 0
 }
 
 func (x *PromoCode) GetCreatedAt() *timestamppb.Timestamp {
@@ -290,7 +290,7 @@ const file_promos_service_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\x03R\x05value\x12,\n" +
 	"\bcurrency\x18\x03 \x01(\x0e2\x10.common.CurrencyR\bcurrency\x12\x18\n" +
-	"\acreator\x18\x04 \x01(\tR\acreator\x120\n" +
+	"\acreator\x18\x04 \x01(\x03R\acreator\x120\n" +
 	"\x05expAt\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x05expAt\"\x94\x01\n" +
 	"\x0eCreatePromoOut\x128\n" +
 	"\tpromoCode\x18\x01 \x01(\v2\x15.promocodes.PromoCodeH\x00R\tpromoCode\x88\x01\x01\x12.\n" +
@@ -306,7 +306,7 @@ const file_promos_service_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\x03R\x05value\x12,\n" +
 	"\bcurrency\x18\x03 \x01(\x0e2\x10.common.CurrencyR\bcurrency\x120\n" +
 	"\x05expAt\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x05expAt\x12\x18\n" +
-	"\acreator\x18\x05 \x01(\tR\acreator\x128\n" +
+	"\acreator\x18\x05 \x01(\x03R\acreator\x128\n" +
 	"\tcreatedAt\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt2\xb6\x01\n" +
 	"\x06Promos\x12?\n" +
 	"\x06Create\x12\x19.promocodes.CreatePromoIn\x1a\x1a.promocodes.CreatePromoOut\x121\n" +

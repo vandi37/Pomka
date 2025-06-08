@@ -1,0 +1,7 @@
+protoc --go-grpc_out=./service/internal/models --proto_path=./proto proto/promos/service.proto
+protoc --go_out=./service/internal/models --proto_path=./proto proto/promos/service.proto
+
+protoc --go-grpc_out=./service/internal/models --proto_path=./proto proto/users/service.proto
+protoc --go_out=./service/internal/models --proto_path=./proto proto/users/service.proto
+
+protoc --go_out=./service/internal/models --proto_path=./proto proto/common/types.proto

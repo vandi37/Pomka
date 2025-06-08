@@ -10,8 +10,8 @@ import (
 
 var promo = &promos.CreatePromoIn{
 	Name:     uuid.New().String(),
-	Value:    10,
-	Currency: 1,
-	Creator:  "test",
+	Value:    0,
+	Currency: 0,
+	Creator:  0,
 	ExpAt:    timestamppb.New(time.Now().Add(time.Hour * 6)),
 }

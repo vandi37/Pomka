@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS promos  (
     Creator varchar(255),
     Currency int,
     ExpAt timestamp NOT NULL,
-    CreatedAt timestamp NOT NULL
+    CreatedAt timestamp DEFAULT current_timestamp
 );
 -- +goose StatementEnd
 

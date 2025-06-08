@@ -6,7 +6,7 @@ import "common/types.proto";
 import "google/protobuf/timestamp.proto";
 
 // option csharp_namespace = "UsersServiceApp"; // для C#
-option go_package = "./users";
+option go_package = "./users"; // для Go
 
 service Users {
     rpc SendTransaction (TransactionRequest) returns (TransactionResponse);

@@ -81,16 +81,3 @@ func Test(t *testing.T) {
 	})
 
 }
-
-func delete(in *promos.PromoName) error {
-	_, err := client.Delete(context.TODO(), &promos.PromoName{Name: in.Name})
-	return err
-}
-
-func use(t *testing.T) {
-	out, err := client.Use(context.TODO(), &promos.PromoName{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Println("use: ", out)
-}

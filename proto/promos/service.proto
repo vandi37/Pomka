@@ -20,7 +20,7 @@ message CreatePromoIn {
     string name = 1;
     int64 value = 2;
     common.Currency currency = 3;
-    string creator = 4;
+    int64 creator = 4;
     google.protobuf.Timestamp expAt = 5;
 }
 
@@ -38,7 +38,7 @@ message PromoCode {
     int64 value = 2;
     common.Currency currency = 3;
     google.protobuf.Timestamp expAt = 4;
-    string creator = 5;
+    int64 creator = 5;
     google.protobuf.Timestamp createdAt = 6;
 }
 

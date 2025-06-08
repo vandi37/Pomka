@@ -20,19 +20,18 @@ func NewRepository() *Repository {
 }
 
 func (r *Repository) Create(ctx context.Context, tx pgx.Tx, in *promos.CreatePromoIn) (*promos.CreatePromoOut, error) {
-	q := `INSERT INTO promos (Name, Value, Creator, Currency, ExpAt, CreatedAt)
-    VALUES ($1, $2, $3, $4, $5, $6)`
+	q := `INSERT INTO promos (Name, Value, Creator, Currency, ExpAt)
+    VALUES ($1, $2, $3, $4, $5)`
 
 	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
-	createdAt := timestamppb.Now()
 
 	_, err := tx.Exec(ctx, q,
 		in.Name,
 		in.Value,
 		in.Creator,
 		in.Currency,
-		expAt,
-		createdAt.AsTime().Format("2006-01-02 15:04:05"))
+		expAt)
+
 	if err != nil {
 		return nil, Err.ErrExecQuery
 	}
