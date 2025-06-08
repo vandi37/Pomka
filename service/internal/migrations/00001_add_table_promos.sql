@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE promos (
+CREATE TABLE IF NOT EXISTS promos  (
     Name varchar(255) NOT NULL UNIQUE,
     Value int NOT NULL,
     Creator varchar(255),
@@ -14,3 +14,4 @@ CREATE TABLE promos (
 -- +goose StatementBegin
 DROP TABLE promos;
 -- +goose StatementEnd
+

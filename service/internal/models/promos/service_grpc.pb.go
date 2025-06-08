@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.31.0
-// source: promocodes/service.proto
+// source: promos/service.proto
 
 package promos
 
@@ -195,5 +195,5 @@ var Promos_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "promocodes/service.proto",
+	Metadata: "promos/service.proto",
 }

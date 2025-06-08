@@ -11,10 +11,16 @@ import (
 
 	"promos/pkg/postgres"
 
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
 func Run() {
+
+	// Logger
+	logger := logrus.New()
+	logger.SetLevel(logrus.DebugLevel)
+
 	// Config
 	cfg, err := config.NewConfig()
 	if err != nil {
@@ -34,10 +40,10 @@ func Run() {
 	grpcSrv := grpc.NewServer()
 
 	// Creating repository
-	repo := repository.NewRepository(pool)
+	repo := repository.NewRepository()
 
 	// Register promo service
-	service := service.NewServicePromos(repo)
+	service := service.NewServicePromos(repo, pool, logger)
 	promos.RegisterPromosServer(grpcSrv, service)
 
 	// Run server

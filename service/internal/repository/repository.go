@@ -5,34 +5,60 @@ import (
 	"promos/internal/models/common"
 	"promos/internal/models/promos"
 	"promos/internal/models/users"
+	Err "promos/pkg/errors"
+
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
-type DB interface {
-	Exec(ctx context.Context, sql string, arguments ...any) (pgconn.CommandTag, error)
-	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
-	Begin(ctx context.Context) (pgx.Tx, error)
-}
-
 type Repository struct {
-	db DB
 }
 
-func NewRepository(db DB) *Repository {
-	return &Repository{db: db}
+func NewRepository() *Repository {
+	return &Repository{}
 }
 
-func (r *Repository) Create(ctx context.Context, in *promos.CreatePromoIn) (*promos.CreatePromoOut, error) {
+func (r *Repository) Create(ctx context.Context, tx pgx.Tx, in *promos.CreatePromoIn) (*promos.CreatePromoOut, error) {
+	q := `INSERT INTO promos (Name, Value, Creator, Currency, ExpAt, CreatedAt)
+    VALUES ($1, $2, $3, $4, $5, $6)`
+
+	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
+	createdAt := timestamppb.Now()
+
+	_, err := tx.Exec(ctx, q,
+		in.Name,
+		in.Value,
+		in.Creator,
+		in.Currency,
+		expAt,
+		createdAt.AsTime().Format("2006-01-02 15:04:05"))
+	if err != nil {
+		return nil, Err.ErrExecQuery
+	}
+
+	out := &promos.CreatePromoOut{
+		PromoCode: &promos.PromoCode{
+			Name:      in.Name,
+			Value:     in.Value,
+			Creator:   in.Creator,
+			Currency:  in.Currency,
+			ExpAt:     in.ExpAt,
+			CreatedAt: timestamppb.Now()}}
+
+	return out, nil
+}
+
+func (r *Repository) Delete(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (*common.Response, error) {
+	q := `DELETE FROM promos WHERE Name=$1`
+
+	if _, err := tx.Exec(ctx, q, in.Name); err != nil {
+		return nil, Err.ErrExecQuery
+	}
+
 	return nil, nil
 }
 
-func (r *Repository) Delete(ctx context.Context, in *promos.PromoName) (*common.Response, error) {
-	return nil, nil
-}
-
-func (r *Repository) Use(ctx context.Context, in *promos.PromoName) (*users.TransactionResponse, error) {
+func (r *Repository) Use(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (*users.TransactionResponse, error) {
 	return nil, nil
 }

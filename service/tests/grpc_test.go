@@ -12,6 +12,7 @@ import (
 
 	"promos/pkg/postgres"
 
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -20,7 +21,11 @@ var srv *server.Server
 var client promos.PromosClient
 
 func init() {
-	// Config
+	// Logger
+	logger := logrus.New()
+	logger.SetLevel(logrus.DebugLevel)
+
+	// Configuration
 	cfg, err := config.NewConfig()
 	if err != nil {
 		panic(err)
@@ -34,14 +39,15 @@ func init() {
 	if err := pool.Ping(context.TODO()); err != nil {
 		panic(err)
 	}
+
 	// GRPC server
 	grpcSrv := grpc.NewServer()
 
 	// Creating repository
-	repo := repository.NewRepository(pool)
+	repo := repository.NewRepository()
 
 	// Register promo service
-	service := service.NewServicePromos(repo)
+	service := service.NewServicePromos(repo, pool, logger)
 	promos.RegisterPromosServer(grpcSrv, service)
 
 	// Run server
@@ -59,30 +65,26 @@ func init() {
 	client = promos.NewPromosClient(conn)
 }
 
-func TestAllTests(t *testing.T) {
+func Test(t *testing.T) {
 	t.Cleanup(func() {
 		srv.Stop()
 	})
 
-	t.Run("TestCreate", create)
-	t.Run("TestDelete", delete)
-	t.Run("TestUse", use)
+	t.Run("Test Create|Use|Delete", func(t *testing.T) {
+		if _, err := client.Create(context.TODO(), promo); err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := client.Delete(context.TODO(), &promos.PromoName{Name: promo.Name}); err != nil {
+			t.Fatal(err)
+		}
+	})
+
 }
 
-func create(t *testing.T) {
-	out, err := client.Create(context.TODO(), &promos.CreatePromoIn{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Println("create: ", out)
-}
-
-func delete(t *testing.T) {
-	out, err := client.Delete(context.TODO(), &promos.PromoName{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Println("delete: ", out)
+func delete(in *promos.PromoName) error {
+	_, err := client.Delete(context.TODO(), &promos.PromoName{Name: in.Name})
+	return err
 }
 
 func use(t *testing.T) {
