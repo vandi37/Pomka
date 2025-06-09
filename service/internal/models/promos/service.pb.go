@@ -435,13 +435,15 @@ const file_promos_service_proto_rawDesc = "" +
 	"\b_failure\"?\n" +
 	"\vPromoUserId\x12\x16\n" +
 	"\x06userId\x18\x01 \x01(\x03R\x06userId\x12\x18\n" +
-	"\apromoId\x18\x02 \x01(\x03R\apromoId2\xaa\x02\n" +
+	"\apromoId\x18\x02 \x01(\x03R\apromoId2\xe7\x02\n" +
 	"\x06Promos\x12;\n" +
-	"\x06Create\x12\x17.promocodes.CreatePromo\x1a\x18.promocodes.PromoFailure\x12/\n" +
-	"\x06Delete\x12\x13.promocodes.PromoId\x1a\x10.common.Response\x12:\n" +
-	"\x03Use\x12\x17.promocodes.PromoUserId\x1a\x1a.users.TransactionResponse\x128\n" +
+	"\x06Create\x12\x17.promocodes.CreatePromo\x1a\x18.promocodes.PromoFailure\x127\n" +
+	"\fDeleteByName\x12\x15.promocodes.PromoName\x1a\x10.common.Response\x123\n" +
+	"\n" +
+	"DeleteById\x12\x13.promocodes.PromoId\x1a\x10.common.Response\x128\n" +
 	"\aGetById\x12\x13.promocodes.PromoId\x1a\x18.promocodes.PromoFailure\x12<\n" +
-	"\tGetByName\x12\x15.promocodes.PromoName\x1a\x18.promocodes.PromoFailureB\n" +
+	"\tGetByName\x12\x15.promocodes.PromoName\x1a\x18.promocodes.PromoFailure\x12:\n" +
+	"\x03Use\x12\x17.promocodes.PromoUserId\x1a\x1a.users.TransactionResponseB\n" +
 	"Z\b./promosb\x06proto3"
 
 var (
@@ -479,17 +481,19 @@ var file_promos_service_proto_depIdxs = []int32{
 	2,  // 5: promocodes.PromoFailure.promoCode:type_name -> promocodes.PromoCode
 	8,  // 6: promocodes.PromoFailure.failure:type_name -> common.Failure
 	3,  // 7: promocodes.Promos.Create:input_type -> promocodes.CreatePromo
-	1,  // 8: promocodes.Promos.Delete:input_type -> promocodes.PromoId
-	5,  // 9: promocodes.Promos.Use:input_type -> promocodes.PromoUserId
+	0,  // 8: promocodes.Promos.DeleteByName:input_type -> promocodes.PromoName
+	1,  // 9: promocodes.Promos.DeleteById:input_type -> promocodes.PromoId
 	1,  // 10: promocodes.Promos.GetById:input_type -> promocodes.PromoId
 	0,  // 11: promocodes.Promos.GetByName:input_type -> promocodes.PromoName
-	4,  // 12: promocodes.Promos.Create:output_type -> promocodes.PromoFailure
-	9,  // 13: promocodes.Promos.Delete:output_type -> common.Response
-	10, // 14: promocodes.Promos.Use:output_type -> users.TransactionResponse
-	4,  // 15: promocodes.Promos.GetById:output_type -> promocodes.PromoFailure
-	4,  // 16: promocodes.Promos.GetByName:output_type -> promocodes.PromoFailure
-	12, // [12:17] is the sub-list for method output_type
-	7,  // [7:12] is the sub-list for method input_type
+	5,  // 12: promocodes.Promos.Use:input_type -> promocodes.PromoUserId
+	4,  // 13: promocodes.Promos.Create:output_type -> promocodes.PromoFailure
+	9,  // 14: promocodes.Promos.DeleteByName:output_type -> common.Response
+	9,  // 15: promocodes.Promos.DeleteById:output_type -> common.Response
+	4,  // 16: promocodes.Promos.GetById:output_type -> promocodes.PromoFailure
+	4,  // 17: promocodes.Promos.GetByName:output_type -> promocodes.PromoFailure
+	10, // 18: promocodes.Promos.Use:output_type -> users.TransactionResponse
+	13, // [13:19] is the sub-list for method output_type
+	7,  // [7:13] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
 	7,  // [7:7] is the sub-list for extension extendee
 	0,  // [0:7] is the sub-list for field type_name

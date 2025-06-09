@@ -21,11 +21,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Promos_Create_FullMethodName    = "/promocodes.Promos/Create"
-	Promos_Delete_FullMethodName    = "/promocodes.Promos/Delete"
-	Promos_Use_FullMethodName       = "/promocodes.Promos/Use"
-	Promos_GetById_FullMethodName   = "/promocodes.Promos/GetById"
-	Promos_GetByName_FullMethodName = "/promocodes.Promos/GetByName"
+	Promos_Create_FullMethodName       = "/promocodes.Promos/Create"
+	Promos_DeleteByName_FullMethodName = "/promocodes.Promos/DeleteByName"
+	Promos_DeleteById_FullMethodName   = "/promocodes.Promos/DeleteById"
+	Promos_GetById_FullMethodName      = "/promocodes.Promos/GetById"
+	Promos_GetByName_FullMethodName    = "/promocodes.Promos/GetByName"
+	Promos_Use_FullMethodName          = "/promocodes.Promos/Use"
 )
 
 // PromosClient is the client API for Promos service.
@@ -33,10 +34,11 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PromosClient interface {
 	Create(ctx context.Context, in *CreatePromo, opts ...grpc.CallOption) (*PromoFailure, error)
-	Delete(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error)
-	Use(ctx context.Context, in *PromoUserId, opts ...grpc.CallOption) (*users.TransactionResponse, error)
+	DeleteByName(ctx context.Context, in *PromoName, opts ...grpc.CallOption) (*common.Response, error)
+	DeleteById(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error)
 	GetById(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*PromoFailure, error)
 	GetByName(ctx context.Context, in *PromoName, opts ...grpc.CallOption) (*PromoFailure, error)
+	Use(ctx context.Context, in *PromoUserId, opts ...grpc.CallOption) (*users.TransactionResponse, error)
 }
 
 type promosClient struct {
@@ -57,20 +59,20 @@ func (c *promosClient) Create(ctx context.Context, in *CreatePromo, opts ...grpc
 	return out, nil
 }
 
-func (c *promosClient) Delete(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error) {
+func (c *promosClient) DeleteByName(ctx context.Context, in *PromoName, opts ...grpc.CallOption) (*common.Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(common.Response)
-	err := c.cc.Invoke(ctx, Promos_Delete_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Promos_DeleteByName_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *promosClient) Use(ctx context.Context, in *PromoUserId, opts ...grpc.CallOption) (*users.TransactionResponse, error) {
+func (c *promosClient) DeleteById(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(users.TransactionResponse)
-	err := c.cc.Invoke(ctx, Promos_Use_FullMethodName, in, out, cOpts...)
+	out := new(common.Response)
+	err := c.cc.Invoke(ctx, Promos_DeleteById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,15 +99,26 @@ func (c *promosClient) GetByName(ctx context.Context, in *PromoName, opts ...grp
 	return out, nil
 }
 
+func (c *promosClient) Use(ctx context.Context, in *PromoUserId, opts ...grpc.CallOption) (*users.TransactionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(users.TransactionResponse)
+	err := c.cc.Invoke(ctx, Promos_Use_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PromosServer is the server API for Promos service.
 // All implementations must embed UnimplementedPromosServer
 // for forward compatibility.
 type PromosServer interface {
 	Create(context.Context, *CreatePromo) (*PromoFailure, error)
-	Delete(context.Context, *PromoId) (*common.Response, error)
-	Use(context.Context, *PromoUserId) (*users.TransactionResponse, error)
+	DeleteByName(context.Context, *PromoName) (*common.Response, error)
+	DeleteById(context.Context, *PromoId) (*common.Response, error)
 	GetById(context.Context, *PromoId) (*PromoFailure, error)
 	GetByName(context.Context, *PromoName) (*PromoFailure, error)
+	Use(context.Context, *PromoUserId) (*users.TransactionResponse, error)
 	mustEmbedUnimplementedPromosServer()
 }
 
@@ -119,17 +132,20 @@ type UnimplementedPromosServer struct{}
 func (UnimplementedPromosServer) Create(context.Context, *CreatePromo) (*PromoFailure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedPromosServer) Delete(context.Context, *PromoId) (*common.Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+func (UnimplementedPromosServer) DeleteByName(context.Context, *PromoName) (*common.Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteByName not implemented")
 }
-func (UnimplementedPromosServer) Use(context.Context, *PromoUserId) (*users.TransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Use not implemented")
+func (UnimplementedPromosServer) DeleteById(context.Context, *PromoId) (*common.Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteById not implemented")
 }
 func (UnimplementedPromosServer) GetById(context.Context, *PromoId) (*PromoFailure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
 func (UnimplementedPromosServer) GetByName(context.Context, *PromoName) (*PromoFailure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByName not implemented")
+}
+func (UnimplementedPromosServer) Use(context.Context, *PromoUserId) (*users.TransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Use not implemented")
 }
 func (UnimplementedPromosServer) mustEmbedUnimplementedPromosServer() {}
 func (UnimplementedPromosServer) testEmbeddedByValue()                {}
@@ -170,38 +186,38 @@ func _Promos_Create_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Promos_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Promos_DeleteByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PromoName)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PromosServer).DeleteByName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Promos_DeleteByName_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PromosServer).DeleteByName(ctx, req.(*PromoName))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Promos_DeleteById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PromoId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PromosServer).Delete(ctx, in)
+		return srv.(PromosServer).DeleteById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Promos_Delete_FullMethodName,
+		FullMethod: Promos_DeleteById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PromosServer).Delete(ctx, req.(*PromoId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Promos_Use_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PromoUserId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PromosServer).Use(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Promos_Use_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PromosServer).Use(ctx, req.(*PromoUserId))
+		return srv.(PromosServer).DeleteById(ctx, req.(*PromoId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -242,6 +258,24 @@ func _Promos_GetByName_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Promos_Use_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PromoUserId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PromosServer).Use(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Promos_Use_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PromosServer).Use(ctx, req.(*PromoUserId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Promos_ServiceDesc is the grpc.ServiceDesc for Promos service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -254,12 +288,12 @@ var Promos_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Promos_Create_Handler,
 		},
 		{
-			MethodName: "Delete",
-			Handler:    _Promos_Delete_Handler,
+			MethodName: "DeleteByName",
+			Handler:    _Promos_DeleteByName_Handler,
 		},
 		{
-			MethodName: "Use",
-			Handler:    _Promos_Use_Handler,
+			MethodName: "DeleteById",
+			Handler:    _Promos_DeleteById_Handler,
 		},
 		{
 			MethodName: "GetById",
@@ -268,6 +302,10 @@ var Promos_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetByName",
 			Handler:    _Promos_GetByName_Handler,
+		},
+		{
+			MethodName: "Use",
+			Handler:    _Promos_Use_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

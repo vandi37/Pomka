@@ -14,4 +14,6 @@ var (
 	ErrIncorrectData       = errors.New("error cannot scan data")
 	ErrServiceUsers        = errors.New("error on service users")
 	ErrWrongTypeData       = errors.New("error not supported type data")
+	ErrPromoExpired        = errors.New("error promocode expired")
+	ErrPromoNotInStock     = errors.New("error promocode activations are over")
 )

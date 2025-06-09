@@ -12,10 +12,14 @@ option go_package = "./promos"; // для Go
 
 service Promos {
     rpc Create(CreatePromo) returns (PromoFailure);
-    rpc Delete(PromoId) returns (common.Response);
-    rpc Use(PromoUserId) returns (users.TransactionResponse);
+
+    rpc DeleteByName(PromoName) returns (common.Response);
+    rpc DeleteById(PromoId) returns (common.Response);
+    
     rpc GetById(PromoId) returns (PromoFailure);
     rpc GetByName(PromoName) returns (PromoFailure);
+
+    rpc Use(PromoUserId) returns (users.TransactionResponse);
 }
 
 message PromoName {
@@ -30,8 +34,8 @@ message PromoCode {
     int64 id = 1;
     string name = 2;
     common.Currency currency = 3; 
-    int amount = 4;
-    int uses = 5; 
+    int64 amount = 4;
+    int32 uses = 5; 
     int64 creator = 6;
     google.protobuf.Timestamp expAt = 7;
     google.protobuf.Timestamp createdAt = 8;

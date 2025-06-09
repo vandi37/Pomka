@@ -7,6 +7,7 @@ import (
 	"promos/internal/models/users"
 	"promos/internal/transport/grpc/conn"
 	Err "promos/pkg/errors"
+	"time"
 
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
@@ -36,7 +37,6 @@ func (r *Repository) Create(ctx context.Context, tx pgx.Tx, in *promos.CreatePro
 		in.Uses,
 		in.Creator,
 		expAt)
-
 	if err != nil {
 		return nil, Err.ErrExecQuery
 	}
@@ -55,7 +55,7 @@ func (r *Repository) Create(ctx context.Context, tx pgx.Tx, in *promos.CreatePro
 	return out, nil
 }
 
-func (r *Repository) Delete(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (*common.Response, error) {
+func (r *Repository) DeleteById(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (*common.Response, error) {
 	q := `DELETE FROM Promos WHERE Id = $1`
 
 	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
@@ -65,17 +65,11 @@ func (r *Repository) Delete(ctx context.Context, tx pgx.Tx, in *promos.PromoId) 
 	return nil, nil
 }
 
-func (r *Repository) Use(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) (*users.TransactionResponse, error) {
-	promo, err := r.GetPromoById(ctx, tx, &promos.PromoId{Id: in.PromoId})
-	if err != nil {
-		return nil, err
-	}
+func (r *Repository) DeleteByName(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (*common.Response, error) {
+	q := `DELETE FROM Promos WHERE Name = $1`
 
-	if _, err := r.ClientsServices.UsersClient.SendTransaction(ctx, &users.TransactionRequest{
-		Sender:   nil,
-		Receiver: &users.UserTransaction{UserId: in.UserId, Amount: promo.Amount, Currency: promo.Currency},
-	}); err != nil {
-		return nil, Err.ErrServiceUsers
+	if _, err := tx.Exec(ctx, q, in.Name); err != nil {
+		return nil, Err.ErrExecQuery
 	}
 
 	return nil, nil
@@ -87,7 +81,13 @@ func (r *Repository) GetPromoById(ctx context.Context, tx pgx.Tx, in *promos.Pro
 	q := `SELECT * FROM Promos WHERE Id = $1`
 	row := tx.QueryRow(ctx, q, in.Id)
 
-	if err := row.Scan(&out.Id, &out.Name, &out.Currency, &out.Amount, &out.Uses, &out.Creator, nil, nil); err != nil {
+	if err := row.Scan(
+		&out.Id,
+		&out.Name,
+		&out.Currency,
+		&out.Amount,
+		&out.Uses,
+		&out.Creator, nil, nil); err != nil {
 		return nil, Err.ErrIncorrectData
 	}
 	return out, nil
@@ -99,9 +99,60 @@ func (r *Repository) GetPromoByName(ctx context.Context, tx pgx.Tx, in *promos.P
 	q := `SELECT * FROM Promos WHERE Name = $1`
 	row := tx.QueryRow(ctx, q, in.Name)
 
-	if err := row.Scan(&out.Id, &out.Name, &out.Currency, &out.Amount, &out.Uses, &out.Creator, nil, nil); err != nil {
+	if err := row.Scan(
+		&out.Id,
+		&out.Name,
+		&out.Currency,
+		&out.Amount,
+		&out.Uses,
+		&out.Creator, nil, nil); err != nil {
 		return nil, Err.ErrIncorrectData
 	}
 
 	return out, nil
+}
+
+func (r *Repository) Activate(ctx context.Context, tx pgx.Tx, in *promos.PromoCode, userId int64) (*users.TransactionResponse, error) {
+
+	if _, err := r.ClientsServices.UsersClient.SendTransaction(ctx, &users.TransactionRequest{
+		Sender:   nil,
+		Receiver: &users.UserTransaction{UserId: userId, Amount: in.Amount, Currency: in.Currency},
+	}); err != nil {
+		return nil, Err.ErrServiceUsers
+	}
+
+	return nil, nil
+}
+
+func (r *Repository) IsValid(in *promos.PromoCode) error {
+	if in.ExpAt.AsTime().Unix() > time.Now().Unix() {
+		return Err.ErrPromoExpired
+	}
+
+	if in.Uses == 0 {
+		return Err.ErrPromoNotInStock
+	}
+
+	return nil
+}
+
+func (r *Repository) DecrementUses(ctx context.Context, tx pgx.Tx, in *promos.PromoId) error {
+	q := `UPDATE Promos SET Uses = Uses-1 WHERE Id = $1`
+
+	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
+		return Err.ErrExecQuery
+	}
+
+	return nil
+}
+
+func (r *Repository) AddUserToPromo(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) error {
+	q := `INSERT INTO UserToPromo (UserId, PromoId, ActivatedAt) VALUES ($1, $2, $3)`
+
+	actAt := time.Now().Format("2006-01-02 15:04:05")
+	if _, err := tx.Exec(ctx, q, in.UserId, in.PromoId, actAt); err != nil {
+		return Err.ErrExecQuery
+	}
+
+	return nil
 }
