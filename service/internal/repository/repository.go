@@ -114,14 +114,15 @@ func (r *Repository) GetPromoByName(ctx context.Context, tx pgx.Tx, in *promos.P
 
 func (r *Repository) Activate(ctx context.Context, tx pgx.Tx, in *promos.PromoCode, userId int64) (*users.TransactionResponse, error) {
 
-	if _, err := r.ClientsServices.UsersClient.SendTransaction(ctx, &users.TransactionRequest{
+	out, err := r.ClientsServices.UsersClient.SendTransaction(ctx, &users.TransactionRequest{
 		Sender:   nil,
 		Receiver: &users.UserTransaction{UserId: userId, Amount: in.Amount, Currency: in.Currency},
-	}); err != nil {
+	})
+	if err != nil {
 		return nil, Err.ErrServiceUsers
 	}
 
-	return nil, nil
+	return out, nil
 }
 
 func (r *Repository) IsValid(in *promos.PromoCode) error {

@@ -115,6 +115,10 @@ func Test(t *testing.T) {
 			t.Fatal(getByIdOut, getByNameOut)
 		}
 
+		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: getByIdOut.PromoCode.Id, UserId: 4}); err != nil {
+			t.Fatal("use: ", err)
+		}
+
 		if _, err := client.DeleteById(context.TODO(), &promos.PromoId{Id: createOut.PromoCode.Id}); err != nil {
 			t.Fatal("delete: ", err)
 		}
