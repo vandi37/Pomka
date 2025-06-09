@@ -6,6 +6,7 @@ import (
 	"promos/config"
 	"promos/internal/models/promos"
 	"promos/internal/repository"
+	"promos/internal/transport/grpc/conn"
 	service "promos/internal/transport/grpc/handlers"
 	"promos/internal/transport/grpc/server"
 
@@ -39,8 +40,14 @@ func Run() {
 	// GRPC server
 	grpcSrv := grpc.NewServer()
 
+	// Connect to other services
+	clientServices, err := conn.NewClientsServices(cfg.Conn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Creating repository
-	repo := repository.NewRepository()
+	repo := repository.NewRepository(clientServices)
 
 	// Register promo service
 	service := service.NewServicePromos(repo, pool, logger)

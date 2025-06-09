@@ -27,8 +27,11 @@ services:
       - DB_MAX_ATMPS=${DB_MAX_ATMPS:-5}
       - DB_DELAY_ATMPS_S=${DB_DELAY_ATMPS_S:-3}
       - DB_USER=${POSTGRES_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-mAz0H1zm}
       - DB_NAME=${POSTGRES_DB:-postgres}
+
+      - SERVICE_USERS_HOST=${SERVICE_USERS_HOST:-localhost}
+      - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-1488}
 
     ports:
      - "${SERVER_PORT:-3000}:${SERVER_PORT:-3000}"

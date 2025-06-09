@@ -1,9 +1,10 @@
 package config
 
 import (
-	"fmt"
 	"os"
+	"promos/internal/transport/grpc/conn"
 	"promos/internal/transport/grpc/server"
+	Err "promos/pkg/errors"
 	"promos/pkg/postgres"
 	"strconv"
 )
@@ -11,6 +12,7 @@ import (
 type Config struct {
 	Server server.ServerConfig
 	DB     postgres.DBConfig
+	Conn   conn.Config
 }
 
 func NewConfig() (Config, error) {
@@ -19,11 +21,8 @@ func NewConfig() (Config, error) {
 	srvNet, srvPort :=
 		os.Getenv("SERVER_NETWORK"),
 		os.Getenv("SERVER_PORT")
-	if srvNet == "" {
-		srvNet = "tcp"
-	}
-	if srvPort == "" {
-		srvPort = "50123"
+	if srvNet == "" || srvPort == "" {
+		return Config{}, Err.ErrMissingEnviroment
 	}
 
 	// Config db
@@ -35,32 +34,19 @@ func NewConfig() (Config, error) {
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_MAX_ATMPS"),
 		os.Getenv("DB_DELAY_ATMPS_S")
-	if dbHost == "" {
-		dbHost = "localhost"
+	if dbHost == "" || dbPort == "" || dbUser == "" || dbPassword == "" || dbName == "" || dbMaxAtmps == "" || dbDelayAtmps == "" {
+		return Config{}, Err.ErrMissingEnviroment
 	}
-	if dbPort == "" {
-		dbPort = "5432"
-	}
-	if dbUser == "" {
-		dbUser = "postgres"
-	}
-	if dbPassword == "" {
-		dbPassword = "mAz0H1zm"
-	}
-	if dbName == "" {
-		dbName = "postgres"
-	}
-	if dbMaxAtmps == "" {
-		dbMaxAtmps = "5"
-	}
-	if dbDelayAtmps == "" {
-		dbDelayAtmps = "5"
-	}
-
 	dbMaxAtmpsInt, err1 := strconv.Atoi(dbMaxAtmps)
 	dbDelayAtmpsInt, err2 := strconv.Atoi(dbDelayAtmps)
 	if err1 != nil || err2 != nil {
-		return Config{}, fmt.Errorf("config: NewConfig: error wrong enviroment param")
+		return Config{}, Err.ErrMissingEnviroment
+	}
+
+	// Config conn
+	SrvUsersHost, SrvUsersPort := os.Getenv("SERVICE_USERS_HOST"), os.Getenv("SERVICE_USERS_PORT")
+	if SrvUsersHost == "" || SrvUsersPort == "" {
+		return Config{}, Err.ErrMissingEnviroment
 	}
 
 	return Config{
@@ -76,6 +62,12 @@ func NewConfig() (Config, error) {
 			Database:    dbName,
 			MaxAtmps:    dbMaxAtmpsInt,
 			DelayAtmpsS: dbDelayAtmpsInt,
+		},
+		Conn: conn.Config{
+			CfgSrvUsers: conn.ConfigServiceUsers{
+				Host: SrvUsersHost,
+				Port: SrvUsersPort,
+			},
 		},
 	}, nil
 }

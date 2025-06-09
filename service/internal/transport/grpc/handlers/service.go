@@ -19,9 +19,11 @@ type ServicePromos struct {
 }
 
 type RepositoryPromos interface {
-	Create(ctx context.Context, tx pgx.Tx, in *promos.CreatePromoIn) (*promos.CreatePromoOut, error)
-	Delete(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (*common.Response, error)
-	Use(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (*users.TransactionResponse, error)
+	Create(ctx context.Context, tx pgx.Tx, in *promos.CreatePromo) (*promos.PromoFailure, error)
+	Delete(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (*common.Response, error)
+	Use(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) (*users.TransactionResponse, error)
+	GetPromoById(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (*promos.PromoCode, error)
+	GetPromoByName(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (*promos.PromoCode, error)
 }
 
 func NewServicePromos(repo RepositoryPromos, db *pgxpool.Pool, log *logrus.Logger) *ServicePromos {

@@ -6,6 +6,7 @@ import (
 	"promos/config"
 	"promos/internal/models/promos"
 	"promos/internal/repository"
+	"promos/internal/transport/grpc/conn"
 	service "promos/internal/transport/grpc/handlers"
 	"promos/internal/transport/grpc/server"
 	"testing"
@@ -21,14 +22,32 @@ var srv *server.Server
 var client promos.PromosClient
 
 func init() {
+
 	// Logger
 	logger := logrus.New()
 	logger.SetLevel(logrus.DebugLevel)
 
-	// Configuration
-	cfg, err := config.NewConfig()
-	if err != nil {
-		panic(err)
+	// Config
+	cfg := config.Config{
+		Server: server.ServerConfig{
+			Network: "tcp",
+			Port:    "50123",
+		},
+		DB: postgres.DBConfig{
+			Host:        "localhost",
+			Port:        "5432",
+			User:        "postgres",
+			Password:    "mAz0H1zm",
+			Database:    "postgres",
+			MaxAtmps:    5,
+			DelayAtmpsS: 5,
+		},
+		Conn: conn.Config{
+			CfgSrvUsers: conn.ConfigServiceUsers{
+				Host: "localhost",
+				Port: "50124",
+			},
+		},
 	}
 
 	// Connecting to postgres
@@ -43,8 +62,14 @@ func init() {
 	// GRPC server
 	grpcSrv := grpc.NewServer()
 
+	// Connect to other services
+	clientServices, err := conn.NewClientsServices(cfg.Conn)
+	if err != nil {
+		panic(err)
+	}
+
 	// Creating repository
-	repo := repository.NewRepository()
+	repo := repository.NewRepository(clientServices)
 
 	// Register promo service
 	service := service.NewServicePromos(repo, pool, logger)
@@ -70,13 +95,28 @@ func Test(t *testing.T) {
 		srv.Stop()
 	})
 
-	t.Run("Test Create|Use|Delete", func(t *testing.T) {
-		if _, err := client.Create(context.TODO(), promo); err != nil {
-			t.Fatal(err)
+	t.Run("Test Create | Use | GetById | GetByName | Delete", func(t *testing.T) {
+		createOut, err := client.Create(context.TODO(), promo)
+		if err != nil {
+			t.Fatal("create: ", err)
 		}
 
-		if _, err := client.Delete(context.TODO(), &promos.PromoName{Name: promo.Name}); err != nil {
-			t.Fatal(err)
+		getByIdOut, err := client.GetById(context.TODO(), &promos.PromoId{Id: createOut.PromoCode.Id})
+		if err != nil {
+			t.Fatal("getById: ", err)
+		}
+
+		getByNameOut, err := client.GetByName(context.TODO(), &promos.PromoName{Name: createOut.PromoCode.Name})
+		if err != nil {
+			t.Fatal("getByName: ", err)
+		}
+
+		if getByIdOut.PromoCode.Id != getByNameOut.PromoCode.Id {
+			t.Fatal(getByIdOut, getByNameOut)
+		}
+
+		if _, err := client.Delete(context.TODO(), &promos.PromoId{Id: createOut.PromoCode.Id}); err != nil {
+			t.Fatal("delete: ", err)
 		}
 	})
 
