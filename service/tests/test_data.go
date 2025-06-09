@@ -8,10 +8,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var promo = &promos.CreatePromoIn{
+var promo = &promos.CreatePromo{
 	Name:     uuid.New().String(),
-	Value:    0,
+	Amount:   0,
 	Currency: 0,
-	Creator:  0,
+	Creator:  <ID>,
+	Uses:     1,
 	ExpAt:    timestamppb.New(time.Now().Add(time.Hour * 6)),
 }
