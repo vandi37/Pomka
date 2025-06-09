@@ -37,7 +37,7 @@ func init() {
 			Host:        "localhost",
 			Port:        "5432",
 			User:        "postgres",
-			Password:    "mAz0H1zm",
+			Password:    "postgres",
 			Database:    "postgres",
 			MaxAtmps:    5,
 			DelayAtmpsS: 5,
