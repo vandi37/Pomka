@@ -24,134 +24,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type CreatePromoIn struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Value         int64                  `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
-	Currency      common.Currency        `protobuf:"varint,3,opt,name=currency,proto3,enum=common.Currency" json:"currency,omitempty"`
-	Creator       int64                  `protobuf:"varint,4,opt,name=creator,proto3" json:"creator,omitempty"`
-	ExpAt         *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expAt,proto3" json:"expAt,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreatePromoIn) Reset() {
-	*x = CreatePromoIn{}
-	mi := &file_promos_service_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreatePromoIn) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreatePromoIn) ProtoMessage() {}
-
-func (x *CreatePromoIn) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreatePromoIn.ProtoReflect.Descriptor instead.
-func (*CreatePromoIn) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *CreatePromoIn) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *CreatePromoIn) GetValue() int64 {
-	if x != nil {
-		return x.Value
-	}
-	return 0
-}
-
-func (x *CreatePromoIn) GetCurrency() common.Currency {
-	if x != nil {
-		return x.Currency
-	}
-	return common.Currency(0)
-}
-
-func (x *CreatePromoIn) GetCreator() int64 {
-	if x != nil {
-		return x.Creator
-	}
-	return 0
-}
-
-func (x *CreatePromoIn) GetExpAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.ExpAt
-	}
-	return nil
-}
-
-type CreatePromoOut struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PromoCode     *PromoCode             `protobuf:"bytes,1,opt,name=promoCode,proto3,oneof" json:"promoCode,omitempty"`
-	Failure       *common.Failure        `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreatePromoOut) Reset() {
-	*x = CreatePromoOut{}
-	mi := &file_promos_service_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreatePromoOut) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreatePromoOut) ProtoMessage() {}
-
-func (x *CreatePromoOut) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreatePromoOut.ProtoReflect.Descriptor instead.
-func (*CreatePromoOut) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *CreatePromoOut) GetPromoCode() *PromoCode {
-	if x != nil {
-		return x.PromoCode
-	}
-	return nil
-}
-
-func (x *CreatePromoOut) GetFailure() *common.Failure {
-	if x != nil {
-		return x.Failure
-	}
-	return nil
-}
-
 type PromoName struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -161,7 +33,7 @@ type PromoName struct {
 
 func (x *PromoName) Reset() {
 	*x = PromoName{}
-	mi := &file_promos_service_proto_msgTypes[2]
+	mi := &file_promos_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -173,7 +45,7 @@ func (x *PromoName) String() string {
 func (*PromoName) ProtoMessage() {}
 
 func (x *PromoName) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[2]
+	mi := &file_promos_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -186,7 +58,7 @@ func (x *PromoName) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoName.ProtoReflect.Descriptor instead.
 func (*PromoName) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{2}
+	return file_promos_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PromoName) GetName() string {
@@ -196,21 +68,67 @@ func (x *PromoName) GetName() string {
 	return ""
 }
 
+type PromoId struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PromoId) Reset() {
+	*x = PromoId{}
+	mi := &file_promos_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PromoId) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PromoId) ProtoMessage() {}
+
+func (x *PromoId) ProtoReflect() protoreflect.Message {
+	mi := &file_promos_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PromoId.ProtoReflect.Descriptor instead.
+func (*PromoId) Descriptor() ([]byte, []int) {
+	return file_promos_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *PromoId) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 type PromoCode struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Value         int64                  `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Currency      common.Currency        `protobuf:"varint,3,opt,name=currency,proto3,enum=common.Currency" json:"currency,omitempty"`
-	ExpAt         *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=expAt,proto3" json:"expAt,omitempty"`
-	Creator       int64                  `protobuf:"varint,5,opt,name=creator,proto3" json:"creator,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	Amount        int64                  `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	Uses          int32                  `protobuf:"varint,5,opt,name=uses,proto3" json:"uses,omitempty"`
+	Creator       int64                  `protobuf:"varint,6,opt,name=creator,proto3" json:"creator,omitempty"`
+	ExpAt         *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expAt,proto3" json:"expAt,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PromoCode) Reset() {
 	*x = PromoCode{}
-	mi := &file_promos_service_proto_msgTypes[3]
+	mi := &file_promos_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -222,7 +140,7 @@ func (x *PromoCode) String() string {
 func (*PromoCode) ProtoMessage() {}
 
 func (x *PromoCode) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[3]
+	mi := &file_promos_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -235,7 +153,14 @@ func (x *PromoCode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoCode.ProtoReflect.Descriptor instead.
 func (*PromoCode) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{3}
+	return file_promos_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *PromoCode) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
 }
 
 func (x *PromoCode) GetName() string {
@@ -245,13 +170,6 @@ func (x *PromoCode) GetName() string {
 	return ""
 }
 
-func (x *PromoCode) GetValue() int64 {
-	if x != nil {
-		return x.Value
-	}
-	return 0
-}
-
 func (x *PromoCode) GetCurrency() common.Currency {
 	if x != nil {
 		return x.Currency
@@ -259,11 +177,18 @@ func (x *PromoCode) GetCurrency() common.Currency {
 	return common.Currency(0)
 }
 
-func (x *PromoCode) GetExpAt() *timestamppb.Timestamp {
+func (x *PromoCode) GetAmount() int64 {
 	if x != nil {
-		return x.ExpAt
+		return x.Amount
 	}
-	return nil
+	return 0
+}
+
+func (x *PromoCode) GetUses() int32 {
+	if x != nil {
+		return x.Uses
+	}
+	return 0
 }
 
 func (x *PromoCode) GetCreator() int64 {
@@ -273,6 +198,13 @@ func (x *PromoCode) GetCreator() int64 {
 	return 0
 }
 
+func (x *PromoCode) GetExpAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpAt
+	}
+	return nil
+}
+
 func (x *PromoCode) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -280,38 +212,236 @@ func (x *PromoCode) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type CreatePromo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Amount        int64                  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	Currency      common.Currency        `protobuf:"varint,3,opt,name=currency,proto3,enum=common.Currency" json:"currency,omitempty"`
+	Creator       int64                  `protobuf:"varint,4,opt,name=creator,proto3" json:"creator,omitempty"`
+	Uses          int32                  `protobuf:"varint,5,opt,name=uses,proto3" json:"uses,omitempty"`
+	ExpAt         *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=expAt,proto3" json:"expAt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreatePromo) Reset() {
+	*x = CreatePromo{}
+	mi := &file_promos_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreatePromo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreatePromo) ProtoMessage() {}
+
+func (x *CreatePromo) ProtoReflect() protoreflect.Message {
+	mi := &file_promos_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreatePromo.ProtoReflect.Descriptor instead.
+func (*CreatePromo) Descriptor() ([]byte, []int) {
+	return file_promos_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CreatePromo) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreatePromo) GetAmount() int64 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+func (x *CreatePromo) GetCurrency() common.Currency {
+	if x != nil {
+		return x.Currency
+	}
+	return common.Currency(0)
+}
+
+func (x *CreatePromo) GetCreator() int64 {
+	if x != nil {
+		return x.Creator
+	}
+	return 0
+}
+
+func (x *CreatePromo) GetUses() int32 {
+	if x != nil {
+		return x.Uses
+	}
+	return 0
+}
+
+func (x *CreatePromo) GetExpAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpAt
+	}
+	return nil
+}
+
+type PromoFailure struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PromoCode     *PromoCode             `protobuf:"bytes,1,opt,name=promoCode,proto3,oneof" json:"promoCode,omitempty"`
+	Failure       *common.Failure        `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PromoFailure) Reset() {
+	*x = PromoFailure{}
+	mi := &file_promos_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PromoFailure) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PromoFailure) ProtoMessage() {}
+
+func (x *PromoFailure) ProtoReflect() protoreflect.Message {
+	mi := &file_promos_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PromoFailure.ProtoReflect.Descriptor instead.
+func (*PromoFailure) Descriptor() ([]byte, []int) {
+	return file_promos_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PromoFailure) GetPromoCode() *PromoCode {
+	if x != nil {
+		return x.PromoCode
+	}
+	return nil
+}
+
+func (x *PromoFailure) GetFailure() *common.Failure {
+	if x != nil {
+		return x.Failure
+	}
+	return nil
+}
+
+type PromoUserId struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	PromoId       int64                  `protobuf:"varint,2,opt,name=promoId,proto3" json:"promoId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PromoUserId) Reset() {
+	*x = PromoUserId{}
+	mi := &file_promos_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PromoUserId) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PromoUserId) ProtoMessage() {}
+
+func (x *PromoUserId) ProtoReflect() protoreflect.Message {
+	mi := &file_promos_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PromoUserId.ProtoReflect.Descriptor instead.
+func (*PromoUserId) Descriptor() ([]byte, []int) {
+	return file_promos_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *PromoUserId) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *PromoUserId) GetPromoId() int64 {
+	if x != nil {
+		return x.PromoId
+	}
+	return 0
+}
+
 var File_promos_service_proto protoreflect.FileDescriptor
 
 const file_promos_service_proto_rawDesc = "" +
 	"\n" +
 	"\x14promos/service.proto\x12\n" +
-	"promocodes\x1a\x12common/types.proto\x1a\x13users/service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\x01\n" +
-	"\rCreatePromoIn\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x03R\x05value\x12,\n" +
+	"promocodes\x1a\x12common/types.proto\x1a\x13users/service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1f\n" +
+	"\tPromoName\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"\x19\n" +
+	"\aPromoId\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\x8f\x02\n" +
+	"\tPromoCode\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12,\n" +
+	"\bcurrency\x18\x03 \x01(\x0e2\x10.common.CurrencyR\bcurrency\x12\x16\n" +
+	"\x06amount\x18\x04 \x01(\x03R\x06amount\x12\x12\n" +
+	"\x04uses\x18\x05 \x01(\x05R\x04uses\x12\x18\n" +
+	"\acreator\x18\x06 \x01(\x03R\acreator\x120\n" +
+	"\x05expAt\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\x05expAt\x128\n" +
+	"\tcreatedAt\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xc7\x01\n" +
+	"\vCreatePromo\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
+	"\x06amount\x18\x02 \x01(\x03R\x06amount\x12,\n" +
 	"\bcurrency\x18\x03 \x01(\x0e2\x10.common.CurrencyR\bcurrency\x12\x18\n" +
-	"\acreator\x18\x04 \x01(\x03R\acreator\x120\n" +
-	"\x05expAt\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x05expAt\"\x94\x01\n" +
-	"\x0eCreatePromoOut\x128\n" +
+	"\acreator\x18\x04 \x01(\x03R\acreator\x12\x12\n" +
+	"\x04uses\x18\x05 \x01(\x05R\x04uses\x120\n" +
+	"\x05expAt\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x05expAt\"\x92\x01\n" +
+	"\fPromoFailure\x128\n" +
 	"\tpromoCode\x18\x01 \x01(\v2\x15.promocodes.PromoCodeH\x00R\tpromoCode\x88\x01\x01\x12.\n" +
 	"\afailure\x18\x02 \x01(\v2\x0f.common.FailureH\x01R\afailure\x88\x01\x01B\f\n" +
 	"\n" +
 	"_promoCodeB\n" +
 	"\n" +
-	"\b_failure\"\x1f\n" +
-	"\tPromoName\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"\xe9\x01\n" +
-	"\tPromoCode\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x03R\x05value\x12,\n" +
-	"\bcurrency\x18\x03 \x01(\x0e2\x10.common.CurrencyR\bcurrency\x120\n" +
-	"\x05expAt\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x05expAt\x12\x18\n" +
-	"\acreator\x18\x05 \x01(\x03R\acreator\x128\n" +
-	"\tcreatedAt\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt2\xb6\x01\n" +
-	"\x06Promos\x12?\n" +
-	"\x06Create\x12\x19.promocodes.CreatePromoIn\x1a\x1a.promocodes.CreatePromoOut\x121\n" +
-	"\x06Delete\x12\x15.promocodes.PromoName\x1a\x10.common.Response\x128\n" +
-	"\x03Use\x12\x15.promocodes.PromoName\x1a\x1a.users.TransactionResponseB\n" +
+	"\b_failure\"?\n" +
+	"\vPromoUserId\x12\x16\n" +
+	"\x06userId\x18\x01 \x01(\x03R\x06userId\x12\x18\n" +
+	"\apromoId\x18\x02 \x01(\x03R\apromoId2\xaa\x02\n" +
+	"\x06Promos\x12;\n" +
+	"\x06Create\x12\x17.promocodes.CreatePromo\x1a\x18.promocodes.PromoFailure\x12/\n" +
+	"\x06Delete\x12\x13.promocodes.PromoId\x1a\x10.common.Response\x12:\n" +
+	"\x03Use\x12\x17.promocodes.PromoUserId\x1a\x1a.users.TransactionResponse\x128\n" +
+	"\aGetById\x12\x13.promocodes.PromoId\x1a\x18.promocodes.PromoFailure\x12<\n" +
+	"\tGetByName\x12\x15.promocodes.PromoName\x1a\x18.promocodes.PromoFailureB\n" +
 	"Z\b./promosb\x06proto3"
 
 var (
@@ -326,34 +456,40 @@ func file_promos_service_proto_rawDescGZIP() []byte {
 	return file_promos_service_proto_rawDescData
 }
 
-var file_promos_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_promos_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_promos_service_proto_goTypes = []any{
-	(*CreatePromoIn)(nil),             // 0: promocodes.CreatePromoIn
-	(*CreatePromoOut)(nil),            // 1: promocodes.CreatePromoOut
-	(*PromoName)(nil),                 // 2: promocodes.PromoName
-	(*PromoCode)(nil),                 // 3: promocodes.PromoCode
-	(common.Currency)(0),              // 4: common.Currency
-	(*timestamppb.Timestamp)(nil),     // 5: google.protobuf.Timestamp
-	(*common.Failure)(nil),            // 6: common.Failure
-	(*common.Response)(nil),           // 7: common.Response
-	(*users.TransactionResponse)(nil), // 8: users.TransactionResponse
+	(*PromoName)(nil),                 // 0: promocodes.PromoName
+	(*PromoId)(nil),                   // 1: promocodes.PromoId
+	(*PromoCode)(nil),                 // 2: promocodes.PromoCode
+	(*CreatePromo)(nil),               // 3: promocodes.CreatePromo
+	(*PromoFailure)(nil),              // 4: promocodes.PromoFailure
+	(*PromoUserId)(nil),               // 5: promocodes.PromoUserId
+	(common.Currency)(0),              // 6: common.Currency
+	(*timestamppb.Timestamp)(nil),     // 7: google.protobuf.Timestamp
+	(*common.Failure)(nil),            // 8: common.Failure
+	(*common.Response)(nil),           // 9: common.Response
+	(*users.TransactionResponse)(nil), // 10: users.TransactionResponse
 }
 var file_promos_service_proto_depIdxs = []int32{
-	4,  // 0: promocodes.CreatePromoIn.currency:type_name -> common.Currency
-	5,  // 1: promocodes.CreatePromoIn.expAt:type_name -> google.protobuf.Timestamp
-	3,  // 2: promocodes.CreatePromoOut.promoCode:type_name -> promocodes.PromoCode
-	6,  // 3: promocodes.CreatePromoOut.failure:type_name -> common.Failure
-	4,  // 4: promocodes.PromoCode.currency:type_name -> common.Currency
-	5,  // 5: promocodes.PromoCode.expAt:type_name -> google.protobuf.Timestamp
-	5,  // 6: promocodes.PromoCode.createdAt:type_name -> google.protobuf.Timestamp
-	0,  // 7: promocodes.Promos.Create:input_type -> promocodes.CreatePromoIn
-	2,  // 8: promocodes.Promos.Delete:input_type -> promocodes.PromoName
-	2,  // 9: promocodes.Promos.Use:input_type -> promocodes.PromoName
-	1,  // 10: promocodes.Promos.Create:output_type -> promocodes.CreatePromoOut
-	7,  // 11: promocodes.Promos.Delete:output_type -> common.Response
-	8,  // 12: promocodes.Promos.Use:output_type -> users.TransactionResponse
-	10, // [10:13] is the sub-list for method output_type
-	7,  // [7:10] is the sub-list for method input_type
+	6,  // 0: promocodes.PromoCode.currency:type_name -> common.Currency
+	7,  // 1: promocodes.PromoCode.expAt:type_name -> google.protobuf.Timestamp
+	7,  // 2: promocodes.PromoCode.createdAt:type_name -> google.protobuf.Timestamp
+	6,  // 3: promocodes.CreatePromo.currency:type_name -> common.Currency
+	7,  // 4: promocodes.CreatePromo.expAt:type_name -> google.protobuf.Timestamp
+	2,  // 5: promocodes.PromoFailure.promoCode:type_name -> promocodes.PromoCode
+	8,  // 6: promocodes.PromoFailure.failure:type_name -> common.Failure
+	3,  // 7: promocodes.Promos.Create:input_type -> promocodes.CreatePromo
+	1,  // 8: promocodes.Promos.Delete:input_type -> promocodes.PromoId
+	5,  // 9: promocodes.Promos.Use:input_type -> promocodes.PromoUserId
+	1,  // 10: promocodes.Promos.GetById:input_type -> promocodes.PromoId
+	0,  // 11: promocodes.Promos.GetByName:input_type -> promocodes.PromoName
+	4,  // 12: promocodes.Promos.Create:output_type -> promocodes.PromoFailure
+	9,  // 13: promocodes.Promos.Delete:output_type -> common.Response
+	10, // 14: promocodes.Promos.Use:output_type -> users.TransactionResponse
+	4,  // 15: promocodes.Promos.GetById:output_type -> promocodes.PromoFailure
+	4,  // 16: promocodes.Promos.GetByName:output_type -> promocodes.PromoFailure
+	12, // [12:17] is the sub-list for method output_type
+	7,  // [7:12] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
 	7,  // [7:7] is the sub-list for extension extendee
 	0,  // [0:7] is the sub-list for field type_name
@@ -364,14 +500,14 @@ func file_promos_service_proto_init() {
 	if File_promos_service_proto != nil {
 		return
 	}
-	file_promos_service_proto_msgTypes[1].OneofWrappers = []any{}
+	file_promos_service_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_promos_service_proto_rawDesc), len(file_promos_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

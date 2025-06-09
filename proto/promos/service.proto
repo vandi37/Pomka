@@ -11,34 +11,47 @@ option go_package = "./promos"; // для Go
 // Promocode/s <=> Promo/s
 
 service Promos {
-    rpc Create(CreatePromoIn) returns (CreatePromoOut);
-    rpc Delete(PromoName) returns (common.Response);
-    rpc Use(PromoName) returns (users.TransactionResponse);
-}
-
-message CreatePromoIn {
-    string name = 1;
-    int64 value = 2;
-    common.Currency currency = 3;
-    int64 creator = 4;
-    google.protobuf.Timestamp expAt = 5;
-}
-
-message CreatePromoOut {
-    optional PromoCode promoCode = 1;
-    optional common.Failure failure = 2;
+    rpc Create(CreatePromo) returns (PromoFailure);
+    rpc Delete(PromoId) returns (common.Response);
+    rpc Use(PromoUserId) returns (users.TransactionResponse);
+    rpc GetById(PromoId) returns (PromoFailure);
+    rpc GetByName(PromoName) returns (PromoFailure);
 }
 
 message PromoName {
     string name = 1;
 }
 
-message PromoCode {
-    string name = 1;
-    int64 value = 2;
-    common.Currency currency = 3;
-    google.protobuf.Timestamp expAt = 4;
-    int64 creator = 5;
-    google.protobuf.Timestamp createdAt = 6;
+message PromoId {
+    int64 id = 1;
 }
 
+message PromoCode {
+    int64 id = 1;
+    string name = 2;
+    common.Currency currency = 3; 
+    int amount = 4;
+    int uses = 5; 
+    int64 creator = 6;
+    google.protobuf.Timestamp expAt = 7;
+    google.protobuf.Timestamp createdAt = 8;
+}
+
+message CreatePromo {
+    string name = 1;
+    int64 amount = 2;
+    common.Currency currency = 3;
+    int64 creator = 4;
+    int32 uses = 5;
+    google.protobuf.Timestamp expAt = 6;
+}
+
+message PromoFailure{
+    optional PromoCode promoCode = 1;
+    optional common.Failure failure = 2;
+}
+
+message PromoUserId {
+    int64 userId = 1;
+    int64 promoId = 2;
+}
