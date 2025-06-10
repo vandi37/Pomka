@@ -64,29 +64,34 @@ func (sp *ServicePromos) DeleteByName(ctx context.Context, in *promos.PromoName)
 func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *users.TransactionResponse, err error) {
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
 
-		// Get PromoCode
+		// Query to db for get promo
 		promo, err := sp.repo.GetPromoById(ctx, tx, &promos.PromoId{Id: in.PromoId})
 		if err != nil {
 			return err
 		}
 
-		// Check valid promo
+		// Check expired data and uses of promo
 		if err := sp.repo.IsValid(promo); err != nil {
 			return err
 		}
 
-		// Send query to user service
+		// Query to db for check activation promo from user
+		if err := sp.repo.IsAlreadyActivated(ctx, tx, in); err != nil {
+			return err
+		}
+
+		// Query to serviceUsers for give currency
 		out, err = sp.repo.Activate(ctx, tx, promo, in.UserId)
 		if err != nil {
 			return err
 		}
 
-		// Increment uses promo
+		// Query to db for decremenet uses of promo
 		if err := sp.repo.DecrementUses(ctx, tx, &promos.PromoId{Id: in.PromoId}); err != nil {
 			return err
 		}
 
-		// Add activation promo to history
+		// Query to db for adding promo activation in history
 		if err := sp.repo.AddUserToPromo(ctx, tx, in); err != nil {
 			return err
 		}
