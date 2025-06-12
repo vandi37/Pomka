@@ -1,22 +1,5 @@
 ### **Запуск**:
-Перед запуском, создайте файл .env в директории с docker-compose.yml
-```
-SERVER_NETWORK=tcp
-SERVER_PORT=50123
-
-POSTGRES_HOST=
-POSTGRES_PORT=
-DB_MAX_ATMPS=
-DB_DELAY_ATMPS_S=
-
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-POSTGRES_DB=
-
-SERVICE_USERS_HOST=localhost
-SERVICE_USERS_PORT=
-```
-
+Перед запуском, заполните файл .env в директории с docker-compose.yml
 ```
 docker compose up
 ```
