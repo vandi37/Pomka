@@ -18,6 +18,13 @@ func (r *Repository) CreatePromo(
 	tx pgx.Tx,
 	in *promos.CreatePromo) (*promos.PromoCode, error) {
 
+	if in.Uses < 0 && in.Uses != -1 {
+		return nil, Err.ErrValueUses
+	}
+	if float64(time.Now().Unix()) > float64(in.ExpAt.AsTime().Unix()) {
+		return nil, Err.ErrExpAt
+	}
+
 	var expiredAt, createdAt interface{}
 	var out = new(promos.PromoCode)
 
@@ -31,7 +38,15 @@ func (r *Repository) CreatePromo(
 		in.Amount,
 		in.Uses,
 		in.Creator,
-		expAt).Scan(&out.Id, &out.Name, &out.Currency, &out.Amount, &out.Uses, &out.Creator, &expiredAt, &createdAt)
+		expAt).Scan(
+		&out.Id,
+		&out.Name,
+		&out.Currency,
+		&out.Amount,
+		&out.Uses,
+		&out.Creator,
+		&expiredAt,
+		&createdAt)
 
 	if err != nil {
 		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
@@ -39,6 +54,8 @@ func (r *Repository) CreatePromo(
 	}
 
 	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt.(time.Time)), timestamppb.New(createdAt.(time.Time))
+
+	r.logger.Debugf("creating promo: %d", out.Id)
 	return out, nil
 }
 
@@ -54,6 +71,7 @@ func (r *Repository) DeletePromoById(
 		return Err.ErrExecQuery
 	}
 
+	r.logger.Debugf("deleting promo: %d", in.Id)
 	return nil
 }
 
@@ -69,6 +87,7 @@ func (r *Repository) DeletePromoByName(
 		return Err.ErrExecQuery
 	}
 
+	r.logger.Debugf("deleting promo: %s", in.Name)
 	return nil
 }
 
@@ -77,6 +96,8 @@ func (r *Repository) GetPromoById(
 	ctx context.Context,
 	tx pgx.Tx,
 	in *promos.PromoId) (*promos.PromoCode, error) {
+
+	var expiredAt, createdAt interface{}
 	var out = new(promos.PromoCode)
 
 	q := `SELECT * FROM Promos WHERE Id = $1`
@@ -88,7 +109,9 @@ func (r *Repository) GetPromoById(
 		&out.Currency,
 		&out.Amount,
 		&out.Uses,
-		&out.Creator, nil, nil)
+		&out.Creator,
+		&expiredAt,
+		&createdAt)
 
 	if err != nil {
 		switch err {
@@ -101,6 +124,7 @@ func (r *Repository) GetPromoById(
 		}
 	}
 
+	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt.(time.Time)), timestamppb.New(createdAt.(time.Time))
 	return out, nil
 }
 
@@ -109,6 +133,8 @@ func (r *Repository) GetPromoByName(
 	ctx context.Context,
 	tx pgx.Tx,
 	in *promos.PromoName) (*promos.PromoCode, error) {
+
+	var expiredAt, createdAt interface{}
 	var out = new(promos.PromoCode)
 
 	q := `SELECT * FROM Promos WHERE Name = $1`
@@ -120,7 +146,9 @@ func (r *Repository) GetPromoByName(
 		&out.Currency,
 		&out.Amount,
 		&out.Uses,
-		&out.Creator, nil, nil)
+		&out.Creator,
+		&expiredAt,
+		&createdAt)
 
 	if err != nil {
 		switch err {
@@ -133,6 +161,7 @@ func (r *Repository) GetPromoByName(
 		}
 	}
 
+	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt.(time.Time)), timestamppb.New(createdAt.(time.Time))
 	return out, nil
 }
 
@@ -151,6 +180,7 @@ func (r *Repository) ActivatePromo(
 		return nil, Err.ErrServiceUsers
 	}
 
+	r.logger.Debugf("user: %d activate promo: %d", userId, in.Id)
 	return out, nil
 }
 
@@ -186,6 +216,7 @@ func (r *Repository) AddActivatePromoToHistory(
 		return Err.ErrExecQuery
 	}
 
+	r.logger.Debugf("add in history: user: %d activate promo: %d", in.UserId, in.PromoId)
 	return nil
 }
 
@@ -201,6 +232,7 @@ func (r *Repository) DeleteActivatePromoFromHistory(
 		return Err.ErrExecQuery
 	}
 
+	r.logger.Debugf("delete from history: user: %d activate promo: %d", in.UserId, in.PromoId)
 	return nil
 }
 
@@ -220,16 +252,23 @@ func (r *Repository) PromoIsAlreadyActivated(
 		return false, Err.ErrExecQuery
 	}
 
-	return *activated, nil
+	if *activated {
+		r.logger.Debugf("error user: %d activate promo: %d. promo is already activated by user", in.UserId, in.PromoId)
+		return true, Err.ErrPromoAlreadyActivated
+	}
+
+	return false, nil
 }
 
 // If promo valid, return true. If promo is expired/uses=0, return false.
-func (r *Repository) PromoIsValid(in *promos.PromoCode) (b bool, err error) {
-	if float64(in.ExpAt.AsTime().Unix()) > float64(time.Now().Unix()) {
+func (r *Repository) PromoIsValid(in *promos.PromoCode, userId int64) (b bool, err error) {
+	if float64(time.Now().Unix()) > float64(in.ExpAt.AsTime().Unix()) {
+		r.logger.Debugf("error user: %d activate promo: %d. promo expired: %s", userId, in.Id, in.ExpAt.AsTime().String())
 		return false, Err.ErrPromoExpired
 	}
 
 	if in.Uses == 0 {
+		r.logger.Debugf("error user: %d activate promo: %d. promo not in stock", userId, in.Id)
 		return false, Err.ErrPromoNotInStock
 	}
 
