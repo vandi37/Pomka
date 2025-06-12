@@ -12,7 +12,6 @@ var promo = &promos.CreatePromo{
 	Name:     uuid.New().String(),
 	Amount:   0,
 	Currency: 0,
-	Creator:  4,
 	Uses:     1,
 	ExpAt:    timestamppb.New(time.Now().Add(time.Hour * 6)),
 }
