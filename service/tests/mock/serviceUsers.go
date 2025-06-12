@@ -10,14 +10,12 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type MockServiceUsers struct {
 	db *pgxpool.Pool
-	mock.Mock
 }
 
 func NewMockServiceUsers(pool *pgxpool.Pool) *MockServiceUsers {

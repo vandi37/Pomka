@@ -13,6 +13,7 @@ import (
 
 	"promos/pkg/postgres"
 
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -25,26 +26,20 @@ var repo *repository.Repository
 
 func init() {
 
-	// Logger
+	// Setup logger
 	logger := logrus.New()
 	logger.SetLevel(logrus.DebugLevel)
 	serverLogger := server.NewServerLogger(logger)
 
-	// Config
-	cfg := config.Config{
-		Server: server.ServerConfig{
-			Network: "tcp",
-			Port:    "50123",
-		},
-		DB: postgres.DBConfig{
-			Host:        "localhost",
-			Port:        "<PORT>",
-			User:        "<USER>",
-			Password:    "<PASSWORD>",
-			Database:    "<POSTGRES>",
-			MaxAtmps:    5,
-			DelayAtmpsS: 5,
-		},
+	// Load env
+	if err := godotenv.Load("config.env"); err != nil {
+		panic("error missing enviroment file. please create config.env in ./service/tests")
+	}
+
+	// Cofiguration
+	cfg, err := config.NewConfig()
+	if err != nil {
+		panic(err)
 	}
 
 	// Connecting to postgres

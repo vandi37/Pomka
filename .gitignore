@@ -1,2 +1,2 @@
 # hide enviroment file
-.env
+*.env
