@@ -35,7 +35,7 @@ var promo = &promos.CreatePromo{
 	Amount:   0,
 	Currency: 0,
 	Uses:     2,
-	ExpAt:    timestamppb.New(time.Now().Add(time.Second * 3)),
+	ExpAt:    timestamppb.New(time.Now().Add(time.Second * 1)),
 }
 
 func init() {
