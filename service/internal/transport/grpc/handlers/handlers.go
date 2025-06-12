@@ -86,7 +86,7 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 		}
 
 		// Check expired data and uses of promo
-		if b, err := sp.repo.PromoIsValid(promo); err != nil || !b {
+		if b, err := sp.repo.PromoIsValid(promo, in.UserId); err != nil || !b {
 			return err
 		}
 
