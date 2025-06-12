@@ -1,6 +1,7 @@
 package repeatible
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -16,5 +17,5 @@ func DoWithTries(fn func() error, attemps int, delay time.Duration) (err error) 
 		return nil
 	}
 
-	return
+	return fmt.Errorf("error after %d attemps got fail", attemps)
 }

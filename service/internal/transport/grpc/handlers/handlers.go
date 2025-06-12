@@ -11,8 +11,13 @@ import (
 )
 
 func (sp *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (out *promos.PromoFailure, err error) {
+	var promo *promos.PromoCode
+
+	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
-		out, err = sp.repo.Create(ctx, tx, in)
+
+		// Creating promo
+		promo, err = sp.repo.CreatePromo(ctx, tx, in)
 
 		if err != nil {
 			return err
@@ -21,15 +26,19 @@ func (sp *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (ou
 		return nil
 
 	}); errTx != nil {
-		return nil, errTx
+		return &promos.PromoFailure{PromoCode: nil, Failure: nil}, errTx
 	}
 
-	return out, nil
+	return &promos.PromoFailure{PromoCode: promo, Failure: nil}, nil
 }
 
 func (sp *ServicePromos) DeleteById(ctx context.Context, in *promos.PromoId) (out *common.Response, err error) {
+
+	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
-		out, err = sp.repo.DeleteById(ctx, tx, in)
+
+		// Deleting promo
+		err = sp.repo.DeletePromoById(ctx, tx, in)
 
 		if err != nil {
 			return err
@@ -38,15 +47,19 @@ func (sp *ServicePromos) DeleteById(ctx context.Context, in *promos.PromoId) (ou
 		return nil
 
 	}); errTx != nil {
-		return nil, errTx
+		return &common.Response{Failure: nil}, errTx
 	}
 
-	return out, nil
+	return &common.Response{Failure: nil}, nil
 }
 
 func (sp *ServicePromos) DeleteByName(ctx context.Context, in *promos.PromoName) (out *common.Response, err error) {
+
+	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
-		out, err = sp.repo.DeleteByName(ctx, tx, in)
+
+		// Deleting promo
+		err = sp.repo.DeletePromoByName(ctx, tx, in)
 
 		if err != nil {
 			return err
@@ -55,13 +68,15 @@ func (sp *ServicePromos) DeleteByName(ctx context.Context, in *promos.PromoName)
 		return nil
 
 	}); errTx != nil {
-		return nil, errTx
+		return &common.Response{Failure: nil}, errTx
 	}
 
-	return out, nil
+	return &common.Response{Failure: nil}, nil
 }
 
 func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *users.TransactionResponse, err error) {
+
+	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
 
 		// Query to db for get promo
@@ -71,28 +86,28 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 		}
 
 		// Check expired data and uses of promo
-		if err := sp.repo.IsValid(promo); err != nil {
+		if b, err := sp.repo.PromoIsValid(promo); err != nil || !b {
 			return err
 		}
 
 		// Query to db for check activation promo from user
-		if err := sp.repo.IsAlreadyActivated(ctx, tx, in); err != nil {
+		if b, err := sp.repo.PromoIsAlreadyActivated(ctx, tx, in); err != nil || b {
 			return err
 		}
 
 		// Query to serviceUsers for give currency
-		out, err = sp.repo.Activate(ctx, tx, promo, in.UserId)
+		out, err = sp.repo.ActivatePromo(ctx, promo, in.UserId)
 		if err != nil {
 			return err
 		}
 
 		// Query to db for decremenet uses of promo
-		if err := sp.repo.DecrementUses(ctx, tx, &promos.PromoId{Id: in.PromoId}); err != nil {
+		if err := sp.repo.DecrementPromoUses(ctx, tx, &promos.PromoId{Id: in.PromoId}); err != nil {
 			return err
 		}
 
 		// Query to db for adding promo activation in history
-		if err := sp.repo.AddUserToPromo(ctx, tx, in); err != nil {
+		if err := sp.repo.AddActivatePromoToHistory(ctx, tx, in); err != nil {
 			return err
 		}
 
@@ -108,7 +123,10 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 func (sp *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (out *promos.PromoFailure, err error) {
 	var promo *promos.PromoCode
 
+	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
+
+		// Get promo
 		promo, err = sp.repo.GetPromoById(ctx, tx, in)
 
 		if err != nil {
@@ -127,7 +145,10 @@ func (sp *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (out *
 func (sp *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (out *promos.PromoFailure, err error) {
 	var promo *promos.PromoCode
 
+	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
+
+		// Get promo
 		promo, err = sp.repo.GetPromoByName(ctx, tx, in)
 
 		if err != nil {

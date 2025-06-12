@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"log"
 	"promos/config"
 	"promos/internal/models/promos"
 	"promos/internal/repository"
@@ -17,45 +16,43 @@ import (
 )
 
 func Run() {
-
-	// Logger
+	// Setup logger
 	logger := logrus.New()
 	logger.SetLevel(logrus.DebugLevel)
+	serverLogger := server.NewServerLogger(logger)
 
-	// Config
+	// Configuration
 	cfg, err := config.NewConfig()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
-	// Connecting to postgres
+	// Creating postgres pool
 	pool, err := postgres.NewPool(context.TODO(), cfg.DB)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	if err := pool.Ping(context.TODO()); err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
-	// GRPC server
-	grpcSrv := grpc.NewServer()
-
-	// Connect to other services
+	// Connect to service users
 	clientServices, err := conn.NewClientsServices(cfg.Conn)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	// Creating repository
-	repo := repository.NewRepository(clientServices)
+	repo := repository.NewRepository(clientServices, logger)
 
-	// Register promo service
-	service := service.NewServicePromos(repo, pool, logger)
+	// Register service promos
+	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(serverLogger.LoggingUnaryInterceptor))
+	service := service.NewServicePromos(repo, pool)
 	promos.RegisterPromosServer(grpcSrv, service)
 
 	// Run server
 	server := server.NewServer(grpcSrv)
 	if err := server.Run(cfg.Server); err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 }

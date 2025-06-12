@@ -2,119 +2,143 @@ package repository
 
 import (
 	"context"
-	"log"
-	"promos/internal/models/common"
+	"errors"
 	"promos/internal/models/promos"
 	"promos/internal/models/users"
 	Err "promos/pkg/errors"
 	"time"
 
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (r *Repository) Create(ctx context.Context, tx pgx.Tx, in *promos.CreatePromo) (*promos.PromoFailure, error) {
-	q := `INSERT INTO Promos (Id, Name, Currency, Amount, Uses, Creator, ExpAt)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)`
+// Insert promo to table promos
+func (r *Repository) CreatePromo(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.CreatePromo) (*promos.PromoCode, error) {
 
+	var expiredAt, createdAt interface{}
+	var out = new(promos.PromoCode)
+
+	q := `INSERT INTO Promos (Name, Currency, Amount, Uses, Creator, ExpAt)
+    VALUES ($1, $2, $3, $4, $5, $6) RETURNING Id, Name, Currency, Amount, Uses, Creator, ExpAt, CreatedAt`
 	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
-	id := int64(uuid.New().ID())
-	_, err := tx.Exec(ctx, q,
-		id,
+
+	err := tx.QueryRow(ctx, q,
 		in.Name,
 		in.Currency,
 		in.Amount,
 		in.Uses,
 		in.Creator,
-		expAt)
+		expAt).Scan(&out.Id, &out.Name, &out.Currency, &out.Amount, &out.Uses, &out.Creator, &expiredAt, &createdAt)
+
 	if err != nil {
+		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return nil, Err.ErrExecQuery
 	}
 
-	out := &promos.PromoFailure{
-		PromoCode: &promos.PromoCode{
-			Id:        id,
-			Name:      in.Name,
-			Currency:  in.Currency,
-			Amount:    in.Amount,
-			Uses:      in.Uses,
-			Creator:   in.Creator,
-			ExpAt:     in.ExpAt,
-			CreatedAt: timestamppb.Now()},
-		Failure: nil}
+	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt.(time.Time)), timestamppb.New(createdAt.(time.Time))
 	return out, nil
 }
 
-func (r *Repository) DeleteById(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (*common.Response, error) {
-	q := `DELETE FROM UserToPromo WHERE PromoId = $1`
+// Delete promo from table promos by ID
+func (r *Repository) DeletePromoById(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.PromoId) error {
+	q := `DELETE FROM Promos WHERE Id = $1`
 
 	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
-		log.Println(err)
-		return nil, Err.ErrExecQuery
+		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
+		return Err.ErrExecQuery
 	}
 
-	q = `DELETE FROM Promos WHERE Id = $1`
-
-	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
-		log.Println(err)
-		return nil, Err.ErrExecQuery
-	}
-
-	return nil, nil
+	return nil
 }
 
-func (r *Repository) DeleteByName(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (*common.Response, error) {
+// Delete promo from table promos by Name
+func (r *Repository) DeletePromoByName(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.PromoName) error {
 	q := `DELETE FROM Promos WHERE Name = $1`
 
 	if _, err := tx.Exec(ctx, q, in.Name); err != nil {
-		return nil, Err.ErrExecQuery
+		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
+		return Err.ErrExecQuery
 	}
 
-	return nil, nil
+	return nil
 }
 
-func (r *Repository) GetPromoById(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (*promos.PromoCode, error) {
+// Get promo from table promos by ID
+func (r *Repository) GetPromoById(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.PromoId) (*promos.PromoCode, error) {
 	var out = new(promos.PromoCode)
 
 	q := `SELECT * FROM Promos WHERE Id = $1`
 	row := tx.QueryRow(ctx, q, in.Id)
 
-	if err := row.Scan(
+	err := row.Scan(
 		&out.Id,
 		&out.Name,
 		&out.Currency,
 		&out.Amount,
 		&out.Uses,
-		&out.Creator, nil, nil); err != nil {
-		return nil, Err.ErrIncorrectData
+		&out.Creator, nil, nil)
+
+	if err != nil {
+		switch err {
+		case pgx.ErrNoRows:
+			r.logger.Warn(errors.Join(Err.ErrMissingPromoId, err))
+			return nil, Err.ErrMissingPromoId
+		default:
+			r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
+			return nil, Err.ErrExecQuery
+		}
 	}
+
 	return out, nil
 }
 
-func (r *Repository) GetPromoByName(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (*promos.PromoCode, error) {
+// Get promo from table promos by Name
+func (r *Repository) GetPromoByName(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.PromoName) (*promos.PromoCode, error) {
 	var out = new(promos.PromoCode)
 
 	q := `SELECT * FROM Promos WHERE Name = $1`
 	row := tx.QueryRow(ctx, q, in.Name)
 
-	if err := row.Scan(
+	err := row.Scan(
 		&out.Id,
 		&out.Name,
 		&out.Currency,
 		&out.Amount,
 		&out.Uses,
-		&out.Creator, nil, nil); err != nil {
-		return nil, Err.ErrIncorrectData
+		&out.Creator, nil, nil)
+
+	if err != nil {
+		switch err {
+		case pgx.ErrNoRows:
+			r.logger.Warn(errors.Join(Err.ErrMissingPromoName, err))
+			return nil, Err.ErrMissingPromoName
+		default:
+			r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
+			return nil, Err.ErrExecQuery
+		}
 	}
 
 	return out, nil
 }
 
-func (r *Repository) Activate(
+// Send transaction to service users
+func (r *Repository) ActivatePromo(
 	ctx context.Context,
-	tx pgx.Tx,
 	in *promos.PromoCode,
 	userId int64) (*users.TransactionResponse, error) {
 
@@ -123,25 +147,18 @@ func (r *Repository) Activate(
 		Receiver: &users.UserTransaction{UserId: userId, Amount: in.Amount, Currency: in.Currency},
 	})
 	if err != nil {
+		r.logger.Warn(errors.Join(Err.ErrServiceUsers, err))
 		return nil, Err.ErrServiceUsers
 	}
 
 	return out, nil
 }
 
-func (r *Repository) IsValid(in *promos.PromoCode) error {
-	if float64(in.ExpAt.AsTime().Unix()) > float64(time.Now().Unix()) {
-		return Err.ErrPromoExpired
-	}
-
-	if in.Uses == 0 {
-		return Err.ErrPromoNotInStock
-	}
-
-	return nil
-}
-
-func (r *Repository) DecrementUses(ctx context.Context, tx pgx.Tx, in *promos.PromoId) error {
+// Update table promos, decrement uses of promo.
+func (r *Repository) DecrementPromoUses(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.PromoId) (err error) {
 	if in.Id == -1 {
 		return nil
 	}
@@ -149,33 +166,72 @@ func (r *Repository) DecrementUses(ctx context.Context, tx pgx.Tx, in *promos.Pr
 	q := `UPDATE Promos SET Uses = Uses-1 WHERE Id = $1`
 
 	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
+		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return Err.ErrExecQuery
 	}
 
 	return nil
 }
 
-func (r *Repository) AddUserToPromo(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) error {
+// Insert activation of promo to table UserToPromo
+func (r *Repository) AddActivatePromoToHistory(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.PromoUserId) (err error) {
 	q := `INSERT INTO UserToPromo (UserId, PromoId, ActivatedAt) VALUES ($1, $2, $3)`
 
 	actAt := time.Now().Format("2006-01-02 15:04:05")
 	if _, err := tx.Exec(ctx, q, in.UserId, in.PromoId, actAt); err != nil {
+		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return Err.ErrExecQuery
 	}
 
 	return nil
 }
 
-func (r *Repository) IsAlreadyActivated(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) error {
-	var activated bool
+// Delete activation of promo from table UserToPromo
+func (r *Repository) DeleteActivatePromoFromHistory(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.PromoUserId) (err error) {
+
+	q := `DELETE FROM UserToPromo WHERE UserId=$1 AND PromoId=$2`
+	if _, err := tx.Exec(ctx, q, in.UserId, in.PromoId); err != nil {
+		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
+		return Err.ErrExecQuery
+	}
+
+	return nil
+}
+
+// If promo been activated by user, return true. If promo not activated by user, return false.
+func (r *Repository) PromoIsAlreadyActivated(
+	ctx context.Context,
+	tx pgx.Tx,
+	in *promos.PromoUserId) (b bool, err error) {
+
+	var activated = new(bool)
 
 	q := `SELECT EXISTS(SELECT * FROM UserToPromo WHERE UserId = $1 AND PromoId = $2)`
 
 	row := tx.QueryRow(ctx, q, in.UserId, in.PromoId)
 	if err := row.Scan(&activated); err != nil {
-		log.Println(err)
-		return Err.ErrIncorrectData
+		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
+		return false, Err.ErrExecQuery
 	}
 
-	return nil
+	return *activated, nil
+}
+
+// If promo valid, return true. If promo is expired/uses=0, return false.
+func (r *Repository) PromoIsValid(in *promos.PromoCode) (b bool, err error) {
+	if float64(in.ExpAt.AsTime().Unix()) > float64(time.Now().Unix()) {
+		return false, Err.ErrPromoExpired
+	}
+
+	if in.Uses == 0 {
+		return false, Err.ErrPromoNotInStock
+	}
+
+	return true, nil
 }

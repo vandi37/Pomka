@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
-	grpc *grpc.Server
+	grpc   *grpc.Server
+	logger *logrus.Logger
 }
 
 func NewServer(grpc *grpc.Server) *Server {

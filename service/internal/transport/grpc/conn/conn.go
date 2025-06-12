@@ -13,6 +13,7 @@ type ClientsServices struct {
 }
 
 func NewClientsServices(cfg Config) (*ClientsServices, error) {
+
 	conn, err := grpc.NewClient(fmt.Sprintf("%s:%s", cfg.CfgSrvUsers.Host, cfg.CfgSrvUsers.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
