@@ -2,7 +2,6 @@ package test_grpc
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"promos/config"
 	"promos/internal/models/promos"
@@ -13,7 +12,6 @@ import (
 	"testing"
 	"time"
 
-	Err "promos/pkg/errors"
 	"promos/pkg/postgres"
 
 	"github.com/google/uuid"
@@ -37,7 +35,7 @@ var promo = &promos.CreatePromo{
 	Amount:   0,
 	Currency: 0,
 	Uses:     2,
-	ExpAt:    timestamppb.New(time.Now().Add(time.Second * 1000)),
+	ExpAt:    timestamppb.New(time.Now().Add(time.Second * 3)),
 }
 
 func init() {
@@ -166,7 +164,7 @@ func Test(t *testing.T) {
 		}
 
 		// TEST Use. Second attemp use promo by one user. Want error, promo is already activated by user
-		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId1}); errors.Is(err, Err.ErrPromoAlreadyActivated) {
+		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId1}); err == nil {
 			logger.Warn("error test second Use promo by one user fail", err)
 			t.Fail()
 		}
@@ -192,13 +190,13 @@ func Test(t *testing.T) {
 		promo.Creator = userId3
 
 		// TEST Use. Third activation of promo. Want error, promo not in stock
-		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId2}); errors.Is(err, Err.ErrPromoNotInStock) {
+		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId2}); err == nil {
 			logger.Warn("error test third Use promo, promo not in stock, fail", err)
 			t.Fail()
 		}
 
-		// Sleeping 1 second, for testing promo expiring
-		time.Sleep(time.Second * 1)
+		// Sleeping for testing promo expiring
+		time.Sleep(time.Second * 3)
 
 		// Adding user4
 		userId4, err = serviceUsers.Create(context.TODO())
@@ -208,7 +206,7 @@ func Test(t *testing.T) {
 		promo.Creator = userId4
 
 		// TEST Use. Fourth activation of promo. Want error, promo is expired
-		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId4}); errors.Is(err, Err.ErrPromoExpired) {
+		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId4}); err == nil {
 			logger.Warn("error test fourth Use promo, promo expired, fail", err)
 			t.Fail()
 		}
@@ -218,6 +216,7 @@ func Test(t *testing.T) {
 
 func clearUserToPromo(userIds []int64, promoId int64) error {
 	for _, userId := range userIds {
+		logger.Debugf("deleting history activation user: %d promo: %d", userId, promoId)
 		if err := serviceUsers.ClearHistory(context.TODO(), userId, promoId); err != nil {
 			return err
 		}
@@ -228,6 +227,7 @@ func clearUserToPromo(userIds []int64, promoId int64) error {
 
 func clearUsers(userIds []int64) error {
 	for _, userId := range userIds {
+		logger.Debugf("deleting user: %d", userId)
 		if err := serviceUsers.Delete(context.TODO(), userId); err != nil {
 			return err
 		}

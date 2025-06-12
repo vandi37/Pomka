@@ -22,10 +22,9 @@ func (s *ServerLogger) LoggingUnaryInterceptor(ctx context.Context, req interfac
 	if !ok {
 		md = metadata.New(nil)
 	}
-	s.logger.Debugf("Method: %s, Metadata: %s", info.FullMethod, md)
 
 	resp, err := handler(ctx, req)
-	s.logger.Debugf("Response: %v, Error: %v\n", resp, err)
+	s.logger.Debugf("METHOD: %s, REQUEST: %s, CONTEXT: %s RESPONSE: %v, ERROR: %v\n", info.FullMethod, req, md, resp, err)
 
 	return resp, err
 }

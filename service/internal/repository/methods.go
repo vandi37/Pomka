@@ -180,7 +180,6 @@ func (r *Repository) ActivatePromo(
 		return nil, Err.ErrServiceUsers
 	}
 
-	r.logger.Debugf("user: %d activate promo: %d", userId, in.Id)
 	return out, nil
 }
 
@@ -232,7 +231,6 @@ func (r *Repository) DeleteActivatePromoFromHistory(
 		return Err.ErrExecQuery
 	}
 
-	r.logger.Debugf("delete from history: user: %d activate promo: %d", in.UserId, in.PromoId)
 	return nil
 }
 
@@ -253,7 +251,6 @@ func (r *Repository) PromoIsAlreadyActivated(
 	}
 
 	if *activated {
-		r.logger.Debugf("error user: %d activate promo: %d. promo is already activated by user", in.UserId, in.PromoId)
 		return true, Err.ErrPromoAlreadyActivated
 	}
 
@@ -263,12 +260,10 @@ func (r *Repository) PromoIsAlreadyActivated(
 // If promo valid, return true. If promo is expired/uses=0, return false.
 func (r *Repository) PromoIsValid(in *promos.PromoCode, userId int64) (b bool, err error) {
 	if float64(time.Now().Unix()) > float64(in.ExpAt.AsTime().Unix()) {
-		r.logger.Debugf("error user: %d activate promo: %d. promo expired: %s", userId, in.Id, in.ExpAt.AsTime().String())
 		return false, Err.ErrPromoExpired
 	}
 
 	if in.Uses == 0 {
-		r.logger.Debugf("error user: %d activate promo: %d. promo not in stock", userId, in.Id)
 		return false, Err.ErrPromoNotInStock
 	}
 
