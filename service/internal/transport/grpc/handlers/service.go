@@ -22,7 +22,7 @@ type RepositoryPromos interface {
 	GetPromoById(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (out *promos.PromoCode, err error)
 	GetPromoByName(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (out *promos.PromoCode, err error)
 
-	PromoIsValid(in *promos.PromoCode) (b bool, err error)
+	PromoIsValid(in *promos.PromoCode, userId int64) (b bool, err error)
 	PromoIsAlreadyActivated(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) (b bool, err error)
 
 	ActivatePromo(ctx context.Context, in *promos.PromoCode, userId int64) (out *users.TransactionResponse, err error)
