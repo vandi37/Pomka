@@ -18,7 +18,7 @@ goose postgres postgresql://USER:PASSWORD@HOST:PORT/postgres down
 ```
 
 ### **Тесты**:
-Перед тестами, заполните файл config.env в директории ./service/tests
+Перед тестами, заполните файл config.env в директории ./service/tests. Чтобы тесты смогли поднять бд, запустите докер.
 ```
 cd service/tests
 go test -v
