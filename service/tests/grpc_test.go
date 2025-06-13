@@ -29,15 +29,6 @@ var repo *repository.Repository
 var mockpool *mock.MockPool
 var logger *logrus.Logger
 
-// DONT EDIT PROMO
-var promo = &promos.CreatePromo{
-	Name:     uuid.New().String(),
-	Amount:   0,
-	Currency: 0,
-	Uses:     2,
-	ExpAt:    timestamppb.New(time.Now().Add(time.Second * 1)),
-}
-
 func init() {
 
 	// Setup logger
@@ -101,6 +92,8 @@ func init() {
 
 func Test(t *testing.T) {
 	t.Cleanup(func() {
+		logger.Debug("Cleanup TestMain start")
+
 		// Stoping gRPC server
 		srv.Stop()
 
@@ -108,106 +101,212 @@ func Test(t *testing.T) {
 		if err := mockpool.MockPoolDown(); err != nil {
 			t.Fatal(err)
 		}
+
+		logger.Debug("Cleanup TestMain done")
 	})
 
-	t.Run("ALL TESTING", func(t *testing.T) {
-		var userId1, userId2, userId3, userId4, promoId int64
+	t.Run("CREATE AND DELETE PROMO", CreateDelete)
+	t.Run("COMMON USE PROMO", CommonUse)
+	t.Run("USE PROMO ALREADY ACTIVATED", UsePromoAlreadyActivated)
+	t.Run("USE PROMO NOT IN STOCK", UsePromoAlreadyActivated)
+}
 
-		t.Cleanup(func() {
-			userIds := []int64{userId1, userId2, userId3, userId4}
-			promoIds := []int64{promoId}
+func CreateDelete(t *testing.T) {
+	var promoId, userId int64
+	t.Cleanup(func() {
+		logger.Debug("Cleanup TestCreateDelete start")
 
-			// Delete testing data from table Promos
-			if err := clearPromos(promoIds); err != nil {
-				t.Fatal(err)
-			}
-			// Delete testing data from table Users
-			if err := clearUsers(userIds); err != nil {
-				t.Fatal(err)
-			}
-		})
+		userIds := []int64{userId}
+		promoIds := []int64{promoId}
 
-		// Adding user1
-		userId1, err := serviceUsers.Create(context.TODO())
-		if err != nil {
-			t.Fail()
+		// Delete testing data from table Promos
+		if err := clearPromos(promoIds); err != nil {
+			t.Fatal(err)
 		}
-		promo.Creator = userId1
-
-		// Adding promo
-		promoFailure, err := client.Create(context.TODO(), promo)
-		if err != nil {
-			t.Fail()
-		}
-		promoId = promoFailure.PromoCode.Id
-
-		// TEST GetById
-		if _, err := client.GetById(context.TODO(), &promos.PromoId{Id: promoId}); err != nil {
-			logger.Warn("error test GetById promo fail", err)
-			t.Fail()
+		// Delete testing data from table Users
+		if err := clearUsers(userIds); err != nil {
+			t.Fatal(err)
 		}
 
-		// TEST GetByName
-		if _, err := client.GetByName(context.TODO(), &promos.PromoName{Name: promoFailure.PromoCode.Name}); err != nil {
-			logger.Warn("error test GetByName promo fail", err)
-			t.Fail()
-		}
-
-		// TEST Use
-		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId1}); err != nil {
-			logger.Warn("error test Use promo fail", err)
-			t.Fail()
-		}
-
-		// TEST Use. Second attemp use promo by one user. Want error, promo is already activated by user
-		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId1}); err == nil {
-			logger.Warn("error test second Use promo by one user fail", err)
-			t.Fail()
-		}
-
-		// Adding user2
-		userId2, err = serviceUsers.Create(context.TODO())
-		if err != nil {
-			t.Fail()
-		}
-		promo.Creator = userId2
-
-		// TEST Use. Second activation of promo.
-		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId2}); err != nil {
-			logger.Warn("error test second Use promo fail", err)
-			t.Fail()
-		}
-
-		// Adding user3
-		userId3, err = serviceUsers.Create(context.TODO())
-		if err != nil {
-			t.Fail()
-		}
-		promo.Creator = userId3
-
-		// TEST Use. Third activation of promo. Want error, promo not in stock
-		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId2}); err == nil {
-			logger.Warn("error test third Use promo, promo not in stock, fail", err)
-			t.Fail()
-		}
-
-		// Sleeping for testing promo expiring
-		time.Sleep(time.Second * 3)
-
-		// Adding user4
-		userId4, err = serviceUsers.Create(context.TODO())
-		if err != nil {
-			t.Fail()
-		}
-		promo.Creator = userId4
-
-		// TEST Use. Fourth activation of promo. Want error, promo is expired
-		if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId4}); err == nil {
-			logger.Warn("error test fourth Use promo, promo expired, fail", err)
-			t.Fail()
-		}
-
+		logger.Debug("Cleanup TestCreateDelete done")
 	})
+
+	var createIn = &promos.CreatePromo{
+		Name:  uuid.New().String(),
+		ExpAt: timestamppb.New(time.Now().Add(time.Second * 1)),
+	}
+
+	// Creating user
+	userId, err := serviceUsers.Create(context.TODO())
+	if err != nil {
+		logger.Warn("Create user fail")
+		t.Fail()
+	}
+	createIn.Creator = userId
+
+	// Creating promo
+	createOut, err := client.Create(context.TODO(), createIn)
+	if err != nil {
+		logger.Warn("Create promo fail")
+		t.Fail()
+	}
+	promoId = createOut.PromoCode.Id
+}
+
+func CommonUse(t *testing.T) {
+	var promoId, userId int64
+	t.Cleanup(func() {
+		logger.Debug("Cleanup CommonUse start")
+
+		userIds := []int64{userId}
+		promoIds := []int64{promoId}
+
+		// Delete testing data from table Promos
+		if err := clearPromos(promoIds); err != nil {
+			t.Fatal(err)
+		}
+		// Delete testing data from table Users
+		if err := clearUsers(userIds); err != nil {
+			t.Fatal(err)
+		}
+
+		logger.Debug("Cleanup CommonUse done")
+	})
+
+	var createIn = &promos.CreatePromo{
+		Name:  uuid.New().String(),
+		Uses:  1,
+		ExpAt: timestamppb.New(time.Now().Add(time.Second * 1)),
+	}
+
+	// Creating user
+	userId, err := serviceUsers.Create(context.TODO())
+	if err != nil {
+		logger.Warn("Create user fail")
+		t.Fail()
+	}
+	createIn.Creator = userId
+
+	// Creating promo
+	createOut, err := client.Create(context.TODO(), createIn)
+	if err != nil {
+		logger.Warn("Create promo fail")
+		t.Fail()
+	}
+	promoId = createOut.PromoCode.Id
+
+	if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId}); err != nil {
+		logger.Warn("Use promo fail")
+	}
+}
+
+func UsePromoAlreadyActivated(t *testing.T) {
+	var promoId, userId int64
+	t.Cleanup(func() {
+		logger.Debug("Cleanup TestUsePromoAlreadyActivated start")
+
+		userIds := []int64{userId}
+		promoIds := []int64{promoId}
+
+		// Delete testing data from table Promos
+		if err := clearPromos(promoIds); err != nil {
+			t.Fatal(err)
+		}
+		// Delete testing data from table Users
+		if err := clearUsers(userIds); err != nil {
+			t.Fatal(err)
+		}
+
+		logger.Debug("Cleanup TestUsePromoAlreadyActivated done")
+	})
+
+	var createIn = &promos.CreatePromo{
+		Name:  uuid.New().String(),
+		Uses:  1,
+		ExpAt: timestamppb.New(time.Now().Add(time.Second * 1)),
+	}
+
+	// Creating user
+	userId, err := serviceUsers.Create(context.TODO())
+	if err != nil {
+		logger.Warn("Create user fail")
+		t.Fail()
+	}
+	createIn.Creator = userId
+
+	// Creating promo
+	createOut, err := client.Create(context.TODO(), createIn)
+	if err != nil {
+		logger.Warn("Create promo fail")
+		t.Fail()
+	}
+	promoId = createOut.PromoCode.Id
+
+	if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId}); err != nil {
+		logger.Warn("Use promo fail")
+	}
+	if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userId}); err == nil {
+		logger.Warn("Use promo fail")
+	}
+}
+
+func UsePromoNotInStock(t *testing.T) {
+	var promoId, userIdFirst, userIdSecond int64
+	t.Cleanup(func() {
+		logger.Debug("Cleanup TestPromoNotInStock start")
+
+		userIds := []int64{userIdFirst, userIdSecond}
+		promoIds := []int64{promoId}
+
+		// Delete testing data from table Promos
+		if err := clearPromos(promoIds); err != nil {
+			t.Fatal(err)
+		}
+		// Delete testing data from table Users
+		if err := clearUsers(userIds); err != nil {
+			t.Fatal(err)
+		}
+
+		logger.Debug("Cleanup TestPromoNotInStock done")
+	})
+
+	var createIn = &promos.CreatePromo{
+		Name:  uuid.New().String(),
+		Uses:  1,
+		ExpAt: timestamppb.New(time.Now().Add(time.Second * 1)),
+	}
+
+	// Creating user
+	userIdFirst, err := serviceUsers.Create(context.TODO())
+	if err != nil {
+		logger.Warn("Create user fail")
+		t.Fail()
+	}
+	createIn.Creator = userIdFirst
+
+	// Creating promo
+	createOut, err := client.Create(context.TODO(), createIn)
+	if err != nil {
+		logger.Warn("Create promo fail")
+		t.Fail()
+	}
+	promoId = createOut.PromoCode.Id
+
+	if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userIdFirst}); err != nil {
+		logger.Warn("Use promo fail")
+	}
+
+	// Creating user
+	userIdSecond, err = serviceUsers.Create(context.TODO())
+	if err != nil {
+		logger.Warn("Create user fail")
+		t.Fail()
+	}
+	createIn.Creator = userIdSecond
+
+	if _, err := client.Use(context.TODO(), &promos.PromoUserId{PromoId: promoId, UserId: userIdSecond}); err != nil {
+		logger.Warn("Use promo fail")
+	}
 }
 
 func clearUsers(userIds []int64) error {

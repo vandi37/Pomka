@@ -72,19 +72,3 @@ func (m *MockServiceUsers) Delete(ctx context.Context, userId int64) (err error)
 
 	return nil
 }
-
-func (m *MockServiceUsers) ClearHistory(ctx context.Context, userId int64, promoId int64) (err error) {
-	if errTx := repeatible.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
-		q := `DELETE FROM UserToPromo WHERE UserId=$1 AND PromoId=$2`
-		if _, err := tx.Exec(ctx, q, userId, promoId); err != nil {
-			fmt.Println(err)
-			return Err.ErrExecQuery
-		}
-
-		return nil
-	}); errTx != nil {
-		return errTx
-	}
-
-	return nil
-}

@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS Promos  (
     Name varchar(255) NOT NULL UNIQUE,
     Currency smallint,
     Amount int NOT NULL,
-    Uses int DEFAULT 1,
+    Uses int NOT NULL,
     Creator bigint REFERENCES Users(Id),
     ExpAt timestamp NOT NULL,
     CreatedAt timestamp DEFAULT current_timestamp
