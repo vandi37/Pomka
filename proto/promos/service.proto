@@ -13,13 +13,25 @@ option go_package = "./promos"; // для Go
 service Promos {
     rpc Create(CreatePromo) returns (PromoFailure);
 
-    rpc DeleteByName(PromoName) returns (common.Response);
-    rpc DeleteById(PromoId) returns (common.Response);
+    rpc Delete(PromoId) returns (common.Response);
     
     rpc GetById(PromoId) returns (PromoFailure);
     rpc GetByName(PromoName) returns (PromoFailure);
 
     rpc Use(PromoUserId) returns (users.TransactionResponse);
+
+    rpc AddTime(AddTimeIn) returns (common.Response);
+    rpc AddUses(AddUsesIn) returns (common.Response);
+}
+
+message AddTimeIn {
+    int64 promoId = 1;
+    google.protobuf.Timestamp expAt = 2;
+}
+
+message AddUsesIn {
+    int64 promoId = 1;
+    int32 uses = 2;
 }
 
 message PromoName {
@@ -59,3 +71,4 @@ message PromoUserId {
     int64 userId = 1;
     int64 promoId = 2;
 }
+
