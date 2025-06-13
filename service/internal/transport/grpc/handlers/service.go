@@ -22,13 +22,18 @@ type RepositoryPromos interface {
 	GetPromoById(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (out *promos.PromoCode, err error)
 	GetPromoByName(ctx context.Context, tx pgx.Tx, in *promos.PromoName) (out *promos.PromoCode, err error)
 
-	PromoIsValid(in *promos.PromoCode, userId int64) (b bool, err error)
+	PromoIsExpired(in *promos.PromoCode) (b bool, err error)
+	PromoIsNotInStock(in *promos.PromoCode) (b bool, err error)
 	PromoIsAlreadyActivated(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) (b bool, err error)
+	CreatorIsOwner(ctx context.Context, in *promos.PromoCode) (b bool, err error)
 
 	ActivatePromo(ctx context.Context, in *promos.PromoCode, userId int64) (out *users.TransactionResponse, err error)
 	AddActivatePromoToHistory(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) (err error)
-	DeleteActivatePromoFromHistory(ctx context.Context, tx pgx.Tx, in *promos.PromoUserId) (err error)
+	DeleteActivatePromoFromHistory(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (err error)
 	DecrementPromoUses(ctx context.Context, tx pgx.Tx, in *promos.PromoId) (err error)
+
+	AddTime(ctx context.Context, tx pgx.Tx, in *promos.AddTimeIn) (err error)
+	AddUses(ctx context.Context, tx pgx.Tx, in *promos.AddUsesIn) (err error)
 }
 
 func NewServicePromos(repo RepositoryPromos, db *pgxpool.Pool) *ServicePromos {

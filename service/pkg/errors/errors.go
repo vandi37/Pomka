@@ -6,6 +6,7 @@ import (
 
 var (
 	ErrExpAt                 = errors.New("error timestamb of expired data must be more then now")
+	ErrCreatorIsNotOwner     = errors.New("error creator of promo must be have role owner")
 	ErrValueUses             = errors.New("error value of uses must be > 0, for infinity uses set -1")
 	ErrUniquePromo           = errors.New("error name of promo must be unique")
 	ErrExecQuery             = errors.New("error exeсution query")

@@ -117,10 +117,6 @@ func Test(t *testing.T) {
 			userIds := []int64{userId1, userId2, userId3, userId4}
 			promoIds := []int64{promoId}
 
-			// Delete testing data from table UserToPromo
-			if err := clearUserToPromo(userIds, promoId); err != nil {
-				t.Fatal(err)
-			}
 			// Delete testing data from table Promos
 			if err := clearPromos(promoIds); err != nil {
 				t.Fatal(err)
@@ -214,17 +210,6 @@ func Test(t *testing.T) {
 	})
 }
 
-func clearUserToPromo(userIds []int64, promoId int64) error {
-	for _, userId := range userIds {
-		logger.Debugf("deleting history activation user: %d promo: %d", userId, promoId)
-		if err := serviceUsers.ClearHistory(context.TODO(), userId, promoId); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func clearUsers(userIds []int64) error {
 	for _, userId := range userIds {
 		logger.Debugf("deleting user: %d", userId)
@@ -238,7 +223,7 @@ func clearUsers(userIds []int64) error {
 
 func clearPromos(promoIds []int64) error {
 	for _, promoId := range promoIds {
-		if _, err := client.DeleteById(context.TODO(), &promos.PromoId{Id: promoId}); err != nil {
+		if _, err := client.Delete(context.TODO(), &promos.PromoId{Id: promoId}); err != nil {
 			return err
 		}
 	}

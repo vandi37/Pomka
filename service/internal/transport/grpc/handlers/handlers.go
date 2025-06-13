@@ -32,36 +32,18 @@ func (sp *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (ou
 	return &promos.PromoFailure{PromoCode: promo, Failure: nil}, nil
 }
 
-func (sp *ServicePromos) DeleteById(ctx context.Context, in *promos.PromoId) (out *common.Response, err error) {
+func (sp *ServicePromos) Delete(ctx context.Context, in *promos.PromoId) (out *common.Response, err error) {
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
 
-		// Deleting promo
-		err = sp.repo.DeletePromoById(ctx, tx, in)
-
-		if err != nil {
+		// Deleting history
+		if err := sp.repo.DeleteActivatePromoFromHistory(ctx, tx, in); err != nil {
 			return err
 		}
 
-		return nil
-
-	}); errTx != nil {
-		return &common.Response{Failure: nil}, errTx
-	}
-
-	return &common.Response{Failure: nil}, nil
-}
-
-func (sp *ServicePromos) DeleteByName(ctx context.Context, in *promos.PromoName) (out *common.Response, err error) {
-
-	// Run in transaction
-	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
-
 		// Deleting promo
-		err = sp.repo.DeletePromoByName(ctx, tx, in)
-
-		if err != nil {
+		if err := sp.repo.DeletePromoById(ctx, tx, in); err != nil {
 			return err
 		}
 
@@ -85,8 +67,18 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 			return err
 		}
 
-		// Check expired data and uses of promo
-		if b, err := sp.repo.PromoIsValid(promo, in.UserId); err != nil || !b {
+		// Check creator is owner or not
+		if b, err := sp.repo.CreatorIsOwner(ctx, promo); err != nil || !b {
+			return err
+		}
+
+		// Check promo is expired or not
+		if b, err := sp.repo.PromoIsExpired(promo); err != nil || !b {
+			return err
+		}
+
+		// Check promo is in stock or not
+		if b, err := sp.repo.PromoIsNotInStock(promo); err != nil || !b {
 			return err
 		}
 
@@ -162,4 +154,40 @@ func (sp *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (o
 	}
 
 	return &promos.PromoFailure{PromoCode: promo, Failure: nil}, nil
+}
+
+func (sp *ServicePromos) AddTime(ctx context.Context, in *promos.AddTimeIn) (*common.Response, error) {
+	// Run in transaction
+	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
+
+		// Add time for promo
+		if err := sp.repo.AddTime(ctx, tx, in); err != nil {
+			return err
+		}
+
+		return nil
+
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return nil, nil
+}
+
+func (sp *ServicePromos) AddUses(ctx context.Context, in *promos.AddUsesIn) (*common.Response, error) {
+	// Run in transaction
+	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
+
+		// Add uses for promo
+		if err := sp.repo.AddUses(ctx, tx, in); err != nil {
+			return err
+		}
+
+		return nil
+
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return nil, nil
 }

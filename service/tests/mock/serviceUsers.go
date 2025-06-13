@@ -21,6 +21,21 @@ type MockServiceUsers struct {
 func NewMockServiceUsers(pool *pgxpool.Pool) *MockServiceUsers {
 	return &MockServiceUsers{db: pool}
 }
+func (m *MockServiceUsers) GetUser(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*users.User, error) {
+	var user = new(users.User)
+	if errTx := repeatible.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
+		q := `SELECT * FROM Users WHERE Id=$1`
+		if err := tx.QueryRow(ctx, q, in.Id).Scan(nil, nil, nil, nil, &user.Role, nil, nil, nil); err != nil {
+			return err
+		}
+
+		return nil
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return user, nil
+}
 
 func (m *MockServiceUsers) SendTransaction(ctx context.Context, in *users.TransactionRequest, opts ...grpc.CallOption) (*users.TransactionResponse, error) {
 	return nil, nil
@@ -30,7 +45,7 @@ func (m *MockServiceUsers) Create(ctx context.Context) (int64, error) {
 	var userId = new(int64)
 	if errTx := repeatible.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
 		q := `INSERT INTO Users (Credits, Stocks, PremiumCredits, Role, AutoBuyEnabled, LastFarmingAt, CreatedAt) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING Id`
-		if err := tx.QueryRow(ctx, q, 0, 0, 0, 0, false, timestamppb.Now().AsTime().Format("2006-01-02 15:04:05"), timestamppb.Now().AsTime().Format("2006-01-02 15:04:05")).Scan(&userId); err != nil {
+		if err := tx.QueryRow(ctx, q, 0, 0, 0, 3, false, timestamppb.Now().AsTime().Format("2006-01-02 15:04:05"), timestamppb.Now().AsTime().Format("2006-01-02 15:04:05")).Scan(&userId); err != nil {
 			return Err.ErrExecQuery
 		}
 

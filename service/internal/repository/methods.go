@@ -223,10 +223,10 @@ func (r *Repository) AddActivatePromoToHistory(
 func (r *Repository) DeleteActivatePromoFromHistory(
 	ctx context.Context,
 	tx pgx.Tx,
-	in *promos.PromoUserId) (err error) {
+	in *promos.PromoId) (err error) {
 
-	q := `DELETE FROM UserToPromo WHERE UserId=$1 AND PromoId=$2`
-	if _, err := tx.Exec(ctx, q, in.UserId, in.PromoId); err != nil {
+	q := `DELETE FROM UserToPromo WHERE PromoId=$1`
+	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
 		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return Err.ErrExecQuery
 	}
@@ -257,15 +257,59 @@ func (r *Repository) PromoIsAlreadyActivated(
 	return false, nil
 }
 
-// If promo valid, return true. If promo is expired/uses=0, return false.
-func (r *Repository) PromoIsValid(in *promos.PromoCode, userId int64) (b bool, err error) {
+// Check promo is expired or not
+func (r *Repository) PromoIsExpired(in *promos.PromoCode) (b bool, err error) {
 	if float64(time.Now().Unix()) > float64(in.ExpAt.AsTime().Unix()) {
 		return false, Err.ErrPromoExpired
 	}
 
+	return true, nil
+}
+
+// Check promo in stock or not
+func (r *Repository) PromoIsNotInStock(in *promos.PromoCode) (b bool, err error) {
 	if in.Uses == 0 {
 		return false, Err.ErrPromoNotInStock
 	}
 
 	return true, nil
+}
+
+// Check creator is owner or not
+func (r *Repository) CreatorIsOwner(ctx context.Context, in *promos.PromoCode) (b bool, err error) {
+	user, err := r.UserService.GetUser(ctx, &users.Id{Id: in.Creator})
+	if err != nil {
+		return false, Err.ErrServiceUsers
+	}
+
+	if user.Role == 3 {
+		return true, nil
+	}
+
+	return false, Err.ErrCreatorIsNotOwner
+}
+
+// Add time for promo
+func (r *Repository) AddTime(ctx context.Context, tx pgx.Tx, in *promos.AddTimeIn) (err error) {
+
+	q := `UPDATE Promos SET ExpAt = $1 WHERE Id = $2`
+	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
+
+	if _, err := tx.Exec(ctx, q, expAt, in.PromoId); err != nil {
+		return Err.ErrExecQuery
+	}
+
+	return nil
+}
+
+// Add uses for promo
+func (r *Repository) AddUses(ctx context.Context, tx pgx.Tx, in *promos.AddUsesIn) (err error) {
+
+	q := `UPDATE Promos SET Uses = Uses+$1 WHERE Id = $2`
+
+	if _, err := tx.Exec(ctx, q, in.Uses, in.PromoId); err != nil {
+		return Err.ErrExecQuery
+	}
+
+	return nil
 }
