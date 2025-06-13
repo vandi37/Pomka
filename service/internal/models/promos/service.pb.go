@@ -24,6 +24,110 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type AddTimeIn struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PromoId       int64                  `protobuf:"varint,1,opt,name=promoId,proto3" json:"promoId,omitempty"`
+	ExpAt         *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expAt,proto3" json:"expAt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddTimeIn) Reset() {
+	*x = AddTimeIn{}
+	mi := &file_promos_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddTimeIn) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddTimeIn) ProtoMessage() {}
+
+func (x *AddTimeIn) ProtoReflect() protoreflect.Message {
+	mi := &file_promos_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddTimeIn.ProtoReflect.Descriptor instead.
+func (*AddTimeIn) Descriptor() ([]byte, []int) {
+	return file_promos_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *AddTimeIn) GetPromoId() int64 {
+	if x != nil {
+		return x.PromoId
+	}
+	return 0
+}
+
+func (x *AddTimeIn) GetExpAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpAt
+	}
+	return nil
+}
+
+type AddUsesIn struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PromoId       int64                  `protobuf:"varint,1,opt,name=promoId,proto3" json:"promoId,omitempty"`
+	Uses          int32                  `protobuf:"varint,2,opt,name=uses,proto3" json:"uses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddUsesIn) Reset() {
+	*x = AddUsesIn{}
+	mi := &file_promos_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddUsesIn) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddUsesIn) ProtoMessage() {}
+
+func (x *AddUsesIn) ProtoReflect() protoreflect.Message {
+	mi := &file_promos_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddUsesIn.ProtoReflect.Descriptor instead.
+func (*AddUsesIn) Descriptor() ([]byte, []int) {
+	return file_promos_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AddUsesIn) GetPromoId() int64 {
+	if x != nil {
+		return x.PromoId
+	}
+	return 0
+}
+
+func (x *AddUsesIn) GetUses() int32 {
+	if x != nil {
+		return x.Uses
+	}
+	return 0
+}
+
 type PromoName struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -33,7 +137,7 @@ type PromoName struct {
 
 func (x *PromoName) Reset() {
 	*x = PromoName{}
-	mi := &file_promos_service_proto_msgTypes[0]
+	mi := &file_promos_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +149,7 @@ func (x *PromoName) String() string {
 func (*PromoName) ProtoMessage() {}
 
 func (x *PromoName) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[0]
+	mi := &file_promos_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +162,7 @@ func (x *PromoName) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoName.ProtoReflect.Descriptor instead.
 func (*PromoName) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{0}
+	return file_promos_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PromoName) GetName() string {
@@ -77,7 +181,7 @@ type PromoId struct {
 
 func (x *PromoId) Reset() {
 	*x = PromoId{}
-	mi := &file_promos_service_proto_msgTypes[1]
+	mi := &file_promos_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -89,7 +193,7 @@ func (x *PromoId) String() string {
 func (*PromoId) ProtoMessage() {}
 
 func (x *PromoId) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[1]
+	mi := &file_promos_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -102,7 +206,7 @@ func (x *PromoId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoId.ProtoReflect.Descriptor instead.
 func (*PromoId) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{1}
+	return file_promos_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *PromoId) GetId() int64 {
@@ -128,7 +232,7 @@ type PromoCode struct {
 
 func (x *PromoCode) Reset() {
 	*x = PromoCode{}
-	mi := &file_promos_service_proto_msgTypes[2]
+	mi := &file_promos_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -140,7 +244,7 @@ func (x *PromoCode) String() string {
 func (*PromoCode) ProtoMessage() {}
 
 func (x *PromoCode) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[2]
+	mi := &file_promos_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -153,7 +257,7 @@ func (x *PromoCode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoCode.ProtoReflect.Descriptor instead.
 func (*PromoCode) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{2}
+	return file_promos_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *PromoCode) GetId() int64 {
@@ -226,7 +330,7 @@ type CreatePromo struct {
 
 func (x *CreatePromo) Reset() {
 	*x = CreatePromo{}
-	mi := &file_promos_service_proto_msgTypes[3]
+	mi := &file_promos_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -238,7 +342,7 @@ func (x *CreatePromo) String() string {
 func (*CreatePromo) ProtoMessage() {}
 
 func (x *CreatePromo) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[3]
+	mi := &file_promos_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -251,7 +355,7 @@ func (x *CreatePromo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePromo.ProtoReflect.Descriptor instead.
 func (*CreatePromo) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{3}
+	return file_promos_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreatePromo) GetName() string {
@@ -306,7 +410,7 @@ type PromoFailure struct {
 
 func (x *PromoFailure) Reset() {
 	*x = PromoFailure{}
-	mi := &file_promos_service_proto_msgTypes[4]
+	mi := &file_promos_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -318,7 +422,7 @@ func (x *PromoFailure) String() string {
 func (*PromoFailure) ProtoMessage() {}
 
 func (x *PromoFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[4]
+	mi := &file_promos_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -331,7 +435,7 @@ func (x *PromoFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoFailure.ProtoReflect.Descriptor instead.
 func (*PromoFailure) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{4}
+	return file_promos_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *PromoFailure) GetPromoCode() *PromoCode {
@@ -358,7 +462,7 @@ type PromoUserId struct {
 
 func (x *PromoUserId) Reset() {
 	*x = PromoUserId{}
-	mi := &file_promos_service_proto_msgTypes[5]
+	mi := &file_promos_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -370,7 +474,7 @@ func (x *PromoUserId) String() string {
 func (*PromoUserId) ProtoMessage() {}
 
 func (x *PromoUserId) ProtoReflect() protoreflect.Message {
-	mi := &file_promos_service_proto_msgTypes[5]
+	mi := &file_promos_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -383,7 +487,7 @@ func (x *PromoUserId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PromoUserId.ProtoReflect.Descriptor instead.
 func (*PromoUserId) Descriptor() ([]byte, []int) {
-	return file_promos_service_proto_rawDescGZIP(), []int{5}
+	return file_promos_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *PromoUserId) GetUserId() int64 {
@@ -405,7 +509,13 @@ var File_promos_service_proto protoreflect.FileDescriptor
 const file_promos_service_proto_rawDesc = "" +
 	"\n" +
 	"\x14promos/service.proto\x12\n" +
-	"promocodes\x1a\x12common/types.proto\x1a\x13users/service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1f\n" +
+	"promocodes\x1a\x12common/types.proto\x1a\x13users/service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"W\n" +
+	"\tAddTimeIn\x12\x18\n" +
+	"\apromoId\x18\x01 \x01(\x03R\apromoId\x120\n" +
+	"\x05expAt\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x05expAt\"9\n" +
+	"\tAddUsesIn\x12\x18\n" +
+	"\apromoId\x18\x01 \x01(\x03R\apromoId\x12\x12\n" +
+	"\x04uses\x18\x02 \x01(\x05R\x04uses\"\x1f\n" +
 	"\tPromoName\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"\x19\n" +
 	"\aPromoId\x12\x0e\n" +
@@ -435,15 +545,15 @@ const file_promos_service_proto_rawDesc = "" +
 	"\b_failure\"?\n" +
 	"\vPromoUserId\x12\x16\n" +
 	"\x06userId\x18\x01 \x01(\x03R\x06userId\x12\x18\n" +
-	"\apromoId\x18\x02 \x01(\x03R\apromoId2\xe7\x02\n" +
+	"\apromoId\x18\x02 \x01(\x03R\apromoId2\x92\x03\n" +
 	"\x06Promos\x12;\n" +
-	"\x06Create\x12\x17.promocodes.CreatePromo\x1a\x18.promocodes.PromoFailure\x127\n" +
-	"\fDeleteByName\x12\x15.promocodes.PromoName\x1a\x10.common.Response\x123\n" +
-	"\n" +
-	"DeleteById\x12\x13.promocodes.PromoId\x1a\x10.common.Response\x128\n" +
+	"\x06Create\x12\x17.promocodes.CreatePromo\x1a\x18.promocodes.PromoFailure\x12/\n" +
+	"\x06Delete\x12\x13.promocodes.PromoId\x1a\x10.common.Response\x128\n" +
 	"\aGetById\x12\x13.promocodes.PromoId\x1a\x18.promocodes.PromoFailure\x12<\n" +
 	"\tGetByName\x12\x15.promocodes.PromoName\x1a\x18.promocodes.PromoFailure\x12:\n" +
-	"\x03Use\x12\x17.promocodes.PromoUserId\x1a\x1a.users.TransactionResponseB\n" +
+	"\x03Use\x12\x17.promocodes.PromoUserId\x1a\x1a.users.TransactionResponse\x122\n" +
+	"\aAddTime\x12\x15.promocodes.AddTimeIn\x1a\x10.common.Response\x122\n" +
+	"\aAddUses\x12\x15.promocodes.AddUsesIn\x1a\x10.common.ResponseB\n" +
 	"Z\b./promosb\x06proto3"
 
 var (
@@ -458,45 +568,50 @@ func file_promos_service_proto_rawDescGZIP() []byte {
 	return file_promos_service_proto_rawDescData
 }
 
-var file_promos_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_promos_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_promos_service_proto_goTypes = []any{
-	(*PromoName)(nil),                 // 0: promocodes.PromoName
-	(*PromoId)(nil),                   // 1: promocodes.PromoId
-	(*PromoCode)(nil),                 // 2: promocodes.PromoCode
-	(*CreatePromo)(nil),               // 3: promocodes.CreatePromo
-	(*PromoFailure)(nil),              // 4: promocodes.PromoFailure
-	(*PromoUserId)(nil),               // 5: promocodes.PromoUserId
-	(common.Currency)(0),              // 6: common.Currency
-	(*timestamppb.Timestamp)(nil),     // 7: google.protobuf.Timestamp
-	(*common.Failure)(nil),            // 8: common.Failure
-	(*common.Response)(nil),           // 9: common.Response
-	(*users.TransactionResponse)(nil), // 10: users.TransactionResponse
+	(*AddTimeIn)(nil),                 // 0: promocodes.AddTimeIn
+	(*AddUsesIn)(nil),                 // 1: promocodes.AddUsesIn
+	(*PromoName)(nil),                 // 2: promocodes.PromoName
+	(*PromoId)(nil),                   // 3: promocodes.PromoId
+	(*PromoCode)(nil),                 // 4: promocodes.PromoCode
+	(*CreatePromo)(nil),               // 5: promocodes.CreatePromo
+	(*PromoFailure)(nil),              // 6: promocodes.PromoFailure
+	(*PromoUserId)(nil),               // 7: promocodes.PromoUserId
+	(*timestamppb.Timestamp)(nil),     // 8: google.protobuf.Timestamp
+	(common.Currency)(0),              // 9: common.Currency
+	(*common.Failure)(nil),            // 10: common.Failure
+	(*common.Response)(nil),           // 11: common.Response
+	(*users.TransactionResponse)(nil), // 12: users.TransactionResponse
 }
 var file_promos_service_proto_depIdxs = []int32{
-	6,  // 0: promocodes.PromoCode.currency:type_name -> common.Currency
-	7,  // 1: promocodes.PromoCode.expAt:type_name -> google.protobuf.Timestamp
-	7,  // 2: promocodes.PromoCode.createdAt:type_name -> google.protobuf.Timestamp
-	6,  // 3: promocodes.CreatePromo.currency:type_name -> common.Currency
-	7,  // 4: promocodes.CreatePromo.expAt:type_name -> google.protobuf.Timestamp
-	2,  // 5: promocodes.PromoFailure.promoCode:type_name -> promocodes.PromoCode
-	8,  // 6: promocodes.PromoFailure.failure:type_name -> common.Failure
-	3,  // 7: promocodes.Promos.Create:input_type -> promocodes.CreatePromo
-	0,  // 8: promocodes.Promos.DeleteByName:input_type -> promocodes.PromoName
-	1,  // 9: promocodes.Promos.DeleteById:input_type -> promocodes.PromoId
-	1,  // 10: promocodes.Promos.GetById:input_type -> promocodes.PromoId
-	0,  // 11: promocodes.Promos.GetByName:input_type -> promocodes.PromoName
-	5,  // 12: promocodes.Promos.Use:input_type -> promocodes.PromoUserId
-	4,  // 13: promocodes.Promos.Create:output_type -> promocodes.PromoFailure
-	9,  // 14: promocodes.Promos.DeleteByName:output_type -> common.Response
-	9,  // 15: promocodes.Promos.DeleteById:output_type -> common.Response
-	4,  // 16: promocodes.Promos.GetById:output_type -> promocodes.PromoFailure
-	4,  // 17: promocodes.Promos.GetByName:output_type -> promocodes.PromoFailure
-	10, // 18: promocodes.Promos.Use:output_type -> users.TransactionResponse
-	13, // [13:19] is the sub-list for method output_type
-	7,  // [7:13] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	8,  // 0: promocodes.AddTimeIn.expAt:type_name -> google.protobuf.Timestamp
+	9,  // 1: promocodes.PromoCode.currency:type_name -> common.Currency
+	8,  // 2: promocodes.PromoCode.expAt:type_name -> google.protobuf.Timestamp
+	8,  // 3: promocodes.PromoCode.createdAt:type_name -> google.protobuf.Timestamp
+	9,  // 4: promocodes.CreatePromo.currency:type_name -> common.Currency
+	8,  // 5: promocodes.CreatePromo.expAt:type_name -> google.protobuf.Timestamp
+	4,  // 6: promocodes.PromoFailure.promoCode:type_name -> promocodes.PromoCode
+	10, // 7: promocodes.PromoFailure.failure:type_name -> common.Failure
+	5,  // 8: promocodes.Promos.Create:input_type -> promocodes.CreatePromo
+	3,  // 9: promocodes.Promos.Delete:input_type -> promocodes.PromoId
+	3,  // 10: promocodes.Promos.GetById:input_type -> promocodes.PromoId
+	2,  // 11: promocodes.Promos.GetByName:input_type -> promocodes.PromoName
+	7,  // 12: promocodes.Promos.Use:input_type -> promocodes.PromoUserId
+	0,  // 13: promocodes.Promos.AddTime:input_type -> promocodes.AddTimeIn
+	1,  // 14: promocodes.Promos.AddUses:input_type -> promocodes.AddUsesIn
+	6,  // 15: promocodes.Promos.Create:output_type -> promocodes.PromoFailure
+	11, // 16: promocodes.Promos.Delete:output_type -> common.Response
+	6,  // 17: promocodes.Promos.GetById:output_type -> promocodes.PromoFailure
+	6,  // 18: promocodes.Promos.GetByName:output_type -> promocodes.PromoFailure
+	12, // 19: promocodes.Promos.Use:output_type -> users.TransactionResponse
+	11, // 20: promocodes.Promos.AddTime:output_type -> common.Response
+	11, // 21: promocodes.Promos.AddUses:output_type -> common.Response
+	15, // [15:22] is the sub-list for method output_type
+	8,  // [8:15] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_promos_service_proto_init() }
@@ -504,14 +619,14 @@ func file_promos_service_proto_init() {
 	if File_promos_service_proto != nil {
 		return
 	}
-	file_promos_service_proto_msgTypes[4].OneofWrappers = []any{}
+	file_promos_service_proto_msgTypes[6].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_promos_service_proto_rawDesc), len(file_promos_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

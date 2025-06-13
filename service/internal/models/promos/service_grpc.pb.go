@@ -21,12 +21,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Promos_Create_FullMethodName       = "/promocodes.Promos/Create"
-	Promos_DeleteByName_FullMethodName = "/promocodes.Promos/DeleteByName"
-	Promos_DeleteById_FullMethodName   = "/promocodes.Promos/DeleteById"
-	Promos_GetById_FullMethodName      = "/promocodes.Promos/GetById"
-	Promos_GetByName_FullMethodName    = "/promocodes.Promos/GetByName"
-	Promos_Use_FullMethodName          = "/promocodes.Promos/Use"
+	Promos_Create_FullMethodName    = "/promocodes.Promos/Create"
+	Promos_Delete_FullMethodName    = "/promocodes.Promos/Delete"
+	Promos_GetById_FullMethodName   = "/promocodes.Promos/GetById"
+	Promos_GetByName_FullMethodName = "/promocodes.Promos/GetByName"
+	Promos_Use_FullMethodName       = "/promocodes.Promos/Use"
+	Promos_AddTime_FullMethodName   = "/promocodes.Promos/AddTime"
+	Promos_AddUses_FullMethodName   = "/promocodes.Promos/AddUses"
 )
 
 // PromosClient is the client API for Promos service.
@@ -34,11 +35,12 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PromosClient interface {
 	Create(ctx context.Context, in *CreatePromo, opts ...grpc.CallOption) (*PromoFailure, error)
-	DeleteByName(ctx context.Context, in *PromoName, opts ...grpc.CallOption) (*common.Response, error)
-	DeleteById(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error)
+	Delete(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error)
 	GetById(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*PromoFailure, error)
 	GetByName(ctx context.Context, in *PromoName, opts ...grpc.CallOption) (*PromoFailure, error)
 	Use(ctx context.Context, in *PromoUserId, opts ...grpc.CallOption) (*users.TransactionResponse, error)
+	AddTime(ctx context.Context, in *AddTimeIn, opts ...grpc.CallOption) (*common.Response, error)
+	AddUses(ctx context.Context, in *AddUsesIn, opts ...grpc.CallOption) (*common.Response, error)
 }
 
 type promosClient struct {
@@ -59,20 +61,10 @@ func (c *promosClient) Create(ctx context.Context, in *CreatePromo, opts ...grpc
 	return out, nil
 }
 
-func (c *promosClient) DeleteByName(ctx context.Context, in *PromoName, opts ...grpc.CallOption) (*common.Response, error) {
+func (c *promosClient) Delete(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(common.Response)
-	err := c.cc.Invoke(ctx, Promos_DeleteByName_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *promosClient) DeleteById(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(common.Response)
-	err := c.cc.Invoke(ctx, Promos_DeleteById_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Promos_Delete_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,16 +101,37 @@ func (c *promosClient) Use(ctx context.Context, in *PromoUserId, opts ...grpc.Ca
 	return out, nil
 }
 
+func (c *promosClient) AddTime(ctx context.Context, in *AddTimeIn, opts ...grpc.CallOption) (*common.Response, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(common.Response)
+	err := c.cc.Invoke(ctx, Promos_AddTime_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *promosClient) AddUses(ctx context.Context, in *AddUsesIn, opts ...grpc.CallOption) (*common.Response, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(common.Response)
+	err := c.cc.Invoke(ctx, Promos_AddUses_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PromosServer is the server API for Promos service.
 // All implementations must embed UnimplementedPromosServer
 // for forward compatibility.
 type PromosServer interface {
 	Create(context.Context, *CreatePromo) (*PromoFailure, error)
-	DeleteByName(context.Context, *PromoName) (*common.Response, error)
-	DeleteById(context.Context, *PromoId) (*common.Response, error)
+	Delete(context.Context, *PromoId) (*common.Response, error)
 	GetById(context.Context, *PromoId) (*PromoFailure, error)
 	GetByName(context.Context, *PromoName) (*PromoFailure, error)
 	Use(context.Context, *PromoUserId) (*users.TransactionResponse, error)
+	AddTime(context.Context, *AddTimeIn) (*common.Response, error)
+	AddUses(context.Context, *AddUsesIn) (*common.Response, error)
 	mustEmbedUnimplementedPromosServer()
 }
 
@@ -132,11 +145,8 @@ type UnimplementedPromosServer struct{}
 func (UnimplementedPromosServer) Create(context.Context, *CreatePromo) (*PromoFailure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedPromosServer) DeleteByName(context.Context, *PromoName) (*common.Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteByName not implemented")
-}
-func (UnimplementedPromosServer) DeleteById(context.Context, *PromoId) (*common.Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteById not implemented")
+func (UnimplementedPromosServer) Delete(context.Context, *PromoId) (*common.Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedPromosServer) GetById(context.Context, *PromoId) (*PromoFailure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
@@ -146,6 +156,12 @@ func (UnimplementedPromosServer) GetByName(context.Context, *PromoName) (*PromoF
 }
 func (UnimplementedPromosServer) Use(context.Context, *PromoUserId) (*users.TransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Use not implemented")
+}
+func (UnimplementedPromosServer) AddTime(context.Context, *AddTimeIn) (*common.Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddTime not implemented")
+}
+func (UnimplementedPromosServer) AddUses(context.Context, *AddUsesIn) (*common.Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddUses not implemented")
 }
 func (UnimplementedPromosServer) mustEmbedUnimplementedPromosServer() {}
 func (UnimplementedPromosServer) testEmbeddedByValue()                {}
@@ -186,38 +202,20 @@ func _Promos_Create_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Promos_DeleteByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PromoName)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PromosServer).DeleteByName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Promos_DeleteByName_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PromosServer).DeleteByName(ctx, req.(*PromoName))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Promos_DeleteById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Promos_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PromoId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PromosServer).DeleteById(ctx, in)
+		return srv.(PromosServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Promos_DeleteById_FullMethodName,
+		FullMethod: Promos_Delete_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PromosServer).DeleteById(ctx, req.(*PromoId))
+		return srv.(PromosServer).Delete(ctx, req.(*PromoId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -276,6 +274,42 @@ func _Promos_Use_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Promos_AddTime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddTimeIn)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PromosServer).AddTime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Promos_AddTime_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PromosServer).AddTime(ctx, req.(*AddTimeIn))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Promos_AddUses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddUsesIn)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PromosServer).AddUses(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Promos_AddUses_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PromosServer).AddUses(ctx, req.(*AddUsesIn))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Promos_ServiceDesc is the grpc.ServiceDesc for Promos service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -288,12 +322,8 @@ var Promos_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Promos_Create_Handler,
 		},
 		{
-			MethodName: "DeleteByName",
-			Handler:    _Promos_DeleteByName_Handler,
-		},
-		{
-			MethodName: "DeleteById",
-			Handler:    _Promos_DeleteById_Handler,
+			MethodName: "Delete",
+			Handler:    _Promos_Delete_Handler,
 		},
 		{
 			MethodName: "GetById",
@@ -306,6 +336,14 @@ var Promos_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Use",
 			Handler:    _Promos_Use_Handler,
+		},
+		{
+			MethodName: "AddTime",
+			Handler:    _Promos_AddTime_Handler,
+		},
+		{
+			MethodName: "AddUses",
+			Handler:    _Promos_AddUses_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
