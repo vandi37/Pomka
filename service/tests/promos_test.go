@@ -108,6 +108,7 @@ func TestMain(t *testing.T) {
 	})
 
 	t.Run("CREATE", Create)
+	t.Run("Use", Use)
 }
 
 func Create(t *testing.T) {
@@ -206,7 +207,6 @@ func Create(t *testing.T) {
 
 			// Creating promo
 			out, err := client.Create(context.TODO(), tt.in)
-
 			if (err != nil) != tt.err {
 				t.Fail()
 			}
@@ -250,7 +250,7 @@ func Use(t *testing.T) {
 
 	promoFailure, err := client.Create(context.TODO(), &promos.CreatePromo{
 		Name:    uuid.NewString(),
-		Uses:    -1,
+		Uses:    1,
 		ExpAt:   timestamppb.New(time.Now().Add(time.Hour * 12)),
 		Creator: userId,
 	})
@@ -280,6 +280,22 @@ func Use(t *testing.T) {
 			},
 			err: true,
 		},
+		{
+			name: "not in stock",
+			in: &promos.PromoUserId{
+				PromoId: promoId,
+				UserId:  userId,
+			},
+			err: true,
+		},
+		{
+			name: "expired",
+			in: &promos.PromoUserId{
+				PromoId: promoId,
+				UserId:  userId,
+			},
+			err: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -288,6 +304,33 @@ func Use(t *testing.T) {
 				t.Fail()
 			}
 		})
+
+		// Add uses, only for test
+		if tt.name == "common" {
+			if _, err := client.AddUses(context.TODO(), &promos.AddUsesIn{PromoId: promoId, Uses: 1}); err != nil {
+				t.Fatal(err)
+			}
+		}
+
+		// Delete history activation promo by user, only for tests
+		if tt.name == "already activated" {
+			if err := repo.DeleteActivatePromoFromHistory(context.TODO(), pool, &promos.PromoId{Id: promoId}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := client.AddUses(context.TODO(), &promos.AddUsesIn{PromoId: promoId, Uses: -1}); err != nil {
+				t.Fatal(err)
+			}
+		}
+
+		// Expire promo, only for tests
+		if tt.name == "not in stock" {
+			if _, err := client.AddTime(context.TODO(), &promos.AddTimeIn{PromoId: promoId, ExpAt: timestamppb.New(time.Date(2000, time.April, 16, 10, 0, 0, 0, time.UTC))}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := client.AddUses(context.TODO(), &promos.AddUsesIn{PromoId: promoId, Uses: 1}); err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 
 }
