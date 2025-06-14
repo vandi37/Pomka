@@ -127,13 +127,13 @@ func Create(t *testing.T) {
 		},
 	)
 
-	// Creating creator user
+	// Creating user with role creator
 	creator, err := serviceUsers.Create(context.TODO(), 3)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Creating common user
+	// Creating user with role user
 	user, err = serviceUsers.Create(context.TODO(), 1)
 	if err != nil {
 		t.Fatal(err)
