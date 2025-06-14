@@ -11,16 +11,23 @@ option go_package = "./promos"; // для Go
 // Promocode/s <=> Promo/s
 
 service Promos {
+    // Check creator role, insert promo to Promos
     rpc Create(CreatePromo) returns (PromoFailure);
 
+    // Delete promo from Promos
     rpc Delete(PromoId) returns (common.Response);
     
+    // Get promo from Promos
     rpc GetById(PromoId) returns (PromoFailure);
     rpc GetByName(PromoName) returns (PromoFailure);
 
+    // Check promo valid (count of uses, expiration data, already activate by user), query to service users
     rpc Use(PromoUserId) returns (users.TransactionResponse);
 
+    // Update expAt of promo in Promos
     rpc AddTime(AddTimeIn) returns (common.Response);
+
+    // Update uses of promo in Promos
     rpc AddUses(AddUsesIn) returns (common.Response);
 }
 
