@@ -191,3 +191,21 @@ func (sp *ServicePromos) AddUses(ctx context.Context, in *promos.AddUsesIn) (*co
 
 	return nil, nil
 }
+
+func (sp *ServicePromos) DeleteHistory(ctx context.Context, in *promos.PromoId) (*common.Response, error) {
+	// Run in transaction
+	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
+
+		// Delete history from UserToPromo
+		if err := sp.repo.DeleteActivatePromoFromHistory(ctx, tx, in); err != nil {
+			return err
+		}
+
+		return nil
+
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return nil, nil
+}

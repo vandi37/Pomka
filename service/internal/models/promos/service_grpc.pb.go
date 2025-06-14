@@ -21,25 +21,34 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Promos_Create_FullMethodName    = "/promocodes.Promos/Create"
-	Promos_Delete_FullMethodName    = "/promocodes.Promos/Delete"
-	Promos_GetById_FullMethodName   = "/promocodes.Promos/GetById"
-	Promos_GetByName_FullMethodName = "/promocodes.Promos/GetByName"
-	Promos_Use_FullMethodName       = "/promocodes.Promos/Use"
-	Promos_AddTime_FullMethodName   = "/promocodes.Promos/AddTime"
-	Promos_AddUses_FullMethodName   = "/promocodes.Promos/AddUses"
+	Promos_Create_FullMethodName        = "/promocodes.Promos/Create"
+	Promos_Delete_FullMethodName        = "/promocodes.Promos/Delete"
+	Promos_DeleteHistory_FullMethodName = "/promocodes.Promos/DeleteHistory"
+	Promos_GetById_FullMethodName       = "/promocodes.Promos/GetById"
+	Promos_GetByName_FullMethodName     = "/promocodes.Promos/GetByName"
+	Promos_Use_FullMethodName           = "/promocodes.Promos/Use"
+	Promos_AddTime_FullMethodName       = "/promocodes.Promos/AddTime"
+	Promos_AddUses_FullMethodName       = "/promocodes.Promos/AddUses"
 )
 
 // PromosClient is the client API for Promos service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PromosClient interface {
+	// Check creator role, insert promo to Promos
 	Create(ctx context.Context, in *CreatePromo, opts ...grpc.CallOption) (*PromoFailure, error)
+	// Delete promo from Promos
 	Delete(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error)
+	// Delete all records from UserToPromo
+	DeleteHistory(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error)
+	// Get promo from Promos
 	GetById(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*PromoFailure, error)
 	GetByName(ctx context.Context, in *PromoName, opts ...grpc.CallOption) (*PromoFailure, error)
+	// Check promo valid (count of uses, expiration data, already activate by user), query to service users
 	Use(ctx context.Context, in *PromoUserId, opts ...grpc.CallOption) (*users.TransactionResponse, error)
+	// Update expAt of promo in Promos
 	AddTime(ctx context.Context, in *AddTimeIn, opts ...grpc.CallOption) (*common.Response, error)
+	// Update uses of promo in Promos
 	AddUses(ctx context.Context, in *AddUsesIn, opts ...grpc.CallOption) (*common.Response, error)
 }
 
@@ -65,6 +74,16 @@ func (c *promosClient) Delete(ctx context.Context, in *PromoId, opts ...grpc.Cal
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(common.Response)
 	err := c.cc.Invoke(ctx, Promos_Delete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *promosClient) DeleteHistory(ctx context.Context, in *PromoId, opts ...grpc.CallOption) (*common.Response, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(common.Response)
+	err := c.cc.Invoke(ctx, Promos_DeleteHistory_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -125,12 +144,20 @@ func (c *promosClient) AddUses(ctx context.Context, in *AddUsesIn, opts ...grpc.
 // All implementations must embed UnimplementedPromosServer
 // for forward compatibility.
 type PromosServer interface {
+	// Check creator role, insert promo to Promos
 	Create(context.Context, *CreatePromo) (*PromoFailure, error)
+	// Delete promo from Promos
 	Delete(context.Context, *PromoId) (*common.Response, error)
+	// Delete all records from UserToPromo
+	DeleteHistory(context.Context, *PromoId) (*common.Response, error)
+	// Get promo from Promos
 	GetById(context.Context, *PromoId) (*PromoFailure, error)
 	GetByName(context.Context, *PromoName) (*PromoFailure, error)
+	// Check promo valid (count of uses, expiration data, already activate by user), query to service users
 	Use(context.Context, *PromoUserId) (*users.TransactionResponse, error)
+	// Update expAt of promo in Promos
 	AddTime(context.Context, *AddTimeIn) (*common.Response, error)
+	// Update uses of promo in Promos
 	AddUses(context.Context, *AddUsesIn) (*common.Response, error)
 	mustEmbedUnimplementedPromosServer()
 }
@@ -147,6 +174,9 @@ func (UnimplementedPromosServer) Create(context.Context, *CreatePromo) (*PromoFa
 }
 func (UnimplementedPromosServer) Delete(context.Context, *PromoId) (*common.Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedPromosServer) DeleteHistory(context.Context, *PromoId) (*common.Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteHistory not implemented")
 }
 func (UnimplementedPromosServer) GetById(context.Context, *PromoId) (*PromoFailure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
@@ -216,6 +246,24 @@ func _Promos_Delete_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PromosServer).Delete(ctx, req.(*PromoId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Promos_DeleteHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PromoId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PromosServer).DeleteHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Promos_DeleteHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PromosServer).DeleteHistory(ctx, req.(*PromoId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -324,6 +372,10 @@ var Promos_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _Promos_Delete_Handler,
+		},
+		{
+			MethodName: "DeleteHistory",
+			Handler:    _Promos_DeleteHistory_Handler,
 		},
 		{
 			MethodName: "GetById",

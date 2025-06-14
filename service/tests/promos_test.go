@@ -16,7 +16,6 @@ import (
 	"promos/pkg/postgres"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -27,10 +26,8 @@ import (
 var srv *server.Server
 var client promos.PromosClient
 var serviceUsers *mock.MockServiceUsers
-var repo *repository.Repository
 var dockerpostgres *mock.DockerPool
 var logger *logrus.Logger
-var pool *pgxpool.Pool
 
 // ДОПИСАТЬ ТЕСТЫ
 
@@ -59,7 +56,7 @@ func init() {
 	}
 
 	// Connecting to postgres
-	pool, err = postgres.NewPool(context.TODO(), cfg.DB)
+	pool, err := postgres.NewPool(context.TODO(), cfg.DB)
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +71,7 @@ func init() {
 	serviceUsers = mock.NewMockServiceUsers(pool)
 
 	// Creating repository
-	repo = repository.NewRepository(serviceUsers, logger)
+	repo := repository.NewRepository(serviceUsers, logger)
 
 	// Register promo service
 	service := service.NewServicePromos(repo, pool)
@@ -108,8 +105,8 @@ func TestMain(t *testing.T) {
 
 	})
 
-	t.Run("CREATE", Create)
-	t.Run("Use", Use)
+	t.Run("CREATE | DELETE", Create)
+	t.Run("USE | GET | DELETE | ADD USES | ADD TIME", Use)
 }
 
 func Create(t *testing.T) {
@@ -226,10 +223,6 @@ func Use(t *testing.T) {
 
 	t.Cleanup(
 		func() {
-			// Delete history activation of promo by user
-			if err := repo.DeleteActivatePromoFromHistory(context.TODO(), pool, &promos.PromoId{Id: promoId}); err != nil {
-				t.Fatal(err)
-			}
 
 			// Delete testing data from table Promos
 			if err := clearPromos([]int64{promoId}); err != nil {
@@ -316,7 +309,7 @@ func Use(t *testing.T) {
 
 		// Delete history activation promo by user, only for tests
 		if tt.name == "already activated" {
-			if err := repo.DeleteActivatePromoFromHistory(context.TODO(), pool, &promos.PromoId{Id: promoId}); err != nil {
+			if _, err := client.DeleteHistory(context.TODO(), &promos.PromoId{Id: promoId}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := client.AddUses(context.TODO(), &promos.AddUsesIn{PromoId: promoId, Uses: -1}); err != nil {
