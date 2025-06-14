@@ -87,13 +87,13 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 			return err
 		}
 
-		// Query to serviceUsers for give currency
+		// Query to serviceUsers
 		out, err = sp.repo.ActivatePromo(ctx, promo, in.UserId)
 		if err != nil {
 			return err
 		}
 
-		// Query to db for decremenet uses of promo
+		// Query to db for decrement uses of promo
 		if err := sp.repo.DecrementPromoUses(ctx, tx, &promos.PromoId{Id: in.PromoId}); err != nil {
 			return err
 		}

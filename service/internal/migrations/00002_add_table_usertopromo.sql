@@ -1,9 +1,9 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS UserToPromo (
-    UserId bigint REFERENCES Users(Id),
-    PromoId bigint REFERENCES Promos(Id),
-    activatedAt timestamp NOT NULL
+    UserId BIGINT REFERENCES Users(Id),
+    PromoId BIGINT REFERENCES Promos(Id),
+    activatedAt TIMESTAMP NOT NULL
 );
 -- +goose StatementEnd
 

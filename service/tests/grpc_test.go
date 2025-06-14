@@ -29,6 +29,8 @@ var repo *repository.Repository
 var mockpool *mock.MockPool
 var logger *logrus.Logger
 
+// ДОПИСАТЬ ТЕСТЫ
+
 func init() {
 
 	// Setup logger

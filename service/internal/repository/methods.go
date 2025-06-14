@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"promos/internal/models/common"
 	"promos/internal/models/promos"
 	"promos/internal/models/users"
 	Err "promos/pkg/errors"
@@ -174,6 +175,7 @@ func (r *Repository) ActivatePromo(
 	out, err := r.UserService.SendTransaction(ctx, &users.TransactionRequest{
 		Sender:   nil,
 		Receiver: &users.UserTransaction{UserId: userId, Amount: in.Amount, Currency: in.Currency},
+		Type:     common.TransactionType_ActivatePromoCode,
 	})
 	if err != nil {
 		r.logger.Warn(errors.Join(Err.ErrServiceUsers, err))
