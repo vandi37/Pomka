@@ -15,25 +15,23 @@ import (
 
 // Insert promo to table promos
 func (r *Repository) CreatePromo(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.CreatePromo) (*promos.PromoCode, error) {
 
-	if in.Uses < 0 && in.Uses != -1 {
-		return nil, Err.ErrValueUses
-	}
-	if float64(time.Now().Unix()) > float64(in.ExpAt.AsTime().Unix()) {
-		return nil, Err.ErrExpAt
+	// Check args valid, because Exec() send panic if have error
+	if !(0 <= in.Currency && in.Currency <= 2 && in.Amount >= 0 && (in.Uses > 0 || in.Uses == -1)) {
+		return nil, Err.ErrBadArgs
 	}
 
-	var expiredAt, createdAt interface{}
+	var expiredAt, createdAt interface{} // Scan() cannot convert sql timestamp to protobuf/types/known/timestamppb
 	var out = new(promos.PromoCode)
 
 	q := `INSERT INTO Promos (Name, Currency, Amount, Uses, Creator, ExpAt)
     VALUES ($1, $2, $3, $4, $5, $6) RETURNING Id, Name, Currency, Amount, Uses, Creator, ExpAt, CreatedAt`
 	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
 
-	err := tx.QueryRow(ctx, q,
+	err := db.QueryRow(cdb, q,
 		in.Name,
 		in.Currency,
 		in.Amount,
@@ -50,59 +48,55 @@ func (r *Repository) CreatePromo(
 		&createdAt)
 
 	if err != nil {
-		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
+		r.logger.Warn(Err.ErrExecQuery, err)
 		return nil, Err.ErrExecQuery
 	}
 
 	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt.(time.Time)), timestamppb.New(createdAt.(time.Time))
-
-	r.logger.Debugf("creating promo: %d", out.Id)
 	return out, nil
 }
 
 // Delete promo from table promos by ID
 func (r *Repository) DeletePromoById(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.PromoId) error {
 	q := `DELETE FROM Promos WHERE Id = $1`
 
-	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
+	if _, err := db.Exec(cdb, q, in.Id); err != nil {
 		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return Err.ErrExecQuery
 	}
 
-	r.logger.Debugf("deleting promo: %d", in.Id)
 	return nil
 }
 
 // Delete promo from table promos by Name
 func (r *Repository) DeletePromoByName(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.PromoName) error {
 	q := `DELETE FROM Promos WHERE Name = $1`
 
-	if _, err := tx.Exec(ctx, q, in.Name); err != nil {
+	if _, err := db.Exec(cdb, q, in.Name); err != nil {
 		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return Err.ErrExecQuery
 	}
 
-	r.logger.Debugf("deleting promo: %s", in.Name)
 	return nil
 }
 
 // Get promo from table promos by ID
 func (r *Repository) GetPromoById(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.PromoId) (*promos.PromoCode, error) {
 
 	var expiredAt, createdAt interface{}
 	var out = new(promos.PromoCode)
 
 	q := `SELECT * FROM Promos WHERE Id = $1`
-	row := tx.QueryRow(ctx, q, in.Id)
+	row := db.QueryRow(cdb, q, in.Id)
 
 	err := row.Scan(
 		&out.Id,
@@ -131,15 +125,15 @@ func (r *Repository) GetPromoById(
 
 // Get promo from table promos by Name
 func (r *Repository) GetPromoByName(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.PromoName) (*promos.PromoCode, error) {
 
 	var expiredAt, createdAt interface{}
 	var out = new(promos.PromoCode)
 
 	q := `SELECT * FROM Promos WHERE Name = $1`
-	row := tx.QueryRow(ctx, q, in.Name)
+	row := db.QueryRow(cdb, q, in.Name)
 
 	err := row.Scan(
 		&out.Id,
@@ -168,11 +162,11 @@ func (r *Repository) GetPromoByName(
 
 // Send transaction to service users
 func (r *Repository) ActivatePromo(
-	ctx context.Context,
+	cdb context.Context,
 	in *promos.PromoCode,
 	userId int64) (*users.TransactionResponse, error) {
 
-	out, err := r.UserService.SendTransaction(ctx, &users.TransactionRequest{
+	out, err := r.UserService.SendTransaction(cdb, &users.TransactionRequest{
 		Sender:   nil,
 		Receiver: &users.UserTransaction{UserId: userId, Amount: in.Amount, Currency: in.Currency},
 		Type:     common.TransactionType_ActivatePromoCode,
@@ -187,8 +181,8 @@ func (r *Repository) ActivatePromo(
 
 // Update table promos, decrement uses of promo.
 func (r *Repository) DecrementPromoUses(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.PromoId) (err error) {
 	if in.Id == -1 {
 		return nil
@@ -196,7 +190,7 @@ func (r *Repository) DecrementPromoUses(
 
 	q := `UPDATE Promos SET Uses = Uses-1 WHERE Id = $1`
 
-	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
+	if _, err := db.Exec(cdb, q, in.Id); err != nil {
 		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return Err.ErrExecQuery
 	}
@@ -206,29 +200,27 @@ func (r *Repository) DecrementPromoUses(
 
 // Insert activation of promo to table UserToPromo
 func (r *Repository) AddActivatePromoToHistory(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.PromoUserId) (err error) {
 	q := `INSERT INTO UserToPromo (UserId, PromoId, ActivatedAt) VALUES ($1, $2, $3)`
 
 	actAt := time.Now().Format("2006-01-02 15:04:05")
-	if _, err := tx.Exec(ctx, q, in.UserId, in.PromoId, actAt); err != nil {
+	if _, err := db.Exec(cdb, q, in.UserId, in.PromoId, actAt); err != nil {
 		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return Err.ErrExecQuery
 	}
-
-	r.logger.Debugf("add in history: user: %d activate promo: %d", in.UserId, in.PromoId)
 	return nil
 }
 
 // Delete activation of promo from table UserToPromo
 func (r *Repository) DeleteActivatePromoFromHistory(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.PromoId) (err error) {
 
 	q := `DELETE FROM UserToPromo WHERE PromoId=$1`
-	if _, err := tx.Exec(ctx, q, in.Id); err != nil {
+	if _, err := db.Exec(cdb, q, in.Id); err != nil {
 		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return Err.ErrExecQuery
 	}
@@ -238,15 +230,15 @@ func (r *Repository) DeleteActivatePromoFromHistory(
 
 // If promo been activated by user, return true. If promo not activated by user, return false.
 func (r *Repository) PromoIsAlreadyActivated(
-	ctx context.Context,
-	tx pgx.Tx,
+	cdb context.Context,
+	db DB,
 	in *promos.PromoUserId) (b bool, err error) {
 
 	var activated = new(bool)
 
 	q := `SELECT EXISTS(SELECT * FROM UserToPromo WHERE UserId = $1 AND PromoId = $2)`
 
-	row := tx.QueryRow(ctx, q, in.UserId, in.PromoId)
+	row := db.QueryRow(cdb, q, in.UserId, in.PromoId)
 	if err := row.Scan(&activated); err != nil {
 		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
 		return false, Err.ErrExecQuery
@@ -278,8 +270,8 @@ func (r *Repository) PromoIsNotInStock(in *promos.PromoCode) (b bool, err error)
 }
 
 // Check creator is owner or not
-func (r *Repository) CreatorIsOwner(ctx context.Context, in *promos.PromoCode) (b bool, err error) {
-	user, err := r.UserService.GetUser(ctx, &users.Id{Id: in.Creator})
+func (r *Repository) CreatorIsOwner(cdb context.Context, userId int64) (b bool, err error) {
+	user, err := r.UserService.GetUser(cdb, &users.Id{Id: userId})
 	if err != nil {
 		return false, Err.ErrServiceUsers
 	}
@@ -292,12 +284,12 @@ func (r *Repository) CreatorIsOwner(ctx context.Context, in *promos.PromoCode) (
 }
 
 // Add time for promo
-func (r *Repository) AddTime(ctx context.Context, tx pgx.Tx, in *promos.AddTimeIn) (err error) {
+func (r *Repository) AddTime(cdb context.Context, db DB, in *promos.AddTimeIn) (err error) {
 
 	q := `UPDATE Promos SET ExpAt = $1 WHERE Id = $2`
 	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
 
-	if _, err := tx.Exec(ctx, q, expAt, in.PromoId); err != nil {
+	if _, err := db.Exec(cdb, q, expAt, in.PromoId); err != nil {
 		return Err.ErrExecQuery
 	}
 
@@ -305,11 +297,11 @@ func (r *Repository) AddTime(ctx context.Context, tx pgx.Tx, in *promos.AddTimeI
 }
 
 // Add uses for promo
-func (r *Repository) AddUses(ctx context.Context, tx pgx.Tx, in *promos.AddUsesIn) (err error) {
+func (r *Repository) AddUses(cdb context.Context, db DB, in *promos.AddUsesIn) (err error) {
 
 	q := `UPDATE Promos SET Uses = Uses+$1 WHERE Id = $2`
 
-	if _, err := tx.Exec(ctx, q, in.Uses, in.PromoId); err != nil {
+	if _, err := db.Exec(cdb, q, in.Uses, in.PromoId); err != nil {
 		return Err.ErrExecQuery
 	}
 
