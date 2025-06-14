@@ -5,9 +5,9 @@ import (
 	"promos/config"
 	"promos/internal/models/promos"
 	"promos/internal/repository"
-	"promos/internal/transport/grpc/conn"
 	service "promos/internal/transport/grpc/handlers"
-	"promos/internal/transport/grpc/server"
+	"promos/pkg/grpc/conn"
+	"promos/pkg/grpc/server"
 
 	"promos/pkg/postgres"
 

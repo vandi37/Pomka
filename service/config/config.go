@@ -3,9 +3,9 @@ package config
 import (
 	"fmt"
 	"os"
-	"promos/internal/transport/grpc/conn"
-	"promos/internal/transport/grpc/server"
 	Err "promos/pkg/errors"
+	"promos/pkg/grpc/conn"
+	"promos/pkg/grpc/server"
 	"promos/pkg/postgres"
 	"strconv"
 )
