@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS Promos  (
     Name VARCHAR(255) NOT NULL UNIQUE,
     Currency SMALLINT CHECK (Currency = 0 OR Currency = 1 OR Currency = 2),
     Amount INT NOT NULL CHECK (Amount >= 0),
-    Uses INT NOT NULL CHECK (Uses > 0 OR Uses = -1),
+    Uses INT NOT NULL CHECK (Uses >= 0 OR Uses = -1),
     Creator BIGINT REFERENCES Users(Id),
     ExpAt TIMESTAMP NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
