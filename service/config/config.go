@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"promos/internal/transport/grpc/conn"
@@ -23,8 +22,9 @@ func NewConfig() (Config, error) {
 	srvNet, srvPort :=
 		os.Getenv("SERVER_NETWORK"),
 		os.Getenv("SERVER_PORT")
+
 	if srvNet == "" || srvPort == "" {
-		return Config{}, errors.Join(Err.ErrMissingEnviroment, fmt.Errorf("SERVER"))
+		return Config{}, fmt.Errorf("%s %s", Err.ErrMissingEnviroment, "for server")
 	}
 
 	// Config db
@@ -37,7 +37,7 @@ func NewConfig() (Config, error) {
 		os.Getenv("DB_MAX_ATMPS"),
 		os.Getenv("DB_DELAY_ATMPS_S")
 	if dbHost == "" || dbPort == "" || dbUser == "" || dbPassword == "" || dbName == "" || dbMaxAtmps == "" || dbDelayAtmps == "" {
-		return Config{}, errors.Join(Err.ErrMissingEnviroment, fmt.Errorf("DB"))
+		return Config{}, fmt.Errorf("%s %s", Err.ErrMissingEnviroment, "for db")
 	}
 	dbMaxAtmpsInt, err1 := strconv.Atoi(dbMaxAtmps)
 	dbDelayAtmpsInt, err2 := strconv.Atoi(dbDelayAtmps)
@@ -45,10 +45,10 @@ func NewConfig() (Config, error) {
 		return Config{}, Err.ErrMissingEnviroment
 	}
 
-	// Config conn
+	// Config connection to service users
 	SrvUsersHost, SrvUsersPort := os.Getenv("SERVICE_USERS_HOST"), os.Getenv("SERVICE_USERS_PORT")
 	if SrvUsersHost == "" || SrvUsersPort == "" {
-		return Config{}, errors.Join(Err.ErrMissingEnviroment, fmt.Errorf("SERVICE_USERS"))
+		return Config{}, fmt.Errorf("%s %s", Err.ErrMissingEnviroment, "for connection to service users")
 	}
 
 	return Config{
