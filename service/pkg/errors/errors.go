@@ -5,6 +5,7 @@ import (
 )
 
 var (
+	ErrBadArgs               = errors.New("error bad args: 0 <= Currency <= 2 AND Amount >= 0 AND (Uses > 0 OR Uses = -1)")
 	ErrExpAt                 = errors.New("error timestamb of expired data must be more then now")
 	ErrCreatorIsNotOwner     = errors.New("error creator of promo must be have role owner")
 	ErrValueUses             = errors.New("error value of uses must be > 0, for infinity uses set -1")
