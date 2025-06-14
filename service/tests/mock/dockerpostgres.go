@@ -6,7 +6,7 @@ import (
 	"github.com/ory/dockertest/v3"
 )
 
-type MockPool struct {
+type DockerPool struct {
 	pool     *dockertest.Pool
 	resource *dockertest.Resource
 }
@@ -17,7 +17,7 @@ type Config struct {
 	Password string
 }
 
-func MockPoolUp(cfg Config) (*MockPool, error) {
+func PostgresUp(cfg Config) (*DockerPool, error) {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
 		return nil, err
@@ -32,10 +32,10 @@ func MockPoolUp(cfg Config) (*MockPool, error) {
 		return nil, err
 	}
 
-	return &MockPool{pool: pool, resource: resource}, nil
+	return &DockerPool{pool: pool, resource: resource}, nil
 }
 
-func (m *MockPool) MockPoolDown() error {
+func (m *DockerPool) PostgresDown() error {
 	if err := m.pool.Purge(m.resource); err != nil {
 		return err
 	}
