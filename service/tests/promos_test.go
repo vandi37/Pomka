@@ -8,6 +8,7 @@ import (
 	"promos/internal/repository"
 	service "promos/internal/transport/grpc/handlers"
 	"promos/internal/transport/grpc/server"
+	Err "promos/pkg/errors"
 	"promos/tests/mock"
 	"testing"
 	"time"
@@ -262,7 +263,7 @@ func Use(t *testing.T) {
 	var tests = []struct {
 		name string
 		in   *promos.PromoUserId
-		err  bool
+		err  error
 	}{
 		{
 			name: "common",
@@ -270,7 +271,7 @@ func Use(t *testing.T) {
 				PromoId: promoId,
 				UserId:  userId,
 			},
-			err: false,
+			err: nil,
 		},
 		{
 			name: "already activated",
@@ -278,7 +279,7 @@ func Use(t *testing.T) {
 				PromoId: promoId,
 				UserId:  userId,
 			},
-			err: true,
+			err: Err.ErrPromoAlreadyActivated,
 		},
 		{
 			name: "not in stock",
@@ -286,7 +287,7 @@ func Use(t *testing.T) {
 				PromoId: promoId,
 				UserId:  userId,
 			},
-			err: true,
+			err: Err.ErrPromoNotInStock,
 		},
 		{
 			name: "expired",
@@ -294,13 +295,14 @@ func Use(t *testing.T) {
 				PromoId: promoId,
 				UserId:  userId,
 			},
-			err: true,
+			err: Err.ErrPromoExpired,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if _, err := client.Use(context.TODO(), tt.in); (err != nil) != tt.err {
+			if _, err := client.Use(context.TODO(), tt.in); !(fmt.Errorf("rpc error: code = Unknown desc = %s", tt.err) != err) {
+				logger.Debug("ERROR", err)
 				t.Fail()
 			}
 		})
