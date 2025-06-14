@@ -16,6 +16,11 @@ func (sp *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (ou
 	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
 
+		// Check creator is owner or not
+		if b, err := sp.repo.CreatorIsOwner(ctx, in.Creator); err != nil || !b {
+			return err
+		}
+
 		// Creating promo
 		promo, err = sp.repo.CreatePromo(ctx, tx, in)
 
@@ -64,11 +69,6 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 		// Query to db for get promo
 		promo, err := sp.repo.GetPromoById(ctx, tx, &promos.PromoId{Id: in.PromoId})
 		if err != nil {
-			return err
-		}
-
-		// Check creator is owner or not
-		if b, err := sp.repo.CreatorIsOwner(ctx, promo); err != nil || !b {
 			return err
 		}
 
