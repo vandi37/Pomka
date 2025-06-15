@@ -43,11 +43,11 @@ func Run() {
 	}
 
 	// Creating repository
-	repo := repository.NewRepository(clientServices, logger)
+	repo := repository.NewRepository(logger)
 
 	// Register service promos
 	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(serverLogger.LoggingUnaryInterceptor))
-	service := service.NewServiceWarns(repo, pool)
+	service := service.NewServiceWarns(repo, pool, cfg.Warns, clientServices)
 	warns.RegisterWarnsServer(grpcSrv, service)
 
 	// Run server

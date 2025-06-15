@@ -1,7 +1,7 @@
-protoc --go-grpc_out=./service/internal/models --proto_path=./proto proto/warns/service.proto
-protoc --go_out=./service/internal/models --proto_path=./proto proto/warns/service.proto
+protoc --go-grpc_out=./service/pkg/models --proto_path=./proto proto/warns/service.proto
+protoc --go_out=./service/pkg/models --proto_path=./proto proto/warns/service.proto
 
-protoc --go-grpc_out=./service/internal/models --proto_path=./proto proto/users/service.proto
-protoc --go_out=./service/internal/models --proto_path=./proto proto/users/service.proto
+protoc --go-grpc_out=./service/pkg/models --proto_path=./proto proto/users/service.proto
+protoc --go_out=./service/pkg/models --proto_path=./proto proto/users/service.proto
 
-protoc --go_out=./service/internal/models --proto_path=./proto proto/common/types.proto
+protoc --go_out=./service/pkg/models --proto_path=./proto proto/common/types.proto

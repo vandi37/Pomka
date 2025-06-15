@@ -23,16 +23,28 @@ enum TransactionType {
   User = 6; // Setting role to user
   Moderator = 7; // Setting role to moderator
 
-  // Wars
+  // Warns
   Warn = 8;
   DeleteWarn = 9;
+  InActiveWarn = 10;
 
+  // Bans
+  Ban = 11;
+  DeleteBan = 12;
+  InActiveBan = 13;
+  
+  // Promos
+  CreatePromoCode = 14;
+  DeletePromoCode = 15;
+  ActivatePromoCode = 16;
+  AddUsesForPromo = 17;
+  AddTimeForPromo = 18;
+  DecrementUsesPromo = 19;
+  AddActivationPromoCodeToHistory = 20;
+  
   // Checks
-  Create = 10;
-  CreatePromoCode = 11;
-  Activate = 12;
-  ActivatePromoCode = 13;
-
+  Create = 21;
+  Activate = 22;
   // ...
 }
 

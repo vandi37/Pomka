@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	service "warns/internal/transport/grpc/handlers"
 	Err "warns/pkg/errors"
 	"warns/pkg/grpc/conn"
 	"warns/pkg/grpc/server"
@@ -14,6 +15,7 @@ type Config struct {
 	Server server.ServerConfig
 	DB     postgres.DBConfig
 	Conn   conn.Config
+	Warns  service.Config
 }
 
 func NewConfig() (Config, error) {
@@ -51,6 +53,13 @@ func NewConfig() (Config, error) {
 		return Config{}, fmt.Errorf("%s %s", Err.ErrMissingEnviroment, "for connection to service users")
 	}
 
+	// Config warns
+	warnsBeforeBan := os.Getenv("WARNS_BEFORE_BAN")
+	warnsBeforeBanInt, err := strconv.Atoi(warnsBeforeBan)
+	if err != nil {
+		return Config{}, nil
+	}
+
 	return Config{
 		Server: server.ServerConfig{
 			Network: srvNet,
@@ -70,6 +79,9 @@ func NewConfig() (Config, error) {
 				Host: SrvUsersHost,
 				Port: SrvUsersPort,
 			},
+		},
+		Warns: service.Config{
+			WarnsBeforeBan: warnsBeforeBanInt,
 		},
 	}, nil
 }

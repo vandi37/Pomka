@@ -108,6 +108,214 @@ func (x *Warn) GetIsActive() bool {
 	return false
 }
 
+type WarnFailure struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Warn          *Warn                  `protobuf:"bytes,1,opt,name=warn,proto3,oneof" json:"warn,omitempty"`
+	Failure       *common.Failure        `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WarnFailure) Reset() {
+	*x = WarnFailure{}
+	mi := &file_warns_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WarnFailure) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WarnFailure) ProtoMessage() {}
+
+func (x *WarnFailure) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WarnFailure.ProtoReflect.Descriptor instead.
+func (*WarnFailure) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *WarnFailure) GetWarn() *Warn {
+	if x != nil {
+		return x.Warn
+	}
+	return nil
+}
+
+func (x *WarnFailure) GetFailure() *common.Failure {
+	if x != nil {
+		return x.Failure
+	}
+	return nil
+}
+
+type AllWarns struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Warns         []*Warn                `protobuf:"bytes,1,rep,name=warns,proto3" json:"warns,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AllWarns) Reset() {
+	*x = AllWarns{}
+	mi := &file_warns_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AllWarns) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AllWarns) ProtoMessage() {}
+
+func (x *AllWarns) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AllWarns.ProtoReflect.Descriptor instead.
+func (*AllWarns) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AllWarns) GetWarns() []*Warn {
+	if x != nil {
+		return x.Warns
+	}
+	return nil
+}
+
+type AllWarnsFailure struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Warns         *AllWarns              `protobuf:"bytes,1,opt,name=warns,proto3,oneof" json:"warns,omitempty"`
+	Failure       *common.Response       `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AllWarnsFailure) Reset() {
+	*x = AllWarnsFailure{}
+	mi := &file_warns_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AllWarnsFailure) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AllWarnsFailure) ProtoMessage() {}
+
+func (x *AllWarnsFailure) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AllWarnsFailure.ProtoReflect.Descriptor instead.
+func (*AllWarnsFailure) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AllWarnsFailure) GetWarns() *AllWarns {
+	if x != nil {
+		return x.Warns
+	}
+	return nil
+}
+
+func (x *AllWarnsFailure) GetFailure() *common.Response {
+	if x != nil {
+		return x.Failure
+	}
+	return nil
+}
+
+type WarnCreate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=UserId,proto3" json:"UserId,omitempty"`
+	ModerId       int64                  `protobuf:"varint,2,opt,name=ModerId,proto3" json:"ModerId,omitempty"`
+	Reason        *string                `protobuf:"bytes,3,opt,name=Reason,proto3,oneof" json:"Reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WarnCreate) Reset() {
+	*x = WarnCreate{}
+	mi := &file_warns_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WarnCreate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WarnCreate) ProtoMessage() {}
+
+func (x *WarnCreate) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WarnCreate.ProtoReflect.Descriptor instead.
+func (*WarnCreate) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *WarnCreate) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *WarnCreate) GetModerId() int64 {
+	if x != nil {
+		return x.ModerId
+	}
+	return 0
+}
+
+func (x *WarnCreate) GetReason() string {
+	if x != nil && x.Reason != nil {
+		return *x.Reason
+	}
+	return ""
+}
+
 type Ban struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
@@ -122,7 +330,7 @@ type Ban struct {
 
 func (x *Ban) Reset() {
 	*x = Ban{}
-	mi := &file_warns_service_proto_msgTypes[1]
+	mi := &file_warns_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -134,7 +342,7 @@ func (x *Ban) String() string {
 func (*Ban) ProtoMessage() {}
 
 func (x *Ban) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[1]
+	mi := &file_warns_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -147,7 +355,7 @@ func (x *Ban) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ban.ProtoReflect.Descriptor instead.
 func (*Ban) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{1}
+	return file_warns_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Ban) GetId() int64 {
@@ -192,118 +400,6 @@ func (x *Ban) GetIsActive() bool {
 	return false
 }
 
-type CreateIn struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=UserId,proto3" json:"UserId,omitempty"`
-	ModerId       int64                  `protobuf:"varint,2,opt,name=ModerId,proto3" json:"ModerId,omitempty"`
-	Reason        *string                `protobuf:"bytes,3,opt,name=Reason,proto3,oneof" json:"Reason,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateIn) Reset() {
-	*x = CreateIn{}
-	mi := &file_warns_service_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateIn) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateIn) ProtoMessage() {}
-
-func (x *CreateIn) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateIn.ProtoReflect.Descriptor instead.
-func (*CreateIn) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *CreateIn) GetUserId() int64 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
-}
-
-func (x *CreateIn) GetModerId() int64 {
-	if x != nil {
-		return x.ModerId
-	}
-	return 0
-}
-
-func (x *CreateIn) GetReason() string {
-	if x != nil && x.Reason != nil {
-		return *x.Reason
-	}
-	return ""
-}
-
-type CreateFailure struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Warn          *Warn                  `protobuf:"bytes,1,opt,name=warn,proto3,oneof" json:"warn,omitempty"`
-	Failure       *common.Failure        `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateFailure) Reset() {
-	*x = CreateFailure{}
-	mi := &file_warns_service_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateFailure) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateFailure) ProtoMessage() {}
-
-func (x *CreateFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateFailure.ProtoReflect.Descriptor instead.
-func (*CreateFailure) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *CreateFailure) GetWarn() *Warn {
-	if x != nil {
-		return x.Warn
-	}
-	return nil
-}
-
-func (x *CreateFailure) GetFailure() *common.Failure {
-	if x != nil {
-		return x.Failure
-	}
-	return nil
-}
-
 type BanFailure struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Ban           *Ban                   `protobuf:"bytes,1,opt,name=ban,proto3,oneof" json:"ban,omitempty"`
@@ -314,7 +410,7 @@ type BanFailure struct {
 
 func (x *BanFailure) Reset() {
 	*x = BanFailure{}
-	mi := &file_warns_service_proto_msgTypes[4]
+	mi := &file_warns_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -326,7 +422,7 @@ func (x *BanFailure) String() string {
 func (*BanFailure) ProtoMessage() {}
 
 func (x *BanFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[4]
+	mi := &file_warns_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -339,7 +435,7 @@ func (x *BanFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BanFailure.ProtoReflect.Descriptor instead.
 func (*BanFailure) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{4}
+	return file_warns_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *BanFailure) GetBan() *Ban {
@@ -356,6 +452,162 @@ func (x *BanFailure) GetFailure() *common.Failure {
 	return nil
 }
 
+type AllBans struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Bans          []*Ban                 `protobuf:"bytes,1,rep,name=bans,proto3" json:"bans,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AllBans) Reset() {
+	*x = AllBans{}
+	mi := &file_warns_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AllBans) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AllBans) ProtoMessage() {}
+
+func (x *AllBans) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AllBans.ProtoReflect.Descriptor instead.
+func (*AllBans) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *AllBans) GetBans() []*Ban {
+	if x != nil {
+		return x.Bans
+	}
+	return nil
+}
+
+type AllBansFailure struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Bans          *AllBans               `protobuf:"bytes,1,opt,name=bans,proto3,oneof" json:"bans,omitempty"`
+	Failure       *common.Response       `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AllBansFailure) Reset() {
+	*x = AllBansFailure{}
+	mi := &file_warns_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AllBansFailure) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AllBansFailure) ProtoMessage() {}
+
+func (x *AllBansFailure) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AllBansFailure.ProtoReflect.Descriptor instead.
+func (*AllBansFailure) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *AllBansFailure) GetBans() *AllBans {
+	if x != nil {
+		return x.Bans
+	}
+	return nil
+}
+
+func (x *AllBansFailure) GetFailure() *common.Response {
+	if x != nil {
+		return x.Failure
+	}
+	return nil
+}
+
+type BanCreate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=UserId,proto3" json:"UserId,omitempty"`
+	ModerId       int64                  `protobuf:"varint,2,opt,name=ModerId,proto3" json:"ModerId,omitempty"`
+	Reason        *string                `protobuf:"bytes,3,opt,name=Reason,proto3,oneof" json:"Reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BanCreate) Reset() {
+	*x = BanCreate{}
+	mi := &file_warns_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BanCreate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BanCreate) ProtoMessage() {}
+
+func (x *BanCreate) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BanCreate.ProtoReflect.Descriptor instead.
+func (*BanCreate) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *BanCreate) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *BanCreate) GetModerId() int64 {
+	if x != nil {
+		return x.ModerId
+	}
+	return 0
+}
+
+func (x *BanCreate) GetReason() string {
+	if x != nil && x.Reason != nil {
+		return *x.Reason
+	}
+	return ""
+}
+
 var File_warns_service_proto protoreflect.FileDescriptor
 
 const file_warns_service_proto_rawDesc = "" +
@@ -367,25 +619,34 @@ const file_warns_service_proto_rawDesc = "" +
 	"\aModerId\x18\x03 \x01(\x03R\aModerId\x12\x16\n" +
 	"\x06Reason\x18\x04 \x01(\tR\x06Reason\x126\n" +
 	"\bIssuedAt\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\bIssuedAt\x12\x1a\n" +
-	"\bIsActive\x18\x06 \x01(\bR\bIsActive\"\xb3\x01\n" +
+	"\bIsActive\x18\x06 \x01(\bR\bIsActive\"x\n" +
+	"\vWarnFailure\x12$\n" +
+	"\x04warn\x18\x01 \x01(\v2\v.warns.WarnH\x00R\x04warn\x88\x01\x01\x12.\n" +
+	"\afailure\x18\x02 \x01(\v2\x0f.common.FailureH\x01R\afailure\x88\x01\x01B\a\n" +
+	"\x05_warnB\n" +
+	"\n" +
+	"\b_failure\"-\n" +
+	"\bAllWarns\x12!\n" +
+	"\x05warns\x18\x01 \x03(\v2\v.warns.WarnR\x05warns\"\x84\x01\n" +
+	"\x0fAllWarnsFailure\x12*\n" +
+	"\x05warns\x18\x01 \x01(\v2\x0f.warns.AllWarnsH\x00R\x05warns\x88\x01\x01\x12/\n" +
+	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x01R\afailure\x88\x01\x01B\b\n" +
+	"\x06_warnsB\n" +
+	"\n" +
+	"\b_failure\"f\n" +
+	"\n" +
+	"WarnCreate\x12\x16\n" +
+	"\x06UserId\x18\x01 \x01(\x03R\x06UserId\x12\x18\n" +
+	"\aModerId\x18\x02 \x01(\x03R\aModerId\x12\x1b\n" +
+	"\x06Reason\x18\x03 \x01(\tH\x00R\x06Reason\x88\x01\x01B\t\n" +
+	"\a_Reason\"\xb3\x01\n" +
 	"\x03Ban\x12\x0e\n" +
 	"\x02Id\x18\x01 \x01(\x03R\x02Id\x12\x16\n" +
 	"\x06UserId\x18\x02 \x01(\x03R\x06UserId\x12\x18\n" +
 	"\aModerId\x18\x03 \x01(\x03R\aModerId\x12\x16\n" +
 	"\x06Reason\x18\x04 \x01(\tR\x06Reason\x126\n" +
 	"\bIssuedAt\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\bIssuedAt\x12\x1a\n" +
-	"\bIsActive\x18\x06 \x01(\bR\bIsActive\"d\n" +
-	"\bCreateIn\x12\x16\n" +
-	"\x06UserId\x18\x01 \x01(\x03R\x06UserId\x12\x18\n" +
-	"\aModerId\x18\x02 \x01(\x03R\aModerId\x12\x1b\n" +
-	"\x06Reason\x18\x03 \x01(\tH\x00R\x06Reason\x88\x01\x01B\t\n" +
-	"\a_Reason\"z\n" +
-	"\rCreateFailure\x12$\n" +
-	"\x04warn\x18\x01 \x01(\v2\v.warns.WarnH\x00R\x04warn\x88\x01\x01\x12.\n" +
-	"\afailure\x18\x02 \x01(\v2\x0f.common.FailureH\x01R\afailure\x88\x01\x01B\a\n" +
-	"\x05_warnB\n" +
-	"\n" +
-	"\b_failure\"s\n" +
+	"\bIsActive\x18\x06 \x01(\bR\bIsActive\"s\n" +
 	"\n" +
 	"BanFailure\x12!\n" +
 	"\x03ban\x18\x01 \x01(\v2\n" +
@@ -393,10 +654,27 @@ const file_warns_service_proto_rawDesc = "" +
 	"\afailure\x18\x02 \x01(\v2\x0f.common.FailureH\x01R\afailure\x88\x01\x01B\x06\n" +
 	"\x04_banB\n" +
 	"\n" +
-	"\b_failure2\x83\x01\n" +
-	"\x05Warns\x12/\n" +
-	"\x06Create\x12\x0f.warns.CreateIn\x1a\x14.warns.CreateFailure\x12#\n" +
-	"\x03Ban\x12\t.users.Id\x1a\x11.warns.BanFailure\x12$\n" +
+	"\b_failure\")\n" +
+	"\aAllBans\x12\x1e\n" +
+	"\x04bans\x18\x01 \x03(\v2\n" +
+	".warns.BanR\x04bans\"\x7f\n" +
+	"\x0eAllBansFailure\x12'\n" +
+	"\x04bans\x18\x01 \x01(\v2\x0e.warns.AllBansH\x00R\x04bans\x88\x01\x01\x12/\n" +
+	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x01R\afailure\x88\x01\x01B\a\n" +
+	"\x05_bansB\n" +
+	"\n" +
+	"\b_failure\"e\n" +
+	"\tBanCreate\x12\x16\n" +
+	"\x06UserId\x18\x01 \x01(\x03R\x06UserId\x12\x18\n" +
+	"\aModerId\x18\x02 \x01(\x03R\aModerId\x12\x1b\n" +
+	"\x06Reason\x18\x03 \x01(\tH\x00R\x06Reason\x88\x01\x01B\t\n" +
+	"\a_Reason2\x98\x02\n" +
+	"\x05Warns\x12-\n" +
+	"\x04Warn\x12\x11.warns.WarnCreate\x1a\x12.warns.WarnFailure\x12%\n" +
+	"\x06UnWarn\x12\t.users.Id\x1a\x10.common.Response\x124\n" +
+	"\x0fGetHistoryWarns\x12\t.users.Id\x1a\x16.warns.AllWarnsFailure\x121\n" +
+	"\rGetHistoryBan\x12\t.users.Id\x1a\x15.warns.AllBansFailure\x12*\n" +
+	"\x03Ban\x12\x10.warns.BanCreate\x1a\x11.warns.BanFailure\x12$\n" +
 	"\x05Unban\x12\t.users.Id\x1a\x10.common.ResponseB\tZ\a./warnsb\x06proto3"
 
 var (
@@ -411,36 +689,53 @@ func file_warns_service_proto_rawDescGZIP() []byte {
 	return file_warns_service_proto_rawDescData
 }
 
-var file_warns_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_warns_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_warns_service_proto_goTypes = []any{
 	(*Warn)(nil),                  // 0: warns.Warn
-	(*Ban)(nil),                   // 1: warns.Ban
-	(*CreateIn)(nil),              // 2: warns.CreateIn
-	(*CreateFailure)(nil),         // 3: warns.CreateFailure
-	(*BanFailure)(nil),            // 4: warns.BanFailure
-	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
-	(*common.Failure)(nil),        // 6: common.Failure
-	(*users.Id)(nil),              // 7: users.Id
-	(*common.Response)(nil),       // 8: common.Response
+	(*WarnFailure)(nil),           // 1: warns.WarnFailure
+	(*AllWarns)(nil),              // 2: warns.AllWarns
+	(*AllWarnsFailure)(nil),       // 3: warns.AllWarnsFailure
+	(*WarnCreate)(nil),            // 4: warns.WarnCreate
+	(*Ban)(nil),                   // 5: warns.Ban
+	(*BanFailure)(nil),            // 6: warns.BanFailure
+	(*AllBans)(nil),               // 7: warns.AllBans
+	(*AllBansFailure)(nil),        // 8: warns.AllBansFailure
+	(*BanCreate)(nil),             // 9: warns.BanCreate
+	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
+	(*common.Failure)(nil),        // 11: common.Failure
+	(*common.Response)(nil),       // 12: common.Response
+	(*users.Id)(nil),              // 13: users.Id
 }
 var file_warns_service_proto_depIdxs = []int32{
-	5, // 0: warns.Warn.IssuedAt:type_name -> google.protobuf.Timestamp
-	5, // 1: warns.Ban.IssuedAt:type_name -> google.protobuf.Timestamp
-	0, // 2: warns.CreateFailure.warn:type_name -> warns.Warn
-	6, // 3: warns.CreateFailure.failure:type_name -> common.Failure
-	1, // 4: warns.BanFailure.ban:type_name -> warns.Ban
-	6, // 5: warns.BanFailure.failure:type_name -> common.Failure
-	2, // 6: warns.Warns.Create:input_type -> warns.CreateIn
-	7, // 7: warns.Warns.Ban:input_type -> users.Id
-	7, // 8: warns.Warns.Unban:input_type -> users.Id
-	3, // 9: warns.Warns.Create:output_type -> warns.CreateFailure
-	4, // 10: warns.Warns.Ban:output_type -> warns.BanFailure
-	8, // 11: warns.Warns.Unban:output_type -> common.Response
-	9, // [9:12] is the sub-list for method output_type
-	6, // [6:9] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	10, // 0: warns.Warn.IssuedAt:type_name -> google.protobuf.Timestamp
+	0,  // 1: warns.WarnFailure.warn:type_name -> warns.Warn
+	11, // 2: warns.WarnFailure.failure:type_name -> common.Failure
+	0,  // 3: warns.AllWarns.warns:type_name -> warns.Warn
+	2,  // 4: warns.AllWarnsFailure.warns:type_name -> warns.AllWarns
+	12, // 5: warns.AllWarnsFailure.failure:type_name -> common.Response
+	10, // 6: warns.Ban.IssuedAt:type_name -> google.protobuf.Timestamp
+	5,  // 7: warns.BanFailure.ban:type_name -> warns.Ban
+	11, // 8: warns.BanFailure.failure:type_name -> common.Failure
+	5,  // 9: warns.AllBans.bans:type_name -> warns.Ban
+	7,  // 10: warns.AllBansFailure.bans:type_name -> warns.AllBans
+	12, // 11: warns.AllBansFailure.failure:type_name -> common.Response
+	4,  // 12: warns.Warns.Warn:input_type -> warns.WarnCreate
+	13, // 13: warns.Warns.UnWarn:input_type -> users.Id
+	13, // 14: warns.Warns.GetHistoryWarns:input_type -> users.Id
+	13, // 15: warns.Warns.GetHistoryBan:input_type -> users.Id
+	9,  // 16: warns.Warns.Ban:input_type -> warns.BanCreate
+	13, // 17: warns.Warns.Unban:input_type -> users.Id
+	1,  // 18: warns.Warns.Warn:output_type -> warns.WarnFailure
+	12, // 19: warns.Warns.UnWarn:output_type -> common.Response
+	3,  // 20: warns.Warns.GetHistoryWarns:output_type -> warns.AllWarnsFailure
+	8,  // 21: warns.Warns.GetHistoryBan:output_type -> warns.AllBansFailure
+	6,  // 22: warns.Warns.Ban:output_type -> warns.BanFailure
+	12, // 23: warns.Warns.Unban:output_type -> common.Response
+	18, // [18:24] is the sub-list for method output_type
+	12, // [12:18] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_warns_service_proto_init() }
@@ -448,16 +743,19 @@ func file_warns_service_proto_init() {
 	if File_warns_service_proto != nil {
 		return
 	}
-	file_warns_service_proto_msgTypes[2].OneofWrappers = []any{}
+	file_warns_service_proto_msgTypes[1].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[3].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[4].OneofWrappers = []any{}
+	file_warns_service_proto_msgTypes[6].OneofWrappers = []any{}
+	file_warns_service_proto_msgTypes[8].OneofWrappers = []any{}
+	file_warns_service_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_warns_service_proto_rawDesc), len(file_warns_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
