@@ -3,11 +3,11 @@ package app
 import (
 	"context"
 	"promos/config"
-	"promos/internal/models/promos"
 	"promos/internal/repository"
 	service "promos/internal/transport/grpc/handlers"
 	"promos/pkg/grpc/conn"
 	"promos/pkg/grpc/server"
+	"promos/pkg/models/promos"
 
 	"promos/pkg/postgres"
 

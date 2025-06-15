@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 	"errors"
-	"promos/internal/models/promos"
-	"promos/internal/models/users"
 	Err "promos/pkg/errors"
+	"promos/pkg/models/promos"
+	"promos/pkg/models/users"
 	"promos/pkg/postgres"
 	"time"
 

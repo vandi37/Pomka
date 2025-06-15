@@ -83,14 +83,25 @@ const (
 	TransactionType_Block     TransactionType = 5 // Setting role to blocked
 	TransactionType_User      TransactionType = 6 // Setting role to user
 	TransactionType_Moderator TransactionType = 7 // Setting role to moderator
-	// Wars
-	TransactionType_Warn       TransactionType = 8
-	TransactionType_DeleteWarn TransactionType = 9
+	// Warns
+	TransactionType_Warn         TransactionType = 8
+	TransactionType_DeleteWarn   TransactionType = 9
+	TransactionType_InActiveWarn TransactionType = 10
+	// Bans
+	TransactionType_Ban         TransactionType = 11
+	TransactionType_DeleteBan   TransactionType = 12
+	TransactionType_InActiveBan TransactionType = 13
+	// Promos
+	TransactionType_CreatePromoCode                 TransactionType = 14
+	TransactionType_DeletePromoCode                 TransactionType = 15
+	TransactionType_ActivatePromoCode               TransactionType = 16
+	TransactionType_AddUsesForPromo                 TransactionType = 17
+	TransactionType_AddTimeForPromo                 TransactionType = 18
+	TransactionType_DecrementUsesPromo              TransactionType = 19
+	TransactionType_AddActivationPromoCodeToHistory TransactionType = 20
 	// Checks
-	TransactionType_Create            TransactionType = 10
-	TransactionType_CreatePromoCode   TransactionType = 11
-	TransactionType_Activate          TransactionType = 12
-	TransactionType_ActivatePromoCode TransactionType = 13
+	TransactionType_Create   TransactionType = 21
+	TransactionType_Activate TransactionType = 22 // ...
 )
 
 // Enum value maps for TransactionType.
@@ -106,26 +117,44 @@ var (
 		7:  "Moderator",
 		8:  "Warn",
 		9:  "DeleteWarn",
-		10: "Create",
-		11: "CreatePromoCode",
-		12: "Activate",
-		13: "ActivatePromoCode",
+		10: "InActiveWarn",
+		11: "Ban",
+		12: "DeleteBan",
+		13: "InActiveBan",
+		14: "CreatePromoCode",
+		15: "DeletePromoCode",
+		16: "ActivatePromoCode",
+		17: "AddUsesForPromo",
+		18: "AddTimeForPromo",
+		19: "DecrementUsesPromo",
+		20: "AddActivationPromoCodeToHistory",
+		21: "Create",
+		22: "Activate",
 	}
 	TransactionType_value = map[string]int32{
-		"Get":               0,
-		"Set":               1,
-		"Transfer":          2,
-		"Purchase":          3,
-		"Farm":              4,
-		"Block":             5,
-		"User":              6,
-		"Moderator":         7,
-		"Warn":              8,
-		"DeleteWarn":        9,
-		"Create":            10,
-		"CreatePromoCode":   11,
-		"Activate":          12,
-		"ActivatePromoCode": 13,
+		"Get":                             0,
+		"Set":                             1,
+		"Transfer":                        2,
+		"Purchase":                        3,
+		"Farm":                            4,
+		"Block":                           5,
+		"User":                            6,
+		"Moderator":                       7,
+		"Warn":                            8,
+		"DeleteWarn":                      9,
+		"InActiveWarn":                    10,
+		"Ban":                             11,
+		"DeleteBan":                       12,
+		"InActiveBan":                     13,
+		"CreatePromoCode":                 14,
+		"DeletePromoCode":                 15,
+		"ActivatePromoCode":               16,
+		"AddUsesForPromo":                 17,
+		"AddTimeForPromo":                 18,
+		"DecrementUsesPromo":              19,
+		"AddActivationPromoCodeToHistory": 20,
+		"Create":                          21,
+		"Activate":                        22,
 	}
 )
 
@@ -357,7 +386,7 @@ const file_common_types_proto_rawDesc = "" +
 	"\fNoneCurrency\x10\x00\x12\v\n" +
 	"\aCredits\x10\x01\x12\n" +
 	"\n" +
-	"\x06Stocks\x10\x02*\xcd\x01\n" +
+	"\x06Stocks\x10\x02*\x84\x03\n" +
 	"\x0fTransactionType\x12\a\n" +
 	"\x03Get\x10\x00\x12\a\n" +
 	"\x03Set\x10\x01\x12\f\n" +
@@ -369,13 +398,22 @@ const file_common_types_proto_rawDesc = "" +
 	"\tModerator\x10\a\x12\b\n" +
 	"\x04Warn\x10\b\x12\x0e\n" +
 	"\n" +
-	"DeleteWarn\x10\t\x12\n" +
+	"DeleteWarn\x10\t\x12\x10\n" +
+	"\fInActiveWarn\x10\n" +
+	"\x12\a\n" +
+	"\x03Ban\x10\v\x12\r\n" +
+	"\tDeleteBan\x10\f\x12\x0f\n" +
+	"\vInActiveBan\x10\r\x12\x13\n" +
+	"\x0fCreatePromoCode\x10\x0e\x12\x13\n" +
+	"\x0fDeletePromoCode\x10\x0f\x12\x15\n" +
+	"\x11ActivatePromoCode\x10\x10\x12\x13\n" +
+	"\x0fAddUsesForPromo\x10\x11\x12\x13\n" +
+	"\x0fAddTimeForPromo\x10\x12\x12\x16\n" +
+	"\x12DecrementUsesPromo\x10\x13\x12#\n" +
+	"\x1fAddActivationPromoCodeToHistory\x10\x14\x12\n" +
 	"\n" +
-	"\x06Create\x10\n" +
-	"\x12\x13\n" +
-	"\x0fCreatePromoCode\x10\v\x12\f\n" +
-	"\bActivate\x10\f\x12\x15\n" +
-	"\x11ActivatePromoCode\x10\r*@\n" +
+	"\x06Create\x10\x15\x12\f\n" +
+	"\bActivate\x10\x16*@\n" +
 	"\tErrorCode\x12\x10\n" +
 	"\fUserNotFound\x10\x00\x12\x12\n" +
 	"\x0eNotEnoughMoney\x10\x01\x12\r\n" +

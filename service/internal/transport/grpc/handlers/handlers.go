@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"promos/internal/models/common"
-	"promos/internal/models/promos"
-	"promos/internal/models/users"
+	"promos/pkg/models/common"
+	"promos/pkg/models/promos"
+	"promos/pkg/models/users"
 	repeatible "promos/pkg/utils"
 
 	"github.com/jackc/pgx/v5"
@@ -35,9 +35,7 @@ func (sp *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (ou
 
 		// Send transaction to service users
 		if _, err := sp.users.SendTransaction(ctx, &users.TransactionRequest{
-			Sender:   nil,
-			Receiver: nil,
-			Type:     common.TransactionType_CreatePromoCode,
+			Type: common.TransactionType_CreatePromoCode,
 		}); err != nil {
 			return err
 		}
@@ -63,6 +61,12 @@ func (sp *ServicePromos) Delete(ctx context.Context, in *promos.PromoId) (out *c
 
 		// Deleting promo
 		if err := sp.repo.DeletePromoById(ctx, tx, in); err != nil {
+			return err
+		}
+
+		if _, err := sp.users.SendTransaction(ctx, &users.TransactionRequest{
+			Type: common.TransactionType_DeletePromoCode,
+		}); err != nil {
 			return err
 		}
 
@@ -101,23 +105,38 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 			return err
 		}
 
-		// Send transaction to service users
-		out, err = sp.users.SendTransaction(ctx, &users.TransactionRequest{
-			Sender:   nil,
-			Receiver: &users.UserTransaction{UserId: in.UserId, Amount: promo.Amount, Currency: promo.Currency},
-			Type:     common.TransactionType_ActivatePromoCode,
-		})
-		if err != nil {
-			return err
-		}
-
 		// Query to db for decrement uses of promo
 		if err := sp.repo.DecrementPromoUses(ctx, tx, &promos.PromoId{Id: in.PromoId}); err != nil {
 			return err
 		}
 
+		// Send transaction to service users
+		out, err = sp.users.SendTransaction(ctx, &users.TransactionRequest{
+			Type: common.TransactionType_DecrementUsesPromo,
+		})
+		if err != nil {
+			return err
+		}
+
 		// Query to db for adding promo activation in history
 		if err := sp.repo.AddActivatePromoToHistory(ctx, tx, in); err != nil {
+			return err
+		}
+
+		// Send transaction to service users
+		out, err = sp.users.SendTransaction(ctx, &users.TransactionRequest{
+			Type: common.TransactionType_AddActivationPromoCodeToHistory,
+		})
+		if err != nil {
+			return err
+		}
+
+		// Send transaction to service users
+		out, err = sp.users.SendTransaction(ctx, &users.TransactionRequest{
+			Receiver: &users.UserTransaction{UserId: in.UserId, Amount: promo.Amount, Currency: promo.Currency},
+			Type:     common.TransactionType_ActivatePromoCode,
+		})
+		if err != nil {
 			return err
 		}
 
@@ -183,6 +202,12 @@ func (sp *ServicePromos) AddTime(ctx context.Context, in *promos.AddTimeIn) (*co
 			return err
 		}
 
+		if _, err := sp.users.SendTransaction(ctx, &users.TransactionRequest{
+			Type: common.TransactionType_AddTimeForPromo,
+		}); err != nil {
+			return err
+		}
+
 		return nil
 
 	}); errTx != nil {
@@ -201,21 +226,9 @@ func (sp *ServicePromos) AddUses(ctx context.Context, in *promos.AddUsesIn) (*co
 			return err
 		}
 
-		return nil
-
-	}); errTx != nil {
-		return nil, errTx
-	}
-
-	return nil, nil
-}
-
-func (sp *ServicePromos) DeleteHistory(ctx context.Context, in *promos.PromoId) (*common.Response, error) {
-	// Run in transaction
-	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
-
-		// Delete history from UserToPromo
-		if err := sp.repo.DeleteActivatePromoFromHistory(ctx, tx, in); err != nil {
+		if _, err := sp.users.SendTransaction(ctx, &users.TransactionRequest{
+			Type: common.TransactionType_AddUsesForPromo,
+		}); err != nil {
 			return err
 		}
 

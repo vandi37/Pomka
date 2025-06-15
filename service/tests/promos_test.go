@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"promos/config"
-	"promos/internal/models/promos"
 	"promos/internal/repository"
 	service "promos/internal/transport/grpc/handlers"
 	Err "promos/pkg/errors"
 	"promos/pkg/grpc/server"
+	"promos/pkg/models/promos"
 	"promos/tests/mock"
 	"testing"
 	"time"
@@ -16,6 +16,7 @@ import (
 	"promos/pkg/postgres"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -28,8 +29,8 @@ var client promos.PromosClient
 var serviceUsers *mock.MockServiceUsers
 var dockerpostgres *mock.DockerPool
 var logger *logrus.Logger
-
-// ДОПИСАТЬ ТЕСТЫ
+var repo *repository.Repository
+var pool *pgxpool.Pool
 
 func init() {
 
@@ -56,7 +57,7 @@ func init() {
 	}
 
 	// Connecting to postgres
-	pool, err := postgres.NewPool(context.TODO(), cfg.DB)
+	pool, err = postgres.NewPool(context.TODO(), cfg.DB)
 	if err != nil {
 		panic(err)
 	}
@@ -71,7 +72,7 @@ func init() {
 	serviceUsers = mock.NewMockServiceUsers(pool)
 
 	// Creating repository
-	repo := repository.NewRepository(logger)
+	repo = repository.NewRepository(logger)
 
 	// Register promo service
 	service := service.NewServicePromos(repo, pool, serviceUsers)
@@ -309,7 +310,7 @@ func Use(t *testing.T) {
 
 		// Delete history activation promo by user, only for tests
 		if tt.name == "already activated" {
-			if _, err := client.DeleteHistory(context.TODO(), &promos.PromoId{Id: promoId}); err != nil {
+			if err := repo.DeleteActivatePromoFromHistory(context.TODO(), pool, &promos.PromoId{Id: promoId}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := client.AddUses(context.TODO(), &promos.AddUsesIn{PromoId: promoId, Uses: -1}); err != nil {

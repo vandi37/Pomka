@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"promos/internal/models/promos"
-	"promos/internal/models/users"
+	"promos/pkg/models/promos"
+	"promos/pkg/models/users"
 	"promos/pkg/postgres"
 
 	"github.com/jackc/pgx/v5/pgxpool"

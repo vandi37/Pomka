@@ -16,9 +16,6 @@ service Promos {
 
     // Delete promo from Promos
     rpc Delete(PromoId) returns (common.Response);
-
-    // Delete all records from UserToPromo
-    rpc DeleteHistory(PromoId) returns (common.Response);
     
     // Get promo from Promos
     rpc GetById(PromoId) returns (PromoFailure);

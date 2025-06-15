@@ -3,7 +3,7 @@ package mock
 import (
 	"context"
 	"fmt"
-	"promos/internal/models/users"
+	"promos/pkg/models/users"
 	repeatible "promos/pkg/utils"
 
 	Err "promos/pkg/errors"
