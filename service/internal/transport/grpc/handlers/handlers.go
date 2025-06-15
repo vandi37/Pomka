@@ -35,7 +35,8 @@ func (sp *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (ou
 
 		// Send transaction to service users
 		if _, err := sp.users.SendTransaction(ctx, &users.TransactionRequest{
-			Type: common.TransactionType_CreatePromoCode,
+			Sender: &users.UserTransaction{UserId: in.Creator},
+			Type:   common.TransactionType_CreatePromoCode,
 		}); err != nil {
 			return err
 		}
@@ -112,7 +113,8 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 
 		// Send transaction to service users
 		out, err = sp.users.SendTransaction(ctx, &users.TransactionRequest{
-			Type: common.TransactionType_DecrementUsesPromo,
+			Sender: &users.UserTransaction{UserId: in.UserId},
+			Type:   common.TransactionType_DecrementUsesPromo,
 		})
 		if err != nil {
 			return err
@@ -125,7 +127,8 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 
 		// Send transaction to service users
 		out, err = sp.users.SendTransaction(ctx, &users.TransactionRequest{
-			Type: common.TransactionType_AddActivationPromoCodeToHistory,
+			Sender: &users.UserTransaction{UserId: in.UserId},
+			Type:   common.TransactionType_AddActivationPromoCodeToHistory,
 		})
 		if err != nil {
 			return err
