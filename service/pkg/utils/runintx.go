@@ -3,7 +3,7 @@ package repeatible
 import (
 	"context"
 
-	Err "promos/pkg/errors"
+	Err "warns/pkg/errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

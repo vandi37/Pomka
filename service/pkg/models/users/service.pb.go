@@ -7,7 +7,7 @@
 package users
 
 import (
-	common "promos/internal/models/common"
+	common "warns/pkg/models/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"

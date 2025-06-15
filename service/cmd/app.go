@@ -1,7 +1,7 @@
 package main
 
 import (
-	"promos/internal/app"
+	"warns/internal/app"
 )
 
 func main() {

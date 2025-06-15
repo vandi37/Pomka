@@ -3,10 +3,10 @@ package mock
 import (
 	"context"
 	"fmt"
-	"promos/internal/models/users"
-	repeatible "promos/pkg/utils"
+	"warns/pkg/models/users"
+	repeatible "warns/pkg/utils"
 
-	Err "promos/pkg/errors"
+	Err "warns/pkg/errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

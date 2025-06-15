@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"promos/internal/models/users"
+	"warns/pkg/models/users"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"

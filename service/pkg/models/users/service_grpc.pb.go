@@ -7,7 +7,7 @@
 package users
 
 import (
-	common "promos/internal/models/common"
+	common "warns/pkg/models/common"
 	context "context"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"

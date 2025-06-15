@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	repeatible "promos/pkg/utils"
+	repeatible "warns/pkg/utils"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

@@ -2,7 +2,7 @@ package conn
 
 import (
 	"fmt"
-	"promos/internal/models/users"
+	"warns/pkg/models/users"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

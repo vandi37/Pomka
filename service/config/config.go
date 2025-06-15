@@ -3,11 +3,11 @@ package config
 import (
 	"fmt"
 	"os"
-	Err "promos/pkg/errors"
-	"promos/pkg/grpc/conn"
-	"promos/pkg/grpc/server"
-	"promos/pkg/postgres"
 	"strconv"
+	Err "warns/pkg/errors"
+	"warns/pkg/grpc/conn"
+	"warns/pkg/grpc/server"
+	"warns/pkg/postgres"
 )
 
 type Config struct {

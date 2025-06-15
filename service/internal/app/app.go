@@ -2,14 +2,14 @@ package app
 
 import (
 	"context"
-	"promos/config"
-	"promos/internal/models/promos"
-	"promos/internal/repository"
-	service "promos/internal/transport/grpc/handlers"
-	"promos/pkg/grpc/conn"
-	"promos/pkg/grpc/server"
+	"warns/config"
+	"warns/internal/repository"
+	service "warns/internal/transport/grpc/handlers"
+	"warns/pkg/grpc/conn"
+	"warns/pkg/grpc/server"
+	"warns/pkg/models/warns"
 
-	"promos/pkg/postgres"
+	"warns/pkg/postgres"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -47,8 +47,8 @@ func Run() {
 
 	// Register service promos
 	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(serverLogger.LoggingUnaryInterceptor))
-	service := service.NewServicePromos(repo, pool)
-	promos.RegisterPromosServer(grpcSrv, service)
+	service := service.NewServiceWarns(repo, pool)
+	warns.RegisterWarnsServer(grpcSrv, service)
 
 	// Run server
 	server := server.NewServer(grpcSrv)
