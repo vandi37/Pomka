@@ -71,10 +71,10 @@ func init() {
 	serviceUsers = mock.NewMockServiceUsers(pool)
 
 	// Creating repository
-	repo := repository.NewRepository(serviceUsers, logger)
+	repo := repository.NewRepository(logger)
 
 	// Register promo service
-	service := service.NewServicePromos(repo, pool)
+	service := service.NewServicePromos(repo, pool, serviceUsers)
 	promos.RegisterPromosServer(grpcSrv, service)
 
 	// Run server

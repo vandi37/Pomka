@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 	"errors"
-	"promos/internal/models/common"
 	"promos/internal/models/promos"
 	"promos/internal/models/users"
 	Err "promos/pkg/errors"
+	"promos/pkg/postgres"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -16,7 +16,7 @@ import (
 // Insert promo to table promos
 func (r *Repository) CreatePromo(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.CreatePromo) (*promos.PromoCode, error) {
 
 	// Check args valid, because Exec() send panic if have error
@@ -59,7 +59,7 @@ func (r *Repository) CreatePromo(
 // Delete promo from table promos by ID
 func (r *Repository) DeletePromoById(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.PromoId) error {
 	q := `DELETE FROM Promos WHERE Id = $1`
 
@@ -74,7 +74,7 @@ func (r *Repository) DeletePromoById(
 // Delete promo from table promos by Name
 func (r *Repository) DeletePromoByName(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.PromoName) error {
 	q := `DELETE FROM Promos WHERE Name = $1`
 
@@ -89,7 +89,7 @@ func (r *Repository) DeletePromoByName(
 // Get promo from table promos by ID
 func (r *Repository) GetPromoById(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.PromoId) (*promos.PromoCode, error) {
 
 	var expiredAt, createdAt interface{}
@@ -126,7 +126,7 @@ func (r *Repository) GetPromoById(
 // Get promo from table promos by Name
 func (r *Repository) GetPromoByName(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.PromoName) (*promos.PromoCode, error) {
 
 	var expiredAt, createdAt interface{}
@@ -160,29 +160,10 @@ func (r *Repository) GetPromoByName(
 	return out, nil
 }
 
-// Send transaction to service users
-func (r *Repository) ActivatePromo(
-	ctx context.Context,
-	in *promos.PromoCode,
-	userId int64) (*users.TransactionResponse, error) {
-
-	out, err := r.UserService.SendTransaction(ctx, &users.TransactionRequest{
-		Sender:   nil,
-		Receiver: &users.UserTransaction{UserId: userId, Amount: in.Amount, Currency: in.Currency},
-		Type:     common.TransactionType_ActivatePromoCode,
-	})
-	if err != nil {
-		r.logger.Warn(errors.Join(Err.ErrServiceUsers, err))
-		return nil, Err.ErrServiceUsers
-	}
-
-	return out, nil
-}
-
 // Update table promos, decrement uses of promo.
 func (r *Repository) DecrementPromoUses(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.PromoId) (err error) {
 	if in.Id == -1 {
 		return nil
@@ -201,7 +182,7 @@ func (r *Repository) DecrementPromoUses(
 // Insert activation of promo to table UserToPromo
 func (r *Repository) AddActivatePromoToHistory(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.PromoUserId) (err error) {
 	q := `INSERT INTO UserToPromo (UserId, PromoId, ActivatedAt) VALUES ($1, $2, $3)`
 
@@ -216,7 +197,7 @@ func (r *Repository) AddActivatePromoToHistory(
 // Delete activation of promo from table UserToPromo
 func (r *Repository) DeleteActivatePromoFromHistory(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.PromoId) (err error) {
 
 	q := `DELETE FROM UserToPromo WHERE PromoId=$1`
@@ -231,7 +212,7 @@ func (r *Repository) DeleteActivatePromoFromHistory(
 // If promo been activated by user, return true. If promo not activated by user, return false.
 func (r *Repository) PromoIsAlreadyActivated(
 	ctx context.Context,
-	db DB,
+	db postgres.DB,
 	in *promos.PromoUserId) (b bool, err error) {
 
 	var activated = new(bool)
@@ -270,11 +251,7 @@ func (r *Repository) PromoIsNotInStock(in *promos.PromoCode) (b bool, err error)
 }
 
 // Check creator is owner or not
-func (r *Repository) CreatorIsOwner(ctx context.Context, userId int64) (b bool, err error) {
-	user, err := r.UserService.GetUser(ctx, &users.Id{Id: userId})
-	if err != nil {
-		return false, Err.ErrServiceUsers
-	}
+func (r *Repository) CreatorIsOwner(ctx context.Context, user *users.User) (b bool, err error) {
 
 	if user.Role == 3 {
 		return true, nil
@@ -284,7 +261,7 @@ func (r *Repository) CreatorIsOwner(ctx context.Context, userId int64) (b bool, 
 }
 
 // Add time for promo
-func (r *Repository) AddTime(ctx context.Context, db DB, in *promos.AddTimeIn) (err error) {
+func (r *Repository) AddTime(ctx context.Context, db postgres.DB, in *promos.AddTimeIn) (err error) {
 
 	q := `UPDATE Promos SET ExpAt = $1 WHERE Id = $2`
 	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
@@ -297,7 +274,7 @@ func (r *Repository) AddTime(ctx context.Context, db DB, in *promos.AddTimeIn) (
 }
 
 // Add uses for promo
-func (r *Repository) AddUses(ctx context.Context, db DB, in *promos.AddUsesIn) (err error) {
+func (r *Repository) AddUses(ctx context.Context, db postgres.DB, in *promos.AddUsesIn) (err error) {
 
 	q := `UPDATE Promos SET Uses = Uses+$1 WHERE Id = $2`
 

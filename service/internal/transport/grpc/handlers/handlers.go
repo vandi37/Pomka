@@ -16,15 +16,29 @@ func (sp *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (ou
 	// Run in transaction
 	if errTx := repeatible.RunInTx(sp.db, ctx, func(tx pgx.Tx) error {
 
+		// Query to service users for get information about creator
+		user, err := sp.users.GetUser(ctx, &users.Id{Id: in.Creator})
+		if err != nil {
+			return err
+		}
+
 		// Check creator is owner or not
-		if b, err := sp.repo.CreatorIsOwner(ctx, in.Creator); err != nil || !b {
+		if b, err := sp.repo.CreatorIsOwner(ctx, user); err != nil || !b {
 			return err
 		}
 
 		// Creating promo
 		promo, err = sp.repo.CreatePromo(ctx, tx, in)
-
 		if err != nil {
+			return err
+		}
+
+		// Send transaction to service users
+		if _, err := sp.users.SendTransaction(ctx, &users.TransactionRequest{
+			Sender:   nil,
+			Receiver: nil,
+			Type:     common.TransactionType_CreatePromoCode,
+		}); err != nil {
 			return err
 		}
 
@@ -87,8 +101,12 @@ func (sp *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (out *
 			return err
 		}
 
-		// Query to serviceUsers
-		out, err = sp.repo.ActivatePromo(ctx, promo, in.UserId)
+		// Send transaction to service users
+		out, err = sp.users.SendTransaction(ctx, &users.TransactionRequest{
+			Sender:   nil,
+			Receiver: &users.UserTransaction{UserId: in.UserId, Amount: promo.Amount, Currency: promo.Currency},
+			Type:     common.TransactionType_ActivatePromoCode,
+		})
 		if err != nil {
 			return err
 		}
