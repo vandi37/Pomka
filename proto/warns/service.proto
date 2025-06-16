@@ -100,5 +100,5 @@ message BanCreate {
 
 message CountOfActiveWarns {
     int32 countWarns = 1;
-    optional common.Resonse failure = 2;
+    optional common.Response failure = 2;
 }
