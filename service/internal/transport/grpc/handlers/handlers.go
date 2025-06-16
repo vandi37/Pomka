@@ -38,8 +38,9 @@ func (sw *ServiceWarns) Warn(ctx context.Context, in *warns.WarnCreate) (warnsFa
 
 		// Send transaction to service users
 		if _, err := sw.users.SendTransaction(ctx, &users.TransactionRequest{
-			Sender: &users.UserTransaction{UserId: in.ModerId},
-			Type:   common.TransactionType_Warn,
+			Sender:   &users.UserTransaction{UserId: in.ModerId},
+			Receiver: &users.UserTransaction{UserId: in.UserId},
+			Type:     common.TransactionType_Warn,
 		}); err != nil {
 			return errors.Join(Err.ErrSendTransaction, err)
 		}
@@ -83,7 +84,7 @@ func (sw *ServiceWarns) Warn(ctx context.Context, in *warns.WarnCreate) (warnsFa
 	return warnsFailure, nil
 }
 
-func (sw *ServiceWarns) UnWarn(ctx context.Context, in *users.Id) (*common.Response, error) {
+func (sw *ServiceWarns) AllUnWarn(ctx context.Context, in *users.Id) (*common.Response, error) {
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
@@ -107,18 +108,8 @@ func (sw *ServiceWarns) UnWarn(ctx context.Context, in *users.Id) (*common.Respo
 	return nil, nil
 }
 
-func (sw *ServiceWarns) GetHistoryWarns(ctx context.Context, in *users.Id) (*warns.AllWarnsFailure, error) {
-	// Run in transaction
-	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
-		return nil
-	}); errTx != nil {
-		return nil, errTx
-	}
+func (sw *ServiceWarns) LastUnWarn(ctx context.Context, in *users.Id) (*common.Response, error) {
 
-	return nil, nil
-}
-
-func (sw *ServiceWarns) GetHistoryBan(ctx context.Context, in *users.Id) (*warns.AllBansFailure, error) {
 	// Run in transaction
 	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
 		return nil
@@ -132,6 +123,21 @@ func (sw *ServiceWarns) GetHistoryBan(ctx context.Context, in *users.Id) (*warns
 func (sw *ServiceWarns) Ban(ctx context.Context, in *warns.BanCreate) (*warns.BanFailure, error) {
 	// Run in transaction
 	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
+
+		// Insert ban into bans
+		if _, err := sw.repo.CreateBan(ctx, tx, in); err != nil {
+			return errors.Join(Err.ErrCreateBan, err)
+		}
+
+		// Send transaction to service users
+		if _, err := sw.users.SendTransaction(ctx, &users.TransactionRequest{
+			Sender:   &users.UserTransaction{UserId: in.ModerId},
+			Receiver: &users.UserTransaction{UserId: in.UserId},
+			Type:     common.TransactionType_Block,
+		}); err != nil {
+			return errors.Join(Err.ErrSendTransaction, err)
+		}
+
 		return nil
 	}); errTx != nil {
 		return nil, errTx
@@ -141,6 +147,92 @@ func (sw *ServiceWarns) Ban(ctx context.Context, in *warns.BanCreate) (*warns.Ba
 }
 
 func (sw *ServiceWarns) Unban(ctx context.Context, in *users.Id) (*common.Response, error) {
+	// Run in transaction
+	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
+
+		// Remove ban
+		if err := sw.repo.MakeBanInActive(ctx, tx, in); err != nil {
+			return errors.Join(Err.ErrMakeBansInActive, err)
+		}
+
+		// Send transaction to service users
+		if _, err := sw.users.SendTransaction(ctx, &users.TransactionRequest{
+			Type: common.TransactionType_User,
+		}); err != nil {
+			return errors.Join(Err.ErrSendTransaction, err)
+		}
+
+		return nil
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return nil, nil
+}
+
+func (sw *ServiceWarns) GetHistoryWarns(ctx context.Context, in *users.Id) (warnsFailure *warns.AllWarnsFailure, err error) {
+
+	// Run in transaction
+	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
+		warnsFailure.Warns, err = sw.repo.GetWarns(ctx, tx, in)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return warnsFailure, nil
+}
+
+func (sw *ServiceWarns) GetHistoryBans(ctx context.Context, in *users.Id) (bansFailure *warns.AllBansFailure, err error) {
+
+	// Run in transaction
+	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
+		bansFailure.Bans, err = sw.repo.GetBans(ctx, tx, in)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return bansFailure, nil
+}
+func (sw *ServiceWarns) GetActiveWarns(ctx context.Context, in *users.Id) (warnsFailure *warns.AllWarnsFailure, err error) {
+
+	// Run in transaction
+	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
+		warnsFailure.Warns, err = sw.repo.GetWarns(ctx, tx, in)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return warnsFailure, nil
+}
+
+func (sw *ServiceWarns) GetActiveBan(ctx context.Context, in *users.Id) (banFailure *warns.BanFailure, err error) {
+
+	// Run in transaction
+	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
+		return nil
+	}); errTx != nil {
+		return nil, errTx
+	}
+
+	return banFailure, nil
+}
+
+func (sw *ServiceWarns) GetCountOfActiveWarns(ctx context.Context, in *users.Id) (*warns.CountOfActiveWarns, error) {
 	// Run in transaction
 	if errTx := repeatible.RunInTx(sw.db, ctx, func(tx pgx.Tx) error {
 		return nil

@@ -608,6 +608,58 @@ func (x *BanCreate) GetReason() string {
 	return ""
 }
 
+type CountOfActiveWarns struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CountWarns    int32                  `protobuf:"varint,1,opt,name=countWarns,proto3" json:"countWarns,omitempty"`
+	Failure       *common.Response       `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CountOfActiveWarns) Reset() {
+	*x = CountOfActiveWarns{}
+	mi := &file_warns_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CountOfActiveWarns) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CountOfActiveWarns) ProtoMessage() {}
+
+func (x *CountOfActiveWarns) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CountOfActiveWarns.ProtoReflect.Descriptor instead.
+func (*CountOfActiveWarns) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *CountOfActiveWarns) GetCountWarns() int32 {
+	if x != nil {
+		return x.CountWarns
+	}
+	return 0
+}
+
+func (x *CountOfActiveWarns) GetFailure() *common.Response {
+	if x != nil {
+		return x.Failure
+	}
+	return nil
+}
+
 var File_warns_service_proto protoreflect.FileDescriptor
 
 const file_warns_service_proto_rawDesc = "" +
@@ -668,14 +720,26 @@ const file_warns_service_proto_rawDesc = "" +
 	"\x06UserId\x18\x01 \x01(\x03R\x06UserId\x12\x18\n" +
 	"\aModerId\x18\x02 \x01(\x03R\aModerId\x12\x1b\n" +
 	"\x06Reason\x18\x03 \x01(\tH\x00R\x06Reason\x88\x01\x01B\t\n" +
-	"\a_Reason2\x98\x02\n" +
+	"\a_Reason\"q\n" +
+	"\x12CountOfActiveWarns\x12\x1e\n" +
+	"\n" +
+	"countWarns\x18\x01 \x01(\x05R\n" +
+	"countWarns\x12/\n" +
+	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x00R\afailure\x88\x01\x01B\n" +
+	"\n" +
+	"\b_failure2\xe9\x03\n" +
 	"\x05Warns\x12-\n" +
-	"\x04Warn\x12\x11.warns.WarnCreate\x1a\x12.warns.WarnFailure\x12%\n" +
-	"\x06UnWarn\x12\t.users.Id\x1a\x10.common.Response\x124\n" +
-	"\x0fGetHistoryWarns\x12\t.users.Id\x1a\x16.warns.AllWarnsFailure\x121\n" +
-	"\rGetHistoryBan\x12\t.users.Id\x1a\x15.warns.AllBansFailure\x12*\n" +
+	"\x04Warn\x12\x11.warns.WarnCreate\x1a\x12.warns.WarnFailure\x12(\n" +
+	"\tAllUnWarn\x12\t.users.Id\x1a\x10.common.Response\x12)\n" +
+	"\n" +
+	"LastUnWarn\x12\t.users.Id\x1a\x10.common.Response\x12*\n" +
 	"\x03Ban\x12\x10.warns.BanCreate\x1a\x11.warns.BanFailure\x12$\n" +
-	"\x05Unban\x12\t.users.Id\x1a\x10.common.ResponseB\tZ\a./warnsb\x06proto3"
+	"\x05Unban\x12\t.users.Id\x1a\x10.common.Response\x124\n" +
+	"\x0fGetHistoryWarns\x12\t.users.Id\x1a\x16.warns.AllWarnsFailure\x122\n" +
+	"\x0eGetHistoryBans\x12\t.users.Id\x1a\x15.warns.AllBansFailure\x123\n" +
+	"\x0eGetActiveWarns\x12\t.users.Id\x1a\x16.warns.AllWarnsFailure\x12,\n" +
+	"\fGetActiveBan\x12\t.users.Id\x1a\x11.warns.BanFailure\x12=\n" +
+	"\x15GetCountOfActiveWarns\x12\t.users.Id\x1a\x19.warns.CountOfActiveWarnsB\tZ\a./warnsb\x06proto3"
 
 var (
 	file_warns_service_proto_rawDescOnce sync.Once
@@ -689,7 +753,7 @@ func file_warns_service_proto_rawDescGZIP() []byte {
 	return file_warns_service_proto_rawDescData
 }
 
-var file_warns_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_warns_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_warns_service_proto_goTypes = []any{
 	(*Warn)(nil),                  // 0: warns.Warn
 	(*WarnFailure)(nil),           // 1: warns.WarnFailure
@@ -701,41 +765,51 @@ var file_warns_service_proto_goTypes = []any{
 	(*AllBans)(nil),               // 7: warns.AllBans
 	(*AllBansFailure)(nil),        // 8: warns.AllBansFailure
 	(*BanCreate)(nil),             // 9: warns.BanCreate
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*common.Failure)(nil),        // 11: common.Failure
-	(*common.Response)(nil),       // 12: common.Response
-	(*users.Id)(nil),              // 13: users.Id
+	(*CountOfActiveWarns)(nil),    // 10: warns.CountOfActiveWarns
+	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
+	(*common.Failure)(nil),        // 12: common.Failure
+	(*common.Response)(nil),       // 13: common.Response
+	(*users.Id)(nil),              // 14: users.Id
 }
 var file_warns_service_proto_depIdxs = []int32{
-	10, // 0: warns.Warn.IssuedAt:type_name -> google.protobuf.Timestamp
+	11, // 0: warns.Warn.IssuedAt:type_name -> google.protobuf.Timestamp
 	0,  // 1: warns.WarnFailure.warn:type_name -> warns.Warn
-	11, // 2: warns.WarnFailure.failure:type_name -> common.Failure
+	12, // 2: warns.WarnFailure.failure:type_name -> common.Failure
 	0,  // 3: warns.AllWarns.warns:type_name -> warns.Warn
 	2,  // 4: warns.AllWarnsFailure.warns:type_name -> warns.AllWarns
-	12, // 5: warns.AllWarnsFailure.failure:type_name -> common.Response
-	10, // 6: warns.Ban.IssuedAt:type_name -> google.protobuf.Timestamp
+	13, // 5: warns.AllWarnsFailure.failure:type_name -> common.Response
+	11, // 6: warns.Ban.IssuedAt:type_name -> google.protobuf.Timestamp
 	5,  // 7: warns.BanFailure.ban:type_name -> warns.Ban
-	11, // 8: warns.BanFailure.failure:type_name -> common.Failure
+	12, // 8: warns.BanFailure.failure:type_name -> common.Failure
 	5,  // 9: warns.AllBans.bans:type_name -> warns.Ban
 	7,  // 10: warns.AllBansFailure.bans:type_name -> warns.AllBans
-	12, // 11: warns.AllBansFailure.failure:type_name -> common.Response
-	4,  // 12: warns.Warns.Warn:input_type -> warns.WarnCreate
-	13, // 13: warns.Warns.UnWarn:input_type -> users.Id
-	13, // 14: warns.Warns.GetHistoryWarns:input_type -> users.Id
-	13, // 15: warns.Warns.GetHistoryBan:input_type -> users.Id
+	13, // 11: warns.AllBansFailure.failure:type_name -> common.Response
+	13, // 12: warns.CountOfActiveWarns.failure:type_name -> common.Response
+	4,  // 13: warns.Warns.Warn:input_type -> warns.WarnCreate
+	14, // 14: warns.Warns.AllUnWarn:input_type -> users.Id
+	14, // 15: warns.Warns.LastUnWarn:input_type -> users.Id
 	9,  // 16: warns.Warns.Ban:input_type -> warns.BanCreate
-	13, // 17: warns.Warns.Unban:input_type -> users.Id
-	1,  // 18: warns.Warns.Warn:output_type -> warns.WarnFailure
-	12, // 19: warns.Warns.UnWarn:output_type -> common.Response
-	3,  // 20: warns.Warns.GetHistoryWarns:output_type -> warns.AllWarnsFailure
-	8,  // 21: warns.Warns.GetHistoryBan:output_type -> warns.AllBansFailure
-	6,  // 22: warns.Warns.Ban:output_type -> warns.BanFailure
-	12, // 23: warns.Warns.Unban:output_type -> common.Response
-	18, // [18:24] is the sub-list for method output_type
-	12, // [12:18] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	14, // 17: warns.Warns.Unban:input_type -> users.Id
+	14, // 18: warns.Warns.GetHistoryWarns:input_type -> users.Id
+	14, // 19: warns.Warns.GetHistoryBans:input_type -> users.Id
+	14, // 20: warns.Warns.GetActiveWarns:input_type -> users.Id
+	14, // 21: warns.Warns.GetActiveBan:input_type -> users.Id
+	14, // 22: warns.Warns.GetCountOfActiveWarns:input_type -> users.Id
+	1,  // 23: warns.Warns.Warn:output_type -> warns.WarnFailure
+	13, // 24: warns.Warns.AllUnWarn:output_type -> common.Response
+	13, // 25: warns.Warns.LastUnWarn:output_type -> common.Response
+	6,  // 26: warns.Warns.Ban:output_type -> warns.BanFailure
+	13, // 27: warns.Warns.Unban:output_type -> common.Response
+	3,  // 28: warns.Warns.GetHistoryWarns:output_type -> warns.AllWarnsFailure
+	8,  // 29: warns.Warns.GetHistoryBans:output_type -> warns.AllBansFailure
+	3,  // 30: warns.Warns.GetActiveWarns:output_type -> warns.AllWarnsFailure
+	6,  // 31: warns.Warns.GetActiveBan:output_type -> warns.BanFailure
+	10, // 32: warns.Warns.GetCountOfActiveWarns:output_type -> warns.CountOfActiveWarns
+	23, // [23:33] is the sub-list for method output_type
+	13, // [13:23] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_warns_service_proto_init() }
@@ -749,13 +823,14 @@ func file_warns_service_proto_init() {
 	file_warns_service_proto_msgTypes[6].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[8].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[9].OneofWrappers = []any{}
+	file_warns_service_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_warns_service_proto_rawDesc), len(file_warns_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -35,7 +35,7 @@ type RepositoryWarns interface {
 	GetBans(ctx context.Context, db postgres.DB, in *users.Id) (warn *warns.AllBans, err error)
 	IsUserModerator(ctx context.Context, in *users.User) (b bool, err error)
 	MakeWarnsInActive(ctx context.Context, db postgres.DB, in *users.Id) (err error)
-	MakeBansInActive(ctx context.Context, db postgres.DB, in *users.Id) (err error)
+	MakeBanInActive(ctx context.Context, db postgres.DB, in *users.Id) (err error)
 	GetCountOfActiveWarns(ctx context.Context, db postgres.DB, in *users.Id) (int, error)
 }
 

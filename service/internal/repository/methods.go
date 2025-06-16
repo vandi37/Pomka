@@ -147,7 +147,7 @@ func (r *Repository) MakeWarnsInActive(ctx context.Context, db postgres.DB, in *
 	return nil
 }
 
-func (r *Repository) MakeBansInActive(ctx context.Context, db postgres.DB, in *users.Id) (err error) {
+func (r *Repository) MakeBanInActive(ctx context.Context, db postgres.DB, in *users.Id) (err error) {
 	q := `UPDATE Bans SET IsActive=FALSE WHERE UserId=$1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {

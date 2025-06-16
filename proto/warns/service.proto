@@ -13,19 +13,31 @@ service Warns {
     rpc Warn(WarnCreate) returns (WarnFailure);
 
     // Make all warns for this user inactive
-    rpc UnWarn(users.Id) returns (common.Response);
+    rpc AllUnWarn(users.Id) returns (common.Response);
+
+    // Make last warn for this user inactive
+    rpc LastUnWarn(users.Id) returns (common.Response);
+
+    // Make all warns for this user inactive, insert active ban in table Bans, set role banned
+    rpc Ban(BanCreate) returns (BanFailure);
+
+    // Make ban for this user inactive, set role user
+    rpc Unban(users.Id) returns (common.Response);
 
     // Get all warns (inactiv and activ) from Warns by user id
     rpc GetHistoryWarns(users.Id) returns (AllWarnsFailure);
 
     // Get all bans (inactiv and activ) from Bans by user id
-    rpc GetHistoryBan(users.Id) returns (AllBansFailure);
+    rpc GetHistoryBans(users.Id) returns (AllBansFailure);
 
-    // Make all warns for this user inactive, insert active ban in table Bans, query to servise users for update role -> banned
-    rpc Ban(BanCreate) returns (BanFailure);
+    // Get active warns for this user
+    rpc GetActiveWarns(users.Id) returns (AllWarnsFailure);
 
-    // Make all bans for this user inactive
-    rpc Unban(users.Id) returns (common.Response);
+    // Get active ban for this user
+    rpc GetActiveBan(users.Id) returns (BanFailure);
+
+    // Get count of active warns for this user
+    rpc GetCountOfActiveWarns(users.Id) returns (CountOfActiveWarns);
 }
 
 message Warn {
@@ -84,4 +96,9 @@ message BanCreate {
     int64 UserId = 1;
     int64 ModerId = 2;
     optional string Reason = 3;
+}
+
+message CountOfActiveWarns {
+    int32 countWarns = 1;
+    optional common.Response failure = 2;
 }
