@@ -37,7 +37,7 @@ service Warns {
     rpc GetActiveBan(users.Id) returns (BanFailure);
 
     // Get count of active warns for this user
-    rpc GetCountOfActiveWarns(users.Id) returns (AllWarnsFailure);
+    rpc GetCountOfActiveWarns(users.Id) returns (CountOfActiveWarns);
 }
 
 message Warn {
@@ -96,4 +96,9 @@ message BanCreate {
     int64 UserId = 1;
     int64 ModerId = 2;
     optional string Reason = 3;
+}
+
+message CountOfActiveWarns {
+    int32 countWarns = 1;
+    optional common.Resonse failure = 2;
 }
