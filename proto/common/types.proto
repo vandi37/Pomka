@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package common;
+
+// option go_package = "./common"; // для Go
+
+enum Currency {
+  NoneCurrency = 0;
+  Credits = 1;
+  Stocks = 2;
+}
+
+enum TransactionType {
+  // Easy
+  Get = 0; // Get
+  Set = 1; // Set
+  Transfer = 2; // Transfer to other user
+  Purchase = 3; // Purchase
+  Farm = 4; // Farm credits
+
+  // Roles
+  Block = 5; // Setting role to blocked
+  User = 6; // Setting role to user
+  Moderator = 7; // Setting role to moderator
+
+  // Warns
+  Warn = 8;
+  DeleteWarn = 9;
+  InActiveWarn = 10;
+
+  // Bans
+  Ban = 11;
+  DeleteBan = 12;
+  InActiveBan = 13;
+  
+  // Promos
+  CreatePromoCode = 14;
+  DeletePromoCode = 15;
+  ActivatePromoCode = 16;
+  AddUsesForPromo = 17;
+  AddTimeForPromo = 18;
+  DecrementUsesPromo = 19;
+  AddActivationPromoCodeToHistory = 20;
+  
+  // Checks
+  Create = 21;
+  Activate = 22;
+  // ...
+}
+
+enum ErrorCode {
+  UserNotFound = 0;
+  NotEnoughMoney = 1;
+  Forbidden = 2;
+}
+
+message Failure {
+  ErrorCode code = 1;
+  map<string, string> details = 2;
+}
+
+message Void {}
+
+message Response {
+  optional common.Failure failure = 1;
+}
