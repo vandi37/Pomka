@@ -32,4 +32,5 @@ var (
 	ErrMakeBansInActive      = errors.New("error make bans inactive")
 	ErrCountActiveWarns      = errors.New("error get count of active warns")
 	ErrSendTransaction       = errors.New("error send transaction to service users")
+	ErrUserAlreadyBanned     = errors.New("error user already banned")
 )

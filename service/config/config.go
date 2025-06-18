@@ -56,7 +56,7 @@ func NewConfig() (Config, error) {
 	// Config warns
 	warnsBeforeBan := os.Getenv("WARNS_BEFORE_BAN")
 	warnsBeforeBanInt, err := strconv.Atoi(warnsBeforeBan)
-	if err != nil {
+	if err != nil || warnsBeforeBanInt <= 0 {
 		return Config{}, nil
 	}
 

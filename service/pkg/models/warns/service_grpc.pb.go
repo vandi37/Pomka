@@ -38,15 +38,15 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WarnsClient interface {
 	// Insert active warn in table Warns
-	Warn(ctx context.Context, in *WarnCreate, opts ...grpc.CallOption) (*WarnFailure, error)
+	Warn(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*WarnFailure, error)
 	// Make all warns for this user inactive
-	AllUnWarn(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*common.Response, error)
+	AllUnWarn(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*common.Response, error)
 	// Make last warn for this user inactive
-	LastUnWarn(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*common.Response, error)
+	LastUnWarn(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*common.Response, error)
 	// Make all warns for this user inactive, insert active ban in table Bans, set role banned
-	Ban(ctx context.Context, in *BanCreate, opts ...grpc.CallOption) (*BanFailure, error)
+	Ban(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*BanFailure, error)
 	// Make ban for this user inactive, set role user
-	Unban(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*common.Response, error)
+	Unban(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*common.Response, error)
 	// Get all warns (inactiv and activ) from Warns by user id
 	GetHistoryWarns(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*AllWarnsFailure, error)
 	// Get all bans (inactiv and activ) from Bans by user id
@@ -67,7 +67,7 @@ func NewWarnsClient(cc grpc.ClientConnInterface) WarnsClient {
 	return &warnsClient{cc}
 }
 
-func (c *warnsClient) Warn(ctx context.Context, in *WarnCreate, opts ...grpc.CallOption) (*WarnFailure, error) {
+func (c *warnsClient) Warn(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*WarnFailure, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(WarnFailure)
 	err := c.cc.Invoke(ctx, Warns_Warn_FullMethodName, in, out, cOpts...)
@@ -77,7 +77,7 @@ func (c *warnsClient) Warn(ctx context.Context, in *WarnCreate, opts ...grpc.Cal
 	return out, nil
 }
 
-func (c *warnsClient) AllUnWarn(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*common.Response, error) {
+func (c *warnsClient) AllUnWarn(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*common.Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(common.Response)
 	err := c.cc.Invoke(ctx, Warns_AllUnWarn_FullMethodName, in, out, cOpts...)
@@ -87,7 +87,7 @@ func (c *warnsClient) AllUnWarn(ctx context.Context, in *users.Id, opts ...grpc.
 	return out, nil
 }
 
-func (c *warnsClient) LastUnWarn(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*common.Response, error) {
+func (c *warnsClient) LastUnWarn(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*common.Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(common.Response)
 	err := c.cc.Invoke(ctx, Warns_LastUnWarn_FullMethodName, in, out, cOpts...)
@@ -97,7 +97,7 @@ func (c *warnsClient) LastUnWarn(ctx context.Context, in *users.Id, opts ...grpc
 	return out, nil
 }
 
-func (c *warnsClient) Ban(ctx context.Context, in *BanCreate, opts ...grpc.CallOption) (*BanFailure, error) {
+func (c *warnsClient) Ban(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*BanFailure, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BanFailure)
 	err := c.cc.Invoke(ctx, Warns_Ban_FullMethodName, in, out, cOpts...)
@@ -107,7 +107,7 @@ func (c *warnsClient) Ban(ctx context.Context, in *BanCreate, opts ...grpc.CallO
 	return out, nil
 }
 
-func (c *warnsClient) Unban(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*common.Response, error) {
+func (c *warnsClient) Unban(ctx context.Context, in *ModerUserReason, opts ...grpc.CallOption) (*common.Response, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(common.Response)
 	err := c.cc.Invoke(ctx, Warns_Unban_FullMethodName, in, out, cOpts...)
@@ -172,15 +172,15 @@ func (c *warnsClient) GetCountOfActiveWarns(ctx context.Context, in *users.Id, o
 // for forward compatibility.
 type WarnsServer interface {
 	// Insert active warn in table Warns
-	Warn(context.Context, *WarnCreate) (*WarnFailure, error)
+	Warn(context.Context, *ModerUserReason) (*WarnFailure, error)
 	// Make all warns for this user inactive
-	AllUnWarn(context.Context, *users.Id) (*common.Response, error)
+	AllUnWarn(context.Context, *ModerUserReason) (*common.Response, error)
 	// Make last warn for this user inactive
-	LastUnWarn(context.Context, *users.Id) (*common.Response, error)
+	LastUnWarn(context.Context, *ModerUserReason) (*common.Response, error)
 	// Make all warns for this user inactive, insert active ban in table Bans, set role banned
-	Ban(context.Context, *BanCreate) (*BanFailure, error)
+	Ban(context.Context, *ModerUserReason) (*BanFailure, error)
 	// Make ban for this user inactive, set role user
-	Unban(context.Context, *users.Id) (*common.Response, error)
+	Unban(context.Context, *ModerUserReason) (*common.Response, error)
 	// Get all warns (inactiv and activ) from Warns by user id
 	GetHistoryWarns(context.Context, *users.Id) (*AllWarnsFailure, error)
 	// Get all bans (inactiv and activ) from Bans by user id
@@ -201,19 +201,19 @@ type WarnsServer interface {
 // pointer dereference when methods are called.
 type UnimplementedWarnsServer struct{}
 
-func (UnimplementedWarnsServer) Warn(context.Context, *WarnCreate) (*WarnFailure, error) {
+func (UnimplementedWarnsServer) Warn(context.Context, *ModerUserReason) (*WarnFailure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Warn not implemented")
 }
-func (UnimplementedWarnsServer) AllUnWarn(context.Context, *users.Id) (*common.Response, error) {
+func (UnimplementedWarnsServer) AllUnWarn(context.Context, *ModerUserReason) (*common.Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllUnWarn not implemented")
 }
-func (UnimplementedWarnsServer) LastUnWarn(context.Context, *users.Id) (*common.Response, error) {
+func (UnimplementedWarnsServer) LastUnWarn(context.Context, *ModerUserReason) (*common.Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LastUnWarn not implemented")
 }
-func (UnimplementedWarnsServer) Ban(context.Context, *BanCreate) (*BanFailure, error) {
+func (UnimplementedWarnsServer) Ban(context.Context, *ModerUserReason) (*BanFailure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ban not implemented")
 }
-func (UnimplementedWarnsServer) Unban(context.Context, *users.Id) (*common.Response, error) {
+func (UnimplementedWarnsServer) Unban(context.Context, *ModerUserReason) (*common.Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unban not implemented")
 }
 func (UnimplementedWarnsServer) GetHistoryWarns(context.Context, *users.Id) (*AllWarnsFailure, error) {
@@ -253,7 +253,7 @@ func RegisterWarnsServer(s grpc.ServiceRegistrar, srv WarnsServer) {
 }
 
 func _Warns_Warn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(WarnCreate)
+	in := new(ModerUserReason)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -265,13 +265,13 @@ func _Warns_Warn_Handler(srv interface{}, ctx context.Context, dec func(interfac
 		FullMethod: Warns_Warn_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WarnsServer).Warn(ctx, req.(*WarnCreate))
+		return srv.(WarnsServer).Warn(ctx, req.(*ModerUserReason))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Warns_AllUnWarn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(users.Id)
+	in := new(ModerUserReason)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -283,13 +283,13 @@ func _Warns_AllUnWarn_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: Warns_AllUnWarn_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WarnsServer).AllUnWarn(ctx, req.(*users.Id))
+		return srv.(WarnsServer).AllUnWarn(ctx, req.(*ModerUserReason))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Warns_LastUnWarn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(users.Id)
+	in := new(ModerUserReason)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -301,13 +301,13 @@ func _Warns_LastUnWarn_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: Warns_LastUnWarn_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WarnsServer).LastUnWarn(ctx, req.(*users.Id))
+		return srv.(WarnsServer).LastUnWarn(ctx, req.(*ModerUserReason))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Warns_Ban_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BanCreate)
+	in := new(ModerUserReason)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -319,13 +319,13 @@ func _Warns_Ban_Handler(srv interface{}, ctx context.Context, dec func(interface
 		FullMethod: Warns_Ban_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WarnsServer).Ban(ctx, req.(*BanCreate))
+		return srv.(WarnsServer).Ban(ctx, req.(*ModerUserReason))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Warns_Unban_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(users.Id)
+	in := new(ModerUserReason)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -337,7 +337,7 @@ func _Warns_Unban_Handler(srv interface{}, ctx context.Context, dec func(interfa
 		FullMethod: Warns_Unban_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WarnsServer).Unban(ctx, req.(*users.Id))
+		return srv.(WarnsServer).Unban(ctx, req.(*ModerUserReason))
 	}
 	return interceptor(ctx, in, info, handler)
 }

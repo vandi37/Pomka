@@ -29,7 +29,7 @@ type Warn struct {
 	Id            int64                  `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
 	UserId        int64                  `protobuf:"varint,2,opt,name=UserId,proto3" json:"UserId,omitempty"`
 	ModerId       int64                  `protobuf:"varint,3,opt,name=ModerId,proto3" json:"ModerId,omitempty"`
-	Reason        string                 `protobuf:"bytes,4,opt,name=Reason,proto3" json:"Reason,omitempty"`
+	Reason        *string                `protobuf:"bytes,4,opt,name=Reason,proto3,oneof" json:"Reason,omitempty"`
 	IssuedAt      *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=IssuedAt,proto3" json:"IssuedAt,omitempty"`
 	IsActive      bool                   `protobuf:"varint,6,opt,name=IsActive,proto3" json:"IsActive,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -88,8 +88,8 @@ func (x *Warn) GetModerId() int64 {
 }
 
 func (x *Warn) GetReason() string {
-	if x != nil {
-		return x.Reason
+	if x != nil && x.Reason != nil {
+		return *x.Reason
 	}
 	return ""
 }
@@ -256,72 +256,12 @@ func (x *AllWarnsFailure) GetFailure() *common.Response {
 	return nil
 }
 
-type WarnCreate struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=UserId,proto3" json:"UserId,omitempty"`
-	ModerId       int64                  `protobuf:"varint,2,opt,name=ModerId,proto3" json:"ModerId,omitempty"`
-	Reason        *string                `protobuf:"bytes,3,opt,name=Reason,proto3,oneof" json:"Reason,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *WarnCreate) Reset() {
-	*x = WarnCreate{}
-	mi := &file_warns_service_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *WarnCreate) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*WarnCreate) ProtoMessage() {}
-
-func (x *WarnCreate) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use WarnCreate.ProtoReflect.Descriptor instead.
-func (*WarnCreate) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *WarnCreate) GetUserId() int64 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
-}
-
-func (x *WarnCreate) GetModerId() int64 {
-	if x != nil {
-		return x.ModerId
-	}
-	return 0
-}
-
-func (x *WarnCreate) GetReason() string {
-	if x != nil && x.Reason != nil {
-		return *x.Reason
-	}
-	return ""
-}
-
 type Ban struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
 	UserId        int64                  `protobuf:"varint,2,opt,name=UserId,proto3" json:"UserId,omitempty"`
 	ModerId       int64                  `protobuf:"varint,3,opt,name=ModerId,proto3" json:"ModerId,omitempty"`
-	Reason        string                 `protobuf:"bytes,4,opt,name=Reason,proto3" json:"Reason,omitempty"`
+	Reason        *string                `protobuf:"bytes,4,opt,name=Reason,proto3,oneof" json:"Reason,omitempty"`
 	IssuedAt      *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=IssuedAt,proto3" json:"IssuedAt,omitempty"`
 	IsActive      bool                   `protobuf:"varint,6,opt,name=IsActive,proto3" json:"IsActive,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -330,7 +270,7 @@ type Ban struct {
 
 func (x *Ban) Reset() {
 	*x = Ban{}
-	mi := &file_warns_service_proto_msgTypes[5]
+	mi := &file_warns_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -342,7 +282,7 @@ func (x *Ban) String() string {
 func (*Ban) ProtoMessage() {}
 
 func (x *Ban) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[5]
+	mi := &file_warns_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -355,7 +295,7 @@ func (x *Ban) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ban.ProtoReflect.Descriptor instead.
 func (*Ban) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{5}
+	return file_warns_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Ban) GetId() int64 {
@@ -380,8 +320,8 @@ func (x *Ban) GetModerId() int64 {
 }
 
 func (x *Ban) GetReason() string {
-	if x != nil {
-		return x.Reason
+	if x != nil && x.Reason != nil {
+		return *x.Reason
 	}
 	return ""
 }
@@ -410,7 +350,7 @@ type BanFailure struct {
 
 func (x *BanFailure) Reset() {
 	*x = BanFailure{}
-	mi := &file_warns_service_proto_msgTypes[6]
+	mi := &file_warns_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -422,7 +362,7 @@ func (x *BanFailure) String() string {
 func (*BanFailure) ProtoMessage() {}
 
 func (x *BanFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[6]
+	mi := &file_warns_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -435,7 +375,7 @@ func (x *BanFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BanFailure.ProtoReflect.Descriptor instead.
 func (*BanFailure) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{6}
+	return file_warns_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *BanFailure) GetBan() *Ban {
@@ -461,7 +401,7 @@ type AllBans struct {
 
 func (x *AllBans) Reset() {
 	*x = AllBans{}
-	mi := &file_warns_service_proto_msgTypes[7]
+	mi := &file_warns_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -473,7 +413,7 @@ func (x *AllBans) String() string {
 func (*AllBans) ProtoMessage() {}
 
 func (x *AllBans) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[7]
+	mi := &file_warns_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -486,7 +426,7 @@ func (x *AllBans) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllBans.ProtoReflect.Descriptor instead.
 func (*AllBans) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{7}
+	return file_warns_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *AllBans) GetBans() []*Ban {
@@ -506,7 +446,7 @@ type AllBansFailure struct {
 
 func (x *AllBansFailure) Reset() {
 	*x = AllBansFailure{}
-	mi := &file_warns_service_proto_msgTypes[8]
+	mi := &file_warns_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -518,7 +458,7 @@ func (x *AllBansFailure) String() string {
 func (*AllBansFailure) ProtoMessage() {}
 
 func (x *AllBansFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[8]
+	mi := &file_warns_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -531,7 +471,7 @@ func (x *AllBansFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllBansFailure.ProtoReflect.Descriptor instead.
 func (*AllBansFailure) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{8}
+	return file_warns_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *AllBansFailure) GetBans() *AllBans {
@@ -548,66 +488,6 @@ func (x *AllBansFailure) GetFailure() *common.Response {
 	return nil
 }
 
-type BanCreate struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=UserId,proto3" json:"UserId,omitempty"`
-	ModerId       int64                  `protobuf:"varint,2,opt,name=ModerId,proto3" json:"ModerId,omitempty"`
-	Reason        *string                `protobuf:"bytes,3,opt,name=Reason,proto3,oneof" json:"Reason,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *BanCreate) Reset() {
-	*x = BanCreate{}
-	mi := &file_warns_service_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *BanCreate) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*BanCreate) ProtoMessage() {}
-
-func (x *BanCreate) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use BanCreate.ProtoReflect.Descriptor instead.
-func (*BanCreate) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *BanCreate) GetUserId() int64 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
-}
-
-func (x *BanCreate) GetModerId() int64 {
-	if x != nil {
-		return x.ModerId
-	}
-	return 0
-}
-
-func (x *BanCreate) GetReason() string {
-	if x != nil && x.Reason != nil {
-		return *x.Reason
-	}
-	return ""
-}
-
 type CountOfActiveWarns struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CountWarns    int32                  `protobuf:"varint,1,opt,name=countWarns,proto3" json:"countWarns,omitempty"`
@@ -618,7 +498,7 @@ type CountOfActiveWarns struct {
 
 func (x *CountOfActiveWarns) Reset() {
 	*x = CountOfActiveWarns{}
-	mi := &file_warns_service_proto_msgTypes[10]
+	mi := &file_warns_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -630,7 +510,7 @@ func (x *CountOfActiveWarns) String() string {
 func (*CountOfActiveWarns) ProtoMessage() {}
 
 func (x *CountOfActiveWarns) ProtoReflect() protoreflect.Message {
-	mi := &file_warns_service_proto_msgTypes[10]
+	mi := &file_warns_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -643,7 +523,7 @@ func (x *CountOfActiveWarns) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CountOfActiveWarns.ProtoReflect.Descriptor instead.
 func (*CountOfActiveWarns) Descriptor() ([]byte, []int) {
-	return file_warns_service_proto_rawDescGZIP(), []int{10}
+	return file_warns_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CountOfActiveWarns) GetCountWarns() int32 {
@@ -660,18 +540,79 @@ func (x *CountOfActiveWarns) GetFailure() *common.Response {
 	return nil
 }
 
+type ModerUserReason struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=UserId,proto3" json:"UserId,omitempty"`
+	ModerId       int64                  `protobuf:"varint,2,opt,name=ModerId,proto3" json:"ModerId,omitempty"`
+	Reason        *string                `protobuf:"bytes,3,opt,name=Reason,proto3,oneof" json:"Reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ModerUserReason) Reset() {
+	*x = ModerUserReason{}
+	mi := &file_warns_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ModerUserReason) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ModerUserReason) ProtoMessage() {}
+
+func (x *ModerUserReason) ProtoReflect() protoreflect.Message {
+	mi := &file_warns_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ModerUserReason.ProtoReflect.Descriptor instead.
+func (*ModerUserReason) Descriptor() ([]byte, []int) {
+	return file_warns_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ModerUserReason) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *ModerUserReason) GetModerId() int64 {
+	if x != nil {
+		return x.ModerId
+	}
+	return 0
+}
+
+func (x *ModerUserReason) GetReason() string {
+	if x != nil && x.Reason != nil {
+		return *x.Reason
+	}
+	return ""
+}
+
 var File_warns_service_proto protoreflect.FileDescriptor
 
 const file_warns_service_proto_rawDesc = "" +
 	"\n" +
-	"\x13warns/service.proto\x12\x05warns\x1a\x12common/types.proto\x1a\x13users/service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb4\x01\n" +
+	"\x13warns/service.proto\x12\x05warns\x1a\x12common/types.proto\x1a\x13users/service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\x01\n" +
 	"\x04Warn\x12\x0e\n" +
 	"\x02Id\x18\x01 \x01(\x03R\x02Id\x12\x16\n" +
 	"\x06UserId\x18\x02 \x01(\x03R\x06UserId\x12\x18\n" +
-	"\aModerId\x18\x03 \x01(\x03R\aModerId\x12\x16\n" +
-	"\x06Reason\x18\x04 \x01(\tR\x06Reason\x126\n" +
+	"\aModerId\x18\x03 \x01(\x03R\aModerId\x12\x1b\n" +
+	"\x06Reason\x18\x04 \x01(\tH\x00R\x06Reason\x88\x01\x01\x126\n" +
 	"\bIssuedAt\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\bIssuedAt\x12\x1a\n" +
-	"\bIsActive\x18\x06 \x01(\bR\bIsActive\"x\n" +
+	"\bIsActive\x18\x06 \x01(\bR\bIsActiveB\t\n" +
+	"\a_Reason\"x\n" +
 	"\vWarnFailure\x12$\n" +
 	"\x04warn\x18\x01 \x01(\v2\v.warns.WarnH\x00R\x04warn\x88\x01\x01\x12.\n" +
 	"\afailure\x18\x02 \x01(\v2\x0f.common.FailureH\x01R\afailure\x88\x01\x01B\a\n" +
@@ -685,20 +626,15 @@ const file_warns_service_proto_rawDesc = "" +
 	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x01R\afailure\x88\x01\x01B\b\n" +
 	"\x06_warnsB\n" +
 	"\n" +
-	"\b_failure\"f\n" +
-	"\n" +
-	"WarnCreate\x12\x16\n" +
-	"\x06UserId\x18\x01 \x01(\x03R\x06UserId\x12\x18\n" +
-	"\aModerId\x18\x02 \x01(\x03R\aModerId\x12\x1b\n" +
-	"\x06Reason\x18\x03 \x01(\tH\x00R\x06Reason\x88\x01\x01B\t\n" +
-	"\a_Reason\"\xb3\x01\n" +
+	"\b_failure\"\xc3\x01\n" +
 	"\x03Ban\x12\x0e\n" +
 	"\x02Id\x18\x01 \x01(\x03R\x02Id\x12\x16\n" +
 	"\x06UserId\x18\x02 \x01(\x03R\x06UserId\x12\x18\n" +
-	"\aModerId\x18\x03 \x01(\x03R\aModerId\x12\x16\n" +
-	"\x06Reason\x18\x04 \x01(\tR\x06Reason\x126\n" +
+	"\aModerId\x18\x03 \x01(\x03R\aModerId\x12\x1b\n" +
+	"\x06Reason\x18\x04 \x01(\tH\x00R\x06Reason\x88\x01\x01\x126\n" +
 	"\bIssuedAt\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\bIssuedAt\x12\x1a\n" +
-	"\bIsActive\x18\x06 \x01(\bR\bIsActive\"s\n" +
+	"\bIsActive\x18\x06 \x01(\bR\bIsActiveB\t\n" +
+	"\a_Reason\"s\n" +
 	"\n" +
 	"BanFailure\x12!\n" +
 	"\x03ban\x18\x01 \x01(\v2\n" +
@@ -715,26 +651,26 @@ const file_warns_service_proto_rawDesc = "" +
 	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x01R\afailure\x88\x01\x01B\a\n" +
 	"\x05_bansB\n" +
 	"\n" +
-	"\b_failure\"e\n" +
-	"\tBanCreate\x12\x16\n" +
-	"\x06UserId\x18\x01 \x01(\x03R\x06UserId\x12\x18\n" +
-	"\aModerId\x18\x02 \x01(\x03R\aModerId\x12\x1b\n" +
-	"\x06Reason\x18\x03 \x01(\tH\x00R\x06Reason\x88\x01\x01B\t\n" +
-	"\a_Reason\"q\n" +
+	"\b_failure\"q\n" +
 	"\x12CountOfActiveWarns\x12\x1e\n" +
 	"\n" +
 	"countWarns\x18\x01 \x01(\x05R\n" +
 	"countWarns\x12/\n" +
 	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x00R\afailure\x88\x01\x01B\n" +
 	"\n" +
-	"\b_failure2\xe9\x03\n" +
-	"\x05Warns\x12-\n" +
-	"\x04Warn\x12\x11.warns.WarnCreate\x1a\x12.warns.WarnFailure\x12(\n" +
-	"\tAllUnWarn\x12\t.users.Id\x1a\x10.common.Response\x12)\n" +
+	"\b_failure\"k\n" +
+	"\x0fModerUserReason\x12\x16\n" +
+	"\x06UserId\x18\x01 \x01(\x03R\x06UserId\x12\x18\n" +
+	"\aModerId\x18\x02 \x01(\x03R\aModerId\x12\x1b\n" +
+	"\x06Reason\x18\x03 \x01(\tH\x00R\x06Reason\x88\x01\x01B\t\n" +
+	"\a_Reason2\x9b\x04\n" +
+	"\x05Warns\x122\n" +
+	"\x04Warn\x12\x16.warns.ModerUserReason\x1a\x12.warns.WarnFailure\x125\n" +
+	"\tAllUnWarn\x12\x16.warns.ModerUserReason\x1a\x10.common.Response\x126\n" +
 	"\n" +
-	"LastUnWarn\x12\t.users.Id\x1a\x10.common.Response\x12*\n" +
-	"\x03Ban\x12\x10.warns.BanCreate\x1a\x11.warns.BanFailure\x12$\n" +
-	"\x05Unban\x12\t.users.Id\x1a\x10.common.Response\x124\n" +
+	"LastUnWarn\x12\x16.warns.ModerUserReason\x1a\x10.common.Response\x120\n" +
+	"\x03Ban\x12\x16.warns.ModerUserReason\x1a\x11.warns.BanFailure\x121\n" +
+	"\x05Unban\x12\x16.warns.ModerUserReason\x1a\x10.common.Response\x124\n" +
 	"\x0fGetHistoryWarns\x12\t.users.Id\x1a\x16.warns.AllWarnsFailure\x122\n" +
 	"\x0eGetHistoryBans\x12\t.users.Id\x1a\x15.warns.AllBansFailure\x123\n" +
 	"\x0eGetActiveWarns\x12\t.users.Id\x1a\x16.warns.AllWarnsFailure\x12,\n" +
@@ -753,58 +689,57 @@ func file_warns_service_proto_rawDescGZIP() []byte {
 	return file_warns_service_proto_rawDescData
 }
 
-var file_warns_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_warns_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_warns_service_proto_goTypes = []any{
 	(*Warn)(nil),                  // 0: warns.Warn
 	(*WarnFailure)(nil),           // 1: warns.WarnFailure
 	(*AllWarns)(nil),              // 2: warns.AllWarns
 	(*AllWarnsFailure)(nil),       // 3: warns.AllWarnsFailure
-	(*WarnCreate)(nil),            // 4: warns.WarnCreate
-	(*Ban)(nil),                   // 5: warns.Ban
-	(*BanFailure)(nil),            // 6: warns.BanFailure
-	(*AllBans)(nil),               // 7: warns.AllBans
-	(*AllBansFailure)(nil),        // 8: warns.AllBansFailure
-	(*BanCreate)(nil),             // 9: warns.BanCreate
-	(*CountOfActiveWarns)(nil),    // 10: warns.CountOfActiveWarns
-	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
-	(*common.Failure)(nil),        // 12: common.Failure
-	(*common.Response)(nil),       // 13: common.Response
-	(*users.Id)(nil),              // 14: users.Id
+	(*Ban)(nil),                   // 4: warns.Ban
+	(*BanFailure)(nil),            // 5: warns.BanFailure
+	(*AllBans)(nil),               // 6: warns.AllBans
+	(*AllBansFailure)(nil),        // 7: warns.AllBansFailure
+	(*CountOfActiveWarns)(nil),    // 8: warns.CountOfActiveWarns
+	(*ModerUserReason)(nil),       // 9: warns.ModerUserReason
+	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
+	(*common.Failure)(nil),        // 11: common.Failure
+	(*common.Response)(nil),       // 12: common.Response
+	(*users.Id)(nil),              // 13: users.Id
 }
 var file_warns_service_proto_depIdxs = []int32{
-	11, // 0: warns.Warn.IssuedAt:type_name -> google.protobuf.Timestamp
+	10, // 0: warns.Warn.IssuedAt:type_name -> google.protobuf.Timestamp
 	0,  // 1: warns.WarnFailure.warn:type_name -> warns.Warn
-	12, // 2: warns.WarnFailure.failure:type_name -> common.Failure
+	11, // 2: warns.WarnFailure.failure:type_name -> common.Failure
 	0,  // 3: warns.AllWarns.warns:type_name -> warns.Warn
 	2,  // 4: warns.AllWarnsFailure.warns:type_name -> warns.AllWarns
-	13, // 5: warns.AllWarnsFailure.failure:type_name -> common.Response
-	11, // 6: warns.Ban.IssuedAt:type_name -> google.protobuf.Timestamp
-	5,  // 7: warns.BanFailure.ban:type_name -> warns.Ban
-	12, // 8: warns.BanFailure.failure:type_name -> common.Failure
-	5,  // 9: warns.AllBans.bans:type_name -> warns.Ban
-	7,  // 10: warns.AllBansFailure.bans:type_name -> warns.AllBans
-	13, // 11: warns.AllBansFailure.failure:type_name -> common.Response
-	13, // 12: warns.CountOfActiveWarns.failure:type_name -> common.Response
-	4,  // 13: warns.Warns.Warn:input_type -> warns.WarnCreate
-	14, // 14: warns.Warns.AllUnWarn:input_type -> users.Id
-	14, // 15: warns.Warns.LastUnWarn:input_type -> users.Id
-	9,  // 16: warns.Warns.Ban:input_type -> warns.BanCreate
-	14, // 17: warns.Warns.Unban:input_type -> users.Id
-	14, // 18: warns.Warns.GetHistoryWarns:input_type -> users.Id
-	14, // 19: warns.Warns.GetHistoryBans:input_type -> users.Id
-	14, // 20: warns.Warns.GetActiveWarns:input_type -> users.Id
-	14, // 21: warns.Warns.GetActiveBan:input_type -> users.Id
-	14, // 22: warns.Warns.GetCountOfActiveWarns:input_type -> users.Id
+	12, // 5: warns.AllWarnsFailure.failure:type_name -> common.Response
+	10, // 6: warns.Ban.IssuedAt:type_name -> google.protobuf.Timestamp
+	4,  // 7: warns.BanFailure.ban:type_name -> warns.Ban
+	11, // 8: warns.BanFailure.failure:type_name -> common.Failure
+	4,  // 9: warns.AllBans.bans:type_name -> warns.Ban
+	6,  // 10: warns.AllBansFailure.bans:type_name -> warns.AllBans
+	12, // 11: warns.AllBansFailure.failure:type_name -> common.Response
+	12, // 12: warns.CountOfActiveWarns.failure:type_name -> common.Response
+	9,  // 13: warns.Warns.Warn:input_type -> warns.ModerUserReason
+	9,  // 14: warns.Warns.AllUnWarn:input_type -> warns.ModerUserReason
+	9,  // 15: warns.Warns.LastUnWarn:input_type -> warns.ModerUserReason
+	9,  // 16: warns.Warns.Ban:input_type -> warns.ModerUserReason
+	9,  // 17: warns.Warns.Unban:input_type -> warns.ModerUserReason
+	13, // 18: warns.Warns.GetHistoryWarns:input_type -> users.Id
+	13, // 19: warns.Warns.GetHistoryBans:input_type -> users.Id
+	13, // 20: warns.Warns.GetActiveWarns:input_type -> users.Id
+	13, // 21: warns.Warns.GetActiveBan:input_type -> users.Id
+	13, // 22: warns.Warns.GetCountOfActiveWarns:input_type -> users.Id
 	1,  // 23: warns.Warns.Warn:output_type -> warns.WarnFailure
-	13, // 24: warns.Warns.AllUnWarn:output_type -> common.Response
-	13, // 25: warns.Warns.LastUnWarn:output_type -> common.Response
-	6,  // 26: warns.Warns.Ban:output_type -> warns.BanFailure
-	13, // 27: warns.Warns.Unban:output_type -> common.Response
+	12, // 24: warns.Warns.AllUnWarn:output_type -> common.Response
+	12, // 25: warns.Warns.LastUnWarn:output_type -> common.Response
+	5,  // 26: warns.Warns.Ban:output_type -> warns.BanFailure
+	12, // 27: warns.Warns.Unban:output_type -> common.Response
 	3,  // 28: warns.Warns.GetHistoryWarns:output_type -> warns.AllWarnsFailure
-	8,  // 29: warns.Warns.GetHistoryBans:output_type -> warns.AllBansFailure
+	7,  // 29: warns.Warns.GetHistoryBans:output_type -> warns.AllBansFailure
 	3,  // 30: warns.Warns.GetActiveWarns:output_type -> warns.AllWarnsFailure
-	6,  // 31: warns.Warns.GetActiveBan:output_type -> warns.BanFailure
-	10, // 32: warns.Warns.GetCountOfActiveWarns:output_type -> warns.CountOfActiveWarns
+	5,  // 31: warns.Warns.GetActiveBan:output_type -> warns.BanFailure
+	8,  // 32: warns.Warns.GetCountOfActiveWarns:output_type -> warns.CountOfActiveWarns
 	23, // [23:33] is the sub-list for method output_type
 	13, // [13:23] is the sub-list for method input_type
 	13, // [13:13] is the sub-list for extension type_name
@@ -817,20 +752,21 @@ func file_warns_service_proto_init() {
 	if File_warns_service_proto != nil {
 		return
 	}
+	file_warns_service_proto_msgTypes[0].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[1].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[3].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[4].OneofWrappers = []any{}
-	file_warns_service_proto_msgTypes[6].OneofWrappers = []any{}
+	file_warns_service_proto_msgTypes[5].OneofWrappers = []any{}
+	file_warns_service_proto_msgTypes[7].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[8].OneofWrappers = []any{}
 	file_warns_service_proto_msgTypes[9].OneofWrappers = []any{}
-	file_warns_service_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_warns_service_proto_rawDesc), len(file_warns_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
