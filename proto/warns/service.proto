@@ -87,7 +87,7 @@ message AllBansFailure {
 }
 
 message CountOfActiveWarns {
-    optional int32 countWarns = 1;
+    int32 countWarns = 1;
     optional common.Response failure = 2;
 }
 
