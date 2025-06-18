@@ -33,7 +33,7 @@ goose postgres postgresql://USER:PASSWORD@HOST:PORT/postgres down
 ```
 
 ### **Тесты**:
-Перед тестами, создайте файл config.env в директории ./service/tests. Чтобы тесты смогли поднять бд, запустите докер. Тесты покрывают сервис Promos, описанный в proto/promos.
+Перед тестами, создайте файл config.env в директории ./service/tests. Чтобы тесты смогли поднять бд, запустите докер.
 ```
 SERVER_NETWORK=tcp
 SERVER_PORT=50123
