@@ -32,6 +32,7 @@ services:
 
       - SERVICE_USERS_HOST=${SERVICE_USERS_HOST:-}
       - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
+      - WARNS_BEFORE_BAN=${WARNS_BEFORE_BAN:-}
 
     ports:
      - "${SERVER_PORT:-}:${SERVER_PORT:-}"
