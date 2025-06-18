@@ -1,6 +1,6 @@
 module warns
 
-go 1.24.2
+go 1.23.4
 
 require (
 	github.com/jackc/pgx/v5 v5.7.5
