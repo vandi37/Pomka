@@ -14,6 +14,8 @@ DB_NAME=<NAME>
 
 SERVICE_USERS_HOST=localhost
 SERVICE_USERS_PORT=<PORT>
+
+WARNS_BEFORE_BAN=3
 ```
 ```
 docker compose up
@@ -33,7 +35,7 @@ goose postgres postgresql://USER:PASSWORD@HOST:PORT/postgres down
 ```
 
 ### **Тесты**:
-Перед тестами, создайте файл config.env в директории ./service/tests. Чтобы тесты смогли поднять бд, запустите докер. Тесты покрывают сервис Promos, описанный в proto/promos.
+Перед тестами, создайте файл config.env в директории ./service/tests. Чтобы тесты смогли поднять бд, запустите докер.
 ```
 SERVER_NETWORK=tcp
 SERVER_PORT=50123
@@ -48,6 +50,8 @@ DB_NAME=<NAME>
 
 SERVICE_USERS_HOST=DONT_TOUCH
 SERVICE_USERS_PORT=DONT_TOUCH
+
+WARNS_BEFORE_BAN=3
 ```
 ```
 cd service/tests
