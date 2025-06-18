@@ -77,7 +77,7 @@ func (sw *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (wa
 		}
 
 		// Insert ban into Bans
-		banReason := fmt.Sprintf("user got %d warns", cntWarns)
+		banReason := fmt.Sprintf("user got %d warns", cntWarns.CountWarns)
 		if _, err := sw.repo.CreateBan(ctx, tx, &warns.ModerUserReason{
 			UserId:  in.UserId,
 			ModerId: in.ModerId,
