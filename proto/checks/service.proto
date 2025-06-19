@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package promocodes;
+package checks;
 
 import "common/types.proto";
 import "users/service.proto";
