@@ -19,7 +19,7 @@ service Promos {
     rpc Use(CheckUse) returns (common.Failure);
 
     // Get check created by user
-    rpc GetUserChecks(users.Id) returns (ChecksFailure)
+    rpc GetUserChecks(users.Id) returns (ChecksFailure);
 }
 
 message Check {
