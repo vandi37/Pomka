@@ -6,7 +6,7 @@ import "common/types.proto";
 import "users/service.proto";
 
 import "google/protobuf/timestamp.proto";
-option go_package = "./promos"; // для Go
+option go_package = "./checks"; // для Go
 
 service Promos {
     // Create check
