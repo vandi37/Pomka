@@ -36,7 +36,8 @@ func PostgresUp(cfg Config) (*DockerPool, error) {
 }
 
 func (m *DockerPool) PostgresDown() error {
-	if err := m.pool.Purge(m.resource); err != nil {
+
+	if err := m.resource.Close(); err != nil {
 		return err
 	}
 
