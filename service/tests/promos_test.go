@@ -296,7 +296,6 @@ func Use(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if _, err := client.Use(context.TODO(), tt.in); !(fmt.Errorf("rpc error: code = Unknown desc = %s", tt.err) != err) {
-				logger.Debug("ERROR", err)
 				t.Fail()
 			}
 		})
