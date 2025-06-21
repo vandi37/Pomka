@@ -85,23 +85,21 @@ const (
 	TransactionType_Moderator TransactionType = 7 // Setting role to moderator
 	// Warns
 	TransactionType_Warn         TransactionType = 8
-	TransactionType_DeleteWarn   TransactionType = 9
-	TransactionType_InActiveWarn TransactionType = 10
+	TransactionType_InActiveWarn TransactionType = 9
 	// Bans
-	TransactionType_Ban         TransactionType = 11
-	TransactionType_DeleteBan   TransactionType = 12
-	TransactionType_InActiveBan TransactionType = 13
+	TransactionType_Ban         TransactionType = 10
+	TransactionType_InActiveBan TransactionType = 11
 	// Promos
-	TransactionType_CreatePromoCode                 TransactionType = 14
-	TransactionType_DeletePromoCode                 TransactionType = 15
-	TransactionType_ActivatePromoCode               TransactionType = 16
-	TransactionType_AddUsesForPromo                 TransactionType = 17
-	TransactionType_AddTimeForPromo                 TransactionType = 18
-	TransactionType_DecrementUsesPromo              TransactionType = 19
-	TransactionType_AddActivationPromoCodeToHistory TransactionType = 20
+	TransactionType_CreatePromoCode                 TransactionType = 12
+	TransactionType_DeletePromoCode                 TransactionType = 13
+	TransactionType_ActivatePromoCode               TransactionType = 14
+	TransactionType_AddUsesForPromo                 TransactionType = 15
+	TransactionType_AddTimeForPromo                 TransactionType = 16
+	TransactionType_DecrementUsesPromo              TransactionType = 17
+	TransactionType_AddActivationPromoCodeToHistory TransactionType = 18
 	// Checks
-	TransactionType_Create   TransactionType = 21
-	TransactionType_Activate TransactionType = 22 // ...
+	TransactionType_Create   TransactionType = 19
+	TransactionType_Activate TransactionType = 20 // ...
 )
 
 // Enum value maps for TransactionType.
@@ -116,20 +114,18 @@ var (
 		6:  "User",
 		7:  "Moderator",
 		8:  "Warn",
-		9:  "DeleteWarn",
-		10: "InActiveWarn",
-		11: "Ban",
-		12: "DeleteBan",
-		13: "InActiveBan",
-		14: "CreatePromoCode",
-		15: "DeletePromoCode",
-		16: "ActivatePromoCode",
-		17: "AddUsesForPromo",
-		18: "AddTimeForPromo",
-		19: "DecrementUsesPromo",
-		20: "AddActivationPromoCodeToHistory",
-		21: "Create",
-		22: "Activate",
+		9:  "InActiveWarn",
+		10: "Ban",
+		11: "InActiveBan",
+		12: "CreatePromoCode",
+		13: "DeletePromoCode",
+		14: "ActivatePromoCode",
+		15: "AddUsesForPromo",
+		16: "AddTimeForPromo",
+		17: "DecrementUsesPromo",
+		18: "AddActivationPromoCodeToHistory",
+		19: "Create",
+		20: "Activate",
 	}
 	TransactionType_value = map[string]int32{
 		"Get":                             0,
@@ -141,20 +137,18 @@ var (
 		"User":                            6,
 		"Moderator":                       7,
 		"Warn":                            8,
-		"DeleteWarn":                      9,
-		"InActiveWarn":                    10,
-		"Ban":                             11,
-		"DeleteBan":                       12,
-		"InActiveBan":                     13,
-		"CreatePromoCode":                 14,
-		"DeletePromoCode":                 15,
-		"ActivatePromoCode":               16,
-		"AddUsesForPromo":                 17,
-		"AddTimeForPromo":                 18,
-		"DecrementUsesPromo":              19,
-		"AddActivationPromoCodeToHistory": 20,
-		"Create":                          21,
-		"Activate":                        22,
+		"InActiveWarn":                    9,
+		"Ban":                             10,
+		"InActiveBan":                     11,
+		"CreatePromoCode":                 12,
+		"DeletePromoCode":                 13,
+		"ActivatePromoCode":               14,
+		"AddUsesForPromo":                 15,
+		"AddTimeForPromo":                 16,
+		"DecrementUsesPromo":              17,
+		"AddActivationPromoCodeToHistory": 18,
+		"Create":                          19,
+		"Activate":                        20,
 	}
 )
 
@@ -191,6 +185,9 @@ const (
 	ErrorCode_UserNotFound   ErrorCode = 0
 	ErrorCode_NotEnoughMoney ErrorCode = 1
 	ErrorCode_Forbidden      ErrorCode = 2
+	ErrorCode_Promos         ErrorCode = 3
+	ErrorCode_Warns          ErrorCode = 4
+	ErrorCode_Checks         ErrorCode = 5
 )
 
 // Enum value maps for ErrorCode.
@@ -199,11 +196,17 @@ var (
 		0: "UserNotFound",
 		1: "NotEnoughMoney",
 		2: "Forbidden",
+		3: "Promos",
+		4: "Warns",
+		5: "Checks",
 	}
 	ErrorCode_value = map[string]int32{
 		"UserNotFound":   0,
 		"NotEnoughMoney": 1,
 		"Forbidden":      2,
+		"Promos":         3,
+		"Warns":          4,
+		"Checks":         5,
 	}
 )
 
@@ -386,7 +389,7 @@ const file_common_types_proto_rawDesc = "" +
 	"\fNoneCurrency\x10\x00\x12\v\n" +
 	"\aCredits\x10\x01\x12\n" +
 	"\n" +
-	"\x06Stocks\x10\x02*\x84\x03\n" +
+	"\x06Stocks\x10\x02*\xe5\x02\n" +
 	"\x0fTransactionType\x12\a\n" +
 	"\x03Get\x10\x00\x12\a\n" +
 	"\x03Set\x10\x01\x12\f\n" +
@@ -396,28 +399,30 @@ const file_common_types_proto_rawDesc = "" +
 	"\x05Block\x10\x05\x12\b\n" +
 	"\x04User\x10\x06\x12\r\n" +
 	"\tModerator\x10\a\x12\b\n" +
-	"\x04Warn\x10\b\x12\x0e\n" +
+	"\x04Warn\x10\b\x12\x10\n" +
+	"\fInActiveWarn\x10\t\x12\a\n" +
+	"\x03Ban\x10\n" +
+	"\x12\x0f\n" +
+	"\vInActiveBan\x10\v\x12\x13\n" +
+	"\x0fCreatePromoCode\x10\f\x12\x13\n" +
+	"\x0fDeletePromoCode\x10\r\x12\x15\n" +
+	"\x11ActivatePromoCode\x10\x0e\x12\x13\n" +
+	"\x0fAddUsesForPromo\x10\x0f\x12\x13\n" +
+	"\x0fAddTimeForPromo\x10\x10\x12\x16\n" +
+	"\x12DecrementUsesPromo\x10\x11\x12#\n" +
+	"\x1fAddActivationPromoCodeToHistory\x10\x12\x12\n" +
 	"\n" +
-	"DeleteWarn\x10\t\x12\x10\n" +
-	"\fInActiveWarn\x10\n" +
-	"\x12\a\n" +
-	"\x03Ban\x10\v\x12\r\n" +
-	"\tDeleteBan\x10\f\x12\x0f\n" +
-	"\vInActiveBan\x10\r\x12\x13\n" +
-	"\x0fCreatePromoCode\x10\x0e\x12\x13\n" +
-	"\x0fDeletePromoCode\x10\x0f\x12\x15\n" +
-	"\x11ActivatePromoCode\x10\x10\x12\x13\n" +
-	"\x0fAddUsesForPromo\x10\x11\x12\x13\n" +
-	"\x0fAddTimeForPromo\x10\x12\x12\x16\n" +
-	"\x12DecrementUsesPromo\x10\x13\x12#\n" +
-	"\x1fAddActivationPromoCodeToHistory\x10\x14\x12\n" +
-	"\n" +
-	"\x06Create\x10\x15\x12\f\n" +
-	"\bActivate\x10\x16*@\n" +
+	"\x06Create\x10\x13\x12\f\n" +
+	"\bActivate\x10\x14*c\n" +
 	"\tErrorCode\x12\x10\n" +
 	"\fUserNotFound\x10\x00\x12\x12\n" +
 	"\x0eNotEnoughMoney\x10\x01\x12\r\n" +
-	"\tForbidden\x10\x02B\n" +
+	"\tForbidden\x10\x02\x12\n" +
+	"\n" +
+	"\x06Promos\x10\x03\x12\t\n" +
+	"\x05Warns\x10\x04\x12\n" +
+	"\n" +
+	"\x06Checks\x10\x05B\n" +
 	"Z\b./commonb\x06proto3"
 
 var (

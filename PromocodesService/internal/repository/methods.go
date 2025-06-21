@@ -24,7 +24,7 @@ func (r *Repository) CreatePromo(
 		return nil, Err.ErrBadArgs
 	}
 
-	var expiredAt, createdAt interface{} // Scan() cannot convert sql timestamp to protobuf/types/known/timestamppb
+	var expiredAt, createdAt time.Time // Scan() cannot convert sql timestamp to protobuf/types/known/timestamppb
 	var out = new(promos.PromoCode)
 
 	q := `INSERT INTO Promos (Name, Currency, Amount, Uses, Creator, ExpAt)
@@ -48,11 +48,10 @@ func (r *Repository) CreatePromo(
 		&createdAt)
 
 	if err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return nil, Err.ErrExecQuery
+		return nil, errors.Join(Err.ErrExecQuery, err)
 	}
 
-	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt.(time.Time)), timestamppb.New(createdAt.(time.Time))
+	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt), timestamppb.New(createdAt)
 	return out, nil
 }
 
@@ -64,8 +63,7 @@ func (r *Repository) DeletePromoById(
 	q := `DELETE FROM Promos WHERE Id = $1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -79,8 +77,7 @@ func (r *Repository) DeletePromoByName(
 	q := `DELETE FROM Promos WHERE Name = $1`
 
 	if _, err := db.Exec(ctx, q, in.Name); err != nil {
-		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -92,7 +89,7 @@ func (r *Repository) GetPromoById(
 	db postgres.DB,
 	in *promos.PromoId) (*promos.PromoCode, error) {
 
-	var expiredAt, createdAt interface{}
+	var expiredAt, createdAt time.Time
 	var out = new(promos.PromoCode)
 
 	q := `SELECT * FROM Promos WHERE Id = $1`
@@ -111,15 +108,13 @@ func (r *Repository) GetPromoById(
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
-			r.logger.Warn(errors.Join(Err.ErrMissingPromoId, err))
-			return nil, Err.ErrMissingPromoId
+			return nil, errors.Join(Err.ErrMissingPromoId, err)
 		default:
-			r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
-			return nil, Err.ErrExecQuery
+			return nil, errors.Join(Err.ErrExecQuery)
 		}
 	}
 
-	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt.(time.Time)), timestamppb.New(createdAt.(time.Time))
+	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt), timestamppb.New(createdAt)
 	return out, nil
 }
 
@@ -129,7 +124,7 @@ func (r *Repository) GetPromoByName(
 	db postgres.DB,
 	in *promos.PromoName) (*promos.PromoCode, error) {
 
-	var expiredAt, createdAt interface{}
+	var expiredAt, createdAt time.Time
 	var out = new(promos.PromoCode)
 
 	q := `SELECT * FROM Promos WHERE Name = $1`
@@ -148,15 +143,13 @@ func (r *Repository) GetPromoByName(
 	if err != nil {
 		switch err {
 		case pgx.ErrNoRows:
-			r.logger.Warn(errors.Join(Err.ErrMissingPromoName, err))
-			return nil, Err.ErrMissingPromoName
+			return nil, errors.Join(Err.ErrMissingPromoId, err)
 		default:
-			r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
-			return nil, Err.ErrExecQuery
+			return nil, errors.Join(Err.ErrExecQuery)
 		}
 	}
 
-	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt.(time.Time)), timestamppb.New(createdAt.(time.Time))
+	out.ExpAt, out.CreatedAt = timestamppb.New(expiredAt), timestamppb.New(createdAt)
 	return out, nil
 }
 
@@ -172,8 +165,7 @@ func (r *Repository) DecrementPromoUses(
 	q := `UPDATE Promos SET Uses = Uses-1 WHERE Id = $1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -188,8 +180,7 @@ func (r *Repository) AddActivatePromoToHistory(
 
 	actAt := time.Now().Format("2006-01-02 15:04:05")
 	if _, err := db.Exec(ctx, q, in.UserId, in.PromoId, actAt); err != nil {
-		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 	return nil
 }
@@ -202,8 +193,7 @@ func (r *Repository) DeleteActivatePromoFromHistory(
 
 	q := `DELETE FROM UserToPromo WHERE PromoId=$1`
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -221,12 +211,11 @@ func (r *Repository) PromoIsAlreadyActivated(
 
 	row := db.QueryRow(ctx, q, in.UserId, in.PromoId)
 	if err := row.Scan(&activated); err != nil {
-		r.logger.Warn(errors.Join(Err.ErrExecQuery, err))
-		return false, Err.ErrExecQuery
+		return false, errors.Join(Err.ErrExecQuery, err)
 	}
 
 	if *activated {
-		return true, Err.ErrPromoAlreadyActivated
+		return true, errors.Join(Err.ErrPromoAlreadyActivated, err)
 	}
 
 	return false, nil
@@ -267,7 +256,7 @@ func (r *Repository) AddTime(ctx context.Context, db postgres.DB, in *promos.Add
 	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
 
 	if _, err := db.Exec(ctx, q, expAt, in.PromoId); err != nil {
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -279,7 +268,7 @@ func (r *Repository) AddUses(ctx context.Context, db postgres.DB, in *promos.Add
 	q := `UPDATE Promos SET Uses = Uses+$1 WHERE Id = $2`
 
 	if _, err := db.Exec(ctx, q, in.Uses, in.PromoId); err != nil {
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil

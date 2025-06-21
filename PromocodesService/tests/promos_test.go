@@ -15,10 +15,11 @@ import (
 
 	"promos/pkg/postgres"
 
+	"promos/pkg/logger"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -28,51 +29,52 @@ var srv *server.Server
 var client promos.PromosClient
 var serviceUsers *mock.MockServiceUsers
 var dockerpostgres *mock.DockerPool
-var logger *logrus.Logger
 var repo *repository.Repository
 var pool *pgxpool.Pool
 
 func init() {
 
 	// Setup logger
-	logger = logrus.New()
-	logger.SetLevel(logrus.DebugLevel)
-	serverLogger := server.NewServerLogger(logger)
+	logger := logger.NewLogger()
 
-	// Load env
+	// Load enviroment
 	if err := godotenv.Load("config.env"); err != nil {
-		panic("error missing enviroment file. please create config.env in ./service/tests")
+		logger.WithField("ERROR", err).Panic("SETUP APP")
 	}
+	logger.WithField("MSG", "Succecs loading enviroment file").Debug("SETUP APP")
 
 	// Cofiguration
 	cfg, err := config.NewConfig()
 	if err != nil {
-		panic(err)
+		logger.WithField("ERROR", err).Panic("SETUP APP")
 	}
+	logger.WithField("MSG", "Succecs loading configuration for app").Debug("SETUP APP")
 
 	// Up docker postgres
 	dockerpostgres, err = mock.PostgresUp(mock.Config{User: cfg.DB.User, Password: cfg.DB.Password, Name: cfg.DB.Database})
 	if err != nil {
-		panic(err)
+		logger.WithField("ERROR", err).Panic("SETUP APP")
 	}
+	logger.WithField("MSG", "Succecs up postgres docker container").Debug("SETUP APP")
 
 	// Connecting to postgres
 	pool, err = postgres.NewPool(context.TODO(), cfg.DB)
 	if err != nil {
-		panic(err)
+		logger.WithField("ERROR", err).Panic("SETUP APP")
 	}
 	if err := pool.Ping(context.TODO()); err != nil {
-		panic(err)
+		logger.WithField("ERROR", err).Panic("SETUP APP")
 	}
+	logger.WithField("MSG", "Succecs connect to postgres").Debug("SETUP APP")
 
 	// gRPC server
-	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(serverLogger.LoggingUnaryInterceptor))
+	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(server.NewServerLogger(logger).LoggingUnaryInterceptor))
 
 	// Creating mock service users
 	serviceUsers = mock.NewMockServiceUsers(pool)
 
 	// Creating repository
-	repo = repository.NewRepository(logger)
+	repo = repository.NewRepository()
 
 	// Register promo service
 	service := service.NewServicePromos(repo, pool, serviceUsers)
@@ -82,15 +84,18 @@ func init() {
 	srv = server.NewServer(grpcSrv)
 	go func() {
 		if err := srv.Run(cfg.Server); err != nil {
-			panic(err)
+			logger.WithField("ERROR", err).Panic("SETUP APP")
 		}
 	}()
+	logger.WithField("MSG", fmt.Sprintf("Running server on %s:%s", cfg.Server.Network, cfg.Server.Port)).Debug("SETUP APP")
 
+	// Connection to server
 	conn, err := grpc.NewClient(fmt.Sprintf("localhost:%s", cfg.Server.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		panic(err)
+		logger.WithField("ERROR", err).Panic("SETUP APP")
 	}
 	client = promos.NewPromosClient(conn)
+	logger.WithField("MSG", fmt.Sprintf("Succecs connection to server on %s:%s", cfg.Server.Network, cfg.Server.Port)).Debug("SETUP APP")
 }
 
 func TestMain(t *testing.T) {
@@ -332,7 +337,6 @@ func Use(t *testing.T) {
 
 func clearUsers(userIds []int64) error {
 	for _, userId := range userIds {
-		logger.Debugf("deleting user: %d", userId)
 		if err := serviceUsers.Delete(context.TODO(), userId); err != nil {
 			return err
 		}

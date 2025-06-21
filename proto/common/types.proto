@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package common;
 
-option go_package = "./common"; // для Go
+option go_package = "./common";
 
 enum Currency {
   NoneCurrency = 0;
@@ -25,26 +25,24 @@ enum TransactionType {
 
   // Warns
   Warn = 8;
-  DeleteWarn = 9;
-  InActiveWarn = 10;
+  InActiveWarn = 9;
 
   // Bans
-  Ban = 11;
-  DeleteBan = 12;
-  InActiveBan = 13;
+  Ban = 10;
+  InActiveBan = 11;
   
   // Promos
-  CreatePromoCode = 14;
-  DeletePromoCode = 15;
-  ActivatePromoCode = 16;
-  AddUsesForPromo = 17;
-  AddTimeForPromo = 18;
-  DecrementUsesPromo = 19;
-  AddActivationPromoCodeToHistory = 20;
+  CreatePromoCode = 12;
+  DeletePromoCode = 13;
+  ActivatePromoCode = 14;
+  AddUsesForPromo = 15;
+  AddTimeForPromo = 16;
+  DecrementUsesPromo = 17;
+  AddActivationPromoCodeToHistory = 18;
   
   // Checks
-  Create = 21;
-  Activate = 22;
+  Create = 19;
+  Activate = 20;
   // ...
 }
 
@@ -52,6 +50,9 @@ enum ErrorCode {
   UserNotFound = 0;
   NotEnoughMoney = 1;
   Forbidden = 2;
+  Promos = 3;
+  Warns = 4;
+  Checks = 5;
 }
 
 message Failure {

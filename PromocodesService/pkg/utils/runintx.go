@@ -2,6 +2,7 @@ package repeatible
 
 import (
 	"context"
+	"errors"
 
 	Err "promos/pkg/errors"
 
@@ -24,7 +25,7 @@ func RunInTx(db *pgxpool.Pool, ctx context.Context, fn func(tx pgx.Tx) error) er
 	}
 
 	if errRollback := tx.Rollback(ctx); errRollback != nil {
-		return Err.ErrTransactionRollback
+		return errors.Join(Err.ErrTransactionRollback, errFn)
 	}
 
 	return errFn
