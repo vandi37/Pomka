@@ -3,7 +3,6 @@ syntax = "proto3";
 package promocodes;
 
 import "common/types.proto";
-import "users/service.proto";
 
 import "google/protobuf/timestamp.proto";
 option go_package = "./promos"; // для Go
@@ -25,7 +24,7 @@ service Promos {
     rpc GetByName(PromoName) returns (PromoFailure);
 
     // Check promo valid (count of uses, expiration data, already activate by user), query to service users
-    rpc Use(PromoUserId) returns (users.TransactionResponse);
+    rpc Use(PromoUserId) returns (common.Response);
 
     // Update expAt of promo in Promos
     rpc AddTime(AddTimeIn) returns (common.Response);
