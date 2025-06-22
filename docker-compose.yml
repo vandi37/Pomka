@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: postgres
+    container_name: postgres-promos
     image: postgres:latest
 
     environment:

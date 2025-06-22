@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -21,8 +22,7 @@ func (s *ServerLogger) LoggingUnaryInterceptor(ctx context.Context, req interfac
 	s.logger.WithFields(logrus.Fields{
 		"METHOD":   info.FullMethod,
 		"REQUEST":  req,
-		"RESPONSE": resp,
-		"ERROR":    err,
+		"RESPONSE": fmt.Sprint(resp, err),
 	}).Info("gRPC SERVER")
 
 	return resp, err

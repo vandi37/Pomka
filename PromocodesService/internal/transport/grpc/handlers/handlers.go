@@ -10,8 +10,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (*promos.PromoFailure, error) {
-	var promo *promos.PromoCode
+func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (promoFailure *promos.PromoFailure, err error) {
+	promoFailure = new(promos.PromoFailure)
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
@@ -28,7 +28,7 @@ func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (*pr
 		}
 
 		// Creating promo
-		promo, err = s.repo.CreatePromo(ctx, tx, in)
+		promoFailure.PromoCode, err = s.repo.CreatePromo(ctx, tx, in)
 		if err != nil {
 			return err
 		}
@@ -45,7 +45,6 @@ func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (*pr
 
 	}); errTx != nil {
 		return &promos.PromoFailure{
-			PromoCode: nil,
 			Failure: &common.Failure{
 				Code: common.ErrorCode_Promos,
 				Details: map[string]string{
@@ -54,7 +53,7 @@ func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (*pr
 			}}, errTx
 	}
 
-	return &promos.PromoFailure{PromoCode: promo, Failure: nil}, nil
+	return promoFailure, nil
 }
 
 func (s *ServicePromos) Delete(ctx context.Context, in *promos.PromoId) (*common.Response, error) {
@@ -90,7 +89,7 @@ func (s *ServicePromos) Delete(ctx context.Context, in *promos.PromoId) (*common
 			}}, errTx
 	}
 
-	return &common.Response{Failure: nil}, nil
+	return nil, nil
 }
 
 func (s *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (*common.Response, error) {
@@ -165,17 +164,17 @@ func (s *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (*commo
 			}}, errTx
 	}
 
-	return &common.Response{Failure: nil}, nil
+	return nil, nil
 }
 
-func (s *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (out *promos.PromoFailure, err error) {
-	var promo *promos.PromoCode
+func (s *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (promoFailure *promos.PromoFailure, err error) {
+	promoFailure = new(promos.PromoFailure)
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Get promo
-		promo, err = s.repo.GetPromoById(ctx, tx, in)
+		promoFailure.PromoCode, err = s.repo.GetPromoById(ctx, tx, in)
 
 		if err != nil {
 			return err
@@ -185,7 +184,6 @@ func (s *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (out *p
 
 	}); errTx != nil {
 		return &promos.PromoFailure{
-			PromoCode: nil,
 			Failure: &common.Failure{
 				Code: common.ErrorCode_Promos,
 				Details: map[string]string{
@@ -195,20 +193,17 @@ func (s *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (out *p
 		}, errTx
 	}
 
-	return &promos.PromoFailure{
-		PromoCode: promo,
-		Failure:   nil,
-	}, nil
+	return promoFailure, nil
 }
 
-func (s *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (out *promos.PromoFailure, err error) {
-	var promo *promos.PromoCode
+func (s *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (promoFailure *promos.PromoFailure, err error) {
+	promoFailure = new(promos.PromoFailure)
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Get promo
-		promo, err = s.repo.GetPromoByName(ctx, tx, in)
+		promoFailure.PromoCode, err = s.repo.GetPromoByName(ctx, tx, in)
 
 		if err != nil {
 			return err
@@ -218,7 +213,6 @@ func (s *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (ou
 
 	}); errTx != nil {
 		return &promos.PromoFailure{
-			PromoCode: nil,
 			Failure: &common.Failure{
 				Code: common.ErrorCode_Promos,
 				Details: map[string]string{
@@ -227,7 +221,7 @@ func (s *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (ou
 			}}, errTx
 	}
 
-	return &promos.PromoFailure{PromoCode: promo, Failure: nil}, nil
+	return promoFailure, nil
 }
 
 func (s *ServicePromos) AddTime(ctx context.Context, in *promos.AddTimeIn) (*common.Response, error) {
@@ -258,7 +252,7 @@ func (s *ServicePromos) AddTime(ctx context.Context, in *promos.AddTimeIn) (*com
 			}}, errTx
 	}
 
-	return &common.Response{Failure: nil}, nil
+	return nil, nil
 }
 
 func (s *ServicePromos) AddUses(ctx context.Context, in *promos.AddUsesIn) (*common.Response, error) {
@@ -289,5 +283,5 @@ func (s *ServicePromos) AddUses(ctx context.Context, in *promos.AddUsesIn) (*com
 			}}, errTx
 	}
 
-	return &common.Response{Failure: nil}, nil
+	return nil, nil
 }

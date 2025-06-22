@@ -33,9 +33,6 @@ func Run() {
 	if err != nil {
 		logger.WithField("ERROR", err).Fatal("SETUP APP")
 	}
-	if err := pool.Ping(context.TODO()); err != nil {
-		logger.WithField("ERROR", err).Fatal("SETUP APP")
-	}
 	logger.WithField("MSG", "Succecs connect to postgres").Debug("SETUP APP")
 
 	// Connect to service users
