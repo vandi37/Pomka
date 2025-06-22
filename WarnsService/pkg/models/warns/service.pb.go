@@ -207,7 +207,7 @@ func (x *AllWarns) GetWarns() []*Warn {
 type AllWarnsFailure struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Warns         *AllWarns              `protobuf:"bytes,1,opt,name=warns,proto3,oneof" json:"warns,omitempty"`
-	Failure       *common.Response       `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
+	Failure       *common.Failure        `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -249,7 +249,7 @@ func (x *AllWarnsFailure) GetWarns() *AllWarns {
 	return nil
 }
 
-func (x *AllWarnsFailure) GetFailure() *common.Response {
+func (x *AllWarnsFailure) GetFailure() *common.Failure {
 	if x != nil {
 		return x.Failure
 	}
@@ -439,7 +439,7 @@ func (x *AllBans) GetBans() []*Ban {
 type AllBansFailure struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Bans          *AllBans               `protobuf:"bytes,1,opt,name=bans,proto3,oneof" json:"bans,omitempty"`
-	Failure       *common.Response       `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
+	Failure       *common.Failure        `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -481,7 +481,7 @@ func (x *AllBansFailure) GetBans() *AllBans {
 	return nil
 }
 
-func (x *AllBansFailure) GetFailure() *common.Response {
+func (x *AllBansFailure) GetFailure() *common.Failure {
 	if x != nil {
 		return x.Failure
 	}
@@ -491,7 +491,7 @@ func (x *AllBansFailure) GetFailure() *common.Response {
 type CountOfActiveWarns struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CountWarns    int32                  `protobuf:"varint,1,opt,name=countWarns,proto3" json:"countWarns,omitempty"`
-	Failure       *common.Response       `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
+	Failure       *common.Failure        `protobuf:"bytes,2,opt,name=failure,proto3,oneof" json:"failure,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -533,7 +533,7 @@ func (x *CountOfActiveWarns) GetCountWarns() int32 {
 	return 0
 }
 
-func (x *CountOfActiveWarns) GetFailure() *common.Response {
+func (x *CountOfActiveWarns) GetFailure() *common.Failure {
 	if x != nil {
 		return x.Failure
 	}
@@ -620,10 +620,10 @@ const file_warns_service_proto_rawDesc = "" +
 	"\n" +
 	"\b_failure\"-\n" +
 	"\bAllWarns\x12!\n" +
-	"\x05warns\x18\x01 \x03(\v2\v.warns.WarnR\x05warns\"\x84\x01\n" +
+	"\x05warns\x18\x01 \x03(\v2\v.warns.WarnR\x05warns\"\x83\x01\n" +
 	"\x0fAllWarnsFailure\x12*\n" +
-	"\x05warns\x18\x01 \x01(\v2\x0f.warns.AllWarnsH\x00R\x05warns\x88\x01\x01\x12/\n" +
-	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x01R\afailure\x88\x01\x01B\b\n" +
+	"\x05warns\x18\x01 \x01(\v2\x0f.warns.AllWarnsH\x00R\x05warns\x88\x01\x01\x12.\n" +
+	"\afailure\x18\x02 \x01(\v2\x0f.common.FailureH\x01R\afailure\x88\x01\x01B\b\n" +
 	"\x06_warnsB\n" +
 	"\n" +
 	"\b_failure\"\xc3\x01\n" +
@@ -645,18 +645,18 @@ const file_warns_service_proto_rawDesc = "" +
 	"\b_failure\")\n" +
 	"\aAllBans\x12\x1e\n" +
 	"\x04bans\x18\x01 \x03(\v2\n" +
-	".warns.BanR\x04bans\"\x7f\n" +
+	".warns.BanR\x04bans\"~\n" +
 	"\x0eAllBansFailure\x12'\n" +
-	"\x04bans\x18\x01 \x01(\v2\x0e.warns.AllBansH\x00R\x04bans\x88\x01\x01\x12/\n" +
-	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x01R\afailure\x88\x01\x01B\a\n" +
+	"\x04bans\x18\x01 \x01(\v2\x0e.warns.AllBansH\x00R\x04bans\x88\x01\x01\x12.\n" +
+	"\afailure\x18\x02 \x01(\v2\x0f.common.FailureH\x01R\afailure\x88\x01\x01B\a\n" +
 	"\x05_bansB\n" +
 	"\n" +
-	"\b_failure\"q\n" +
+	"\b_failure\"p\n" +
 	"\x12CountOfActiveWarns\x12\x1e\n" +
 	"\n" +
 	"countWarns\x18\x01 \x01(\x05R\n" +
-	"countWarns\x12/\n" +
-	"\afailure\x18\x02 \x01(\v2\x10.common.ResponseH\x00R\afailure\x88\x01\x01B\n" +
+	"countWarns\x12.\n" +
+	"\afailure\x18\x02 \x01(\v2\x0f.common.FailureH\x00R\afailure\x88\x01\x01B\n" +
 	"\n" +
 	"\b_failure\"k\n" +
 	"\x0fModerUserReason\x12\x16\n" +
@@ -703,8 +703,8 @@ var file_warns_service_proto_goTypes = []any{
 	(*ModerUserReason)(nil),       // 9: warns.ModerUserReason
 	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
 	(*common.Failure)(nil),        // 11: common.Failure
-	(*common.Response)(nil),       // 12: common.Response
-	(*users.Id)(nil),              // 13: users.Id
+	(*users.Id)(nil),              // 12: users.Id
+	(*common.Response)(nil),       // 13: common.Response
 }
 var file_warns_service_proto_depIdxs = []int32{
 	10, // 0: warns.Warn.IssuedAt:type_name -> google.protobuf.Timestamp
@@ -712,29 +712,29 @@ var file_warns_service_proto_depIdxs = []int32{
 	11, // 2: warns.WarnFailure.failure:type_name -> common.Failure
 	0,  // 3: warns.AllWarns.warns:type_name -> warns.Warn
 	2,  // 4: warns.AllWarnsFailure.warns:type_name -> warns.AllWarns
-	12, // 5: warns.AllWarnsFailure.failure:type_name -> common.Response
+	11, // 5: warns.AllWarnsFailure.failure:type_name -> common.Failure
 	10, // 6: warns.Ban.IssuedAt:type_name -> google.protobuf.Timestamp
 	4,  // 7: warns.BanFailure.ban:type_name -> warns.Ban
 	11, // 8: warns.BanFailure.failure:type_name -> common.Failure
 	4,  // 9: warns.AllBans.bans:type_name -> warns.Ban
 	6,  // 10: warns.AllBansFailure.bans:type_name -> warns.AllBans
-	12, // 11: warns.AllBansFailure.failure:type_name -> common.Response
-	12, // 12: warns.CountOfActiveWarns.failure:type_name -> common.Response
+	11, // 11: warns.AllBansFailure.failure:type_name -> common.Failure
+	11, // 12: warns.CountOfActiveWarns.failure:type_name -> common.Failure
 	9,  // 13: warns.Warns.Warn:input_type -> warns.ModerUserReason
 	9,  // 14: warns.Warns.AllUnWarn:input_type -> warns.ModerUserReason
 	9,  // 15: warns.Warns.LastUnWarn:input_type -> warns.ModerUserReason
 	9,  // 16: warns.Warns.Ban:input_type -> warns.ModerUserReason
 	9,  // 17: warns.Warns.Unban:input_type -> warns.ModerUserReason
-	13, // 18: warns.Warns.GetHistoryWarns:input_type -> users.Id
-	13, // 19: warns.Warns.GetHistoryBans:input_type -> users.Id
-	13, // 20: warns.Warns.GetActiveWarns:input_type -> users.Id
-	13, // 21: warns.Warns.GetActiveBan:input_type -> users.Id
-	13, // 22: warns.Warns.GetCountOfActiveWarns:input_type -> users.Id
+	12, // 18: warns.Warns.GetHistoryWarns:input_type -> users.Id
+	12, // 19: warns.Warns.GetHistoryBans:input_type -> users.Id
+	12, // 20: warns.Warns.GetActiveWarns:input_type -> users.Id
+	12, // 21: warns.Warns.GetActiveBan:input_type -> users.Id
+	12, // 22: warns.Warns.GetCountOfActiveWarns:input_type -> users.Id
 	1,  // 23: warns.Warns.Warn:output_type -> warns.WarnFailure
-	12, // 24: warns.Warns.AllUnWarn:output_type -> common.Response
-	12, // 25: warns.Warns.LastUnWarn:output_type -> common.Response
+	13, // 24: warns.Warns.AllUnWarn:output_type -> common.Response
+	13, // 25: warns.Warns.LastUnWarn:output_type -> common.Response
 	5,  // 26: warns.Warns.Ban:output_type -> warns.BanFailure
-	12, // 27: warns.Warns.Unban:output_type -> common.Response
+	13, // 27: warns.Warns.Unban:output_type -> common.Response
 	3,  // 28: warns.Warns.GetHistoryWarns:output_type -> warns.AllWarnsFailure
 	7,  // 29: warns.Warns.GetHistoryBans:output_type -> warns.AllBansFailure
 	3,  // 30: warns.Warns.GetActiveWarns:output_type -> warns.AllWarnsFailure

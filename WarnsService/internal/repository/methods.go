@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 	Err "warns/pkg/errors"
 	"warns/pkg/models/users"
@@ -21,8 +22,7 @@ func (r *Repository) CreateWarn(ctx context.Context, db postgres.DB, in *warns.M
 
 	err = db.QueryRow(ctx, q, in.UserId, in.ModerId, in.Reason).Scan(&warn.Id, &warn.UserId, &warn.ModerId, &warn.Reason, &issuedAt, &warn.IsActive)
 	if err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return nil, Err.ErrExecQuery
+		return nil, errors.Join(Err.ErrExecQuery, err)
 	}
 
 	warn.IssuedAt = timestamppb.New(*issuedAt)
@@ -40,8 +40,7 @@ func (r *Repository) CreateBan(ctx context.Context, db postgres.DB, in *warns.Mo
 
 	err = db.QueryRow(ctx, q, in.UserId, in.ModerId, in.Reason).Scan(&ban.Id, &ban.UserId, &ban.ModerId, &ban.Reason, &issuedAt, &ban.IsActive)
 	if err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return nil, Err.ErrExecQuery
+		return nil, errors.Join(Err.ErrExecQuery, err)
 	}
 
 	ban.IssuedAt = timestamppb.New(*issuedAt)
@@ -55,8 +54,7 @@ func (r *Repository) GetWarns(ctx context.Context, db postgres.DB, in *users.Id)
 
 	rows, err := db.Query(ctx, q, in.Id)
 	if err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return nil, Err.ErrExecQuery
+		return nil, errors.Join(Err.ErrExecQuery, err)
 	}
 	defer rows.Close()
 
@@ -65,8 +63,7 @@ func (r *Repository) GetWarns(ctx context.Context, db postgres.DB, in *users.Id)
 		var issuedAt = new(time.Time)
 
 		if err := rows.Scan(&warn.Id, &warn.UserId, &warn.ModerId, &warn.Reason, &issuedAt, &warn.IsActive); err != nil {
-			r.logger.Warn(Err.ErrIncorrectData, err)
-			return nil, Err.ErrIncorrectData
+			return nil, errors.Join(Err.ErrIncorrectData, err)
 		}
 
 		warn.IssuedAt = timestamppb.New(*issuedAt)
@@ -83,8 +80,7 @@ func (r *Repository) GetBans(ctx context.Context, db postgres.DB, in *users.Id) 
 
 	rows, err := db.Query(ctx, q, in.Id)
 	if err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return nil, Err.ErrExecQuery
+		return nil, errors.Join(Err.ErrExecQuery, err)
 	}
 	defer rows.Close()
 
@@ -93,8 +89,7 @@ func (r *Repository) GetBans(ctx context.Context, db postgres.DB, in *users.Id) 
 		var issuedAt = new(time.Time)
 
 		if err := rows.Scan(&ban.Id, &ban.UserId, &ban.ModerId, &ban.Reason, &issuedAt, &ban.IsActive); err != nil {
-			r.logger.Warn(Err.ErrIncorrectData, err)
-			return nil, Err.ErrIncorrectData
+			return nil, errors.Join(Err.ErrIncorrectData, err)
 		}
 
 		ban.IssuedAt = timestamppb.New(*issuedAt)
@@ -109,8 +104,7 @@ func (r *Repository) DeleteHistoryWarns(ctx context.Context, db postgres.DB, in 
 	q := `DELETE FROM Warns WHERE UserId=$1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -120,8 +114,7 @@ func (r *Repository) DeleteHistoryBans(ctx context.Context, db postgres.DB, in *
 	q := `DELETE FROM Bans WHERE UserId=$1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -132,16 +125,14 @@ func (r *Repository) IsUserModerator(ctx context.Context, in *users.User) (b boo
 	if in.Role == 2 {
 		return true, nil
 	}
-
-	return false, Err.ErrUserIsNotModerator
+	return false, errors.Join(Err.ErrUserIsNotModerator, err)
 }
 
 func (r *Repository) MakeWarnsInActive(ctx context.Context, db postgres.DB, in *users.Id) (err error) {
 	q := `UPDATE Warns SET IsActive=FALSE WHERE UserId=$1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -151,8 +142,7 @@ func (r *Repository) MakeBanInActive(ctx context.Context, db postgres.DB, in *us
 	q := `UPDATE Bans SET IsActive=FALSE WHERE UserId=$1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -163,8 +153,7 @@ func (r *Repository) GetCountOfActiveWarns(ctx context.Context, db postgres.DB, 
 
 	q := `SELECT COUNT(Id) FROM Warns WHERE UserId=$1 AND IsActive=TRUE`
 	if err := db.QueryRow(ctx, q, in.Id).Scan(&cnt); err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return nil, Err.ErrExecQuery
+		return nil, errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return &warns.CountOfActiveWarns{CountWarns: int32(*cnt)}, nil
@@ -176,8 +165,7 @@ func (r *Repository) GetActiveWarns(ctx context.Context, db postgres.DB, in *use
 
 	rows, err := db.Query(ctx, q, in.Id)
 	if err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return nil, Err.ErrExecQuery
+		return nil, errors.Join(Err.ErrExecQuery, err)
 	}
 	defer rows.Close()
 
@@ -186,8 +174,7 @@ func (r *Repository) GetActiveWarns(ctx context.Context, db postgres.DB, in *use
 		var issuedAt = new(time.Time)
 
 		if err := rows.Scan(&warn.Id, &warn.UserId, &warn.ModerId, &warn.Reason, &issuedAt, &warn.IsActive); err != nil {
-			r.logger.Warn(Err.ErrIncorrectData, err)
-			return nil, Err.ErrIncorrectData
+			return nil, errors.Join(Err.ErrIncorrectData, err)
 		}
 
 		warn.IssuedAt = timestamppb.New(*issuedAt)
@@ -206,8 +193,7 @@ func (r *Repository) GetActiveBan(ctx context.Context, db postgres.DB, in *users
 	ban = new(warns.Ban)
 
 	if err := db.QueryRow(ctx, q, in.Id).Scan(&ban.Id, &ban.UserId, &ban.ModerId, &ban.Reason, &issuedAt, &ban.IsActive); err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return nil, Err.ErrExecQuery
+		return nil, errors.Join(Err.ErrExecQuery, err)
 	}
 
 	ban.IssuedAt = timestamppb.New(*issuedAt)
@@ -220,8 +206,7 @@ func (r *Repository) MakeLastWarnInActive(ctx context.Context, db postgres.DB, i
 		  WHERE UserId = $1 AND Id = (SELECT Id FROM Warns ORDER BY IssuedAt DESC LIMIT 1);`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return Err.ErrExecQuery
+		return errors.Join(Err.ErrExecQuery, err)
 	}
 
 	return nil
@@ -233,8 +218,7 @@ func (r *Repository) IsAlreadyBanned(ctx context.Context, db postgres.DB, in *us
 	q := `SELECT EXISTS(SELECT * FROM Bans WHERE UserId=$1 AND IsActive=TRUE)`
 
 	if err := db.QueryRow(ctx, q, in.Id).Scan(&b); err != nil {
-		r.logger.Warn(Err.ErrExecQuery, err)
-		return false, Err.ErrExecQuery
+		return false, errors.Join(Err.ErrExecQuery, err)
 	}
 
 	if *b {

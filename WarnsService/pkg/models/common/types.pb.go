@@ -185,6 +185,9 @@ const (
 	ErrorCode_UserNotFound   ErrorCode = 0
 	ErrorCode_NotEnoughMoney ErrorCode = 1
 	ErrorCode_Forbidden      ErrorCode = 2
+	ErrorCode_Promos         ErrorCode = 3
+	ErrorCode_Warns          ErrorCode = 4
+	ErrorCode_Checks         ErrorCode = 5
 )
 
 // Enum value maps for ErrorCode.
@@ -193,11 +196,17 @@ var (
 		0: "UserNotFound",
 		1: "NotEnoughMoney",
 		2: "Forbidden",
+		3: "Promos",
+		4: "Warns",
+		5: "Checks",
 	}
 	ErrorCode_value = map[string]int32{
 		"UserNotFound":   0,
 		"NotEnoughMoney": 1,
 		"Forbidden":      2,
+		"Promos":         3,
+		"Warns":          4,
+		"Checks":         5,
 	}
 )
 
@@ -404,11 +413,16 @@ const file_common_types_proto_rawDesc = "" +
 	"\x1fAddActivationPromoCodeToHistory\x10\x12\x12\n" +
 	"\n" +
 	"\x06Create\x10\x13\x12\f\n" +
-	"\bActivate\x10\x14*@\n" +
+	"\bActivate\x10\x14*c\n" +
 	"\tErrorCode\x12\x10\n" +
 	"\fUserNotFound\x10\x00\x12\x12\n" +
 	"\x0eNotEnoughMoney\x10\x01\x12\r\n" +
-	"\tForbidden\x10\x02B\n" +
+	"\tForbidden\x10\x02\x12\n" +
+	"\n" +
+	"\x06Promos\x10\x03\x12\t\n" +
+	"\x05Warns\x10\x04\x12\n" +
+	"\n" +
+	"\x06Checks\x10\x05B\n" +
 	"Z\b./commonb\x06proto3"
 
 var (

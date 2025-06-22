@@ -60,7 +60,7 @@ message AllWarns {
 
 message AllWarnsFailure {
     optional AllWarns warns = 1;
-    optional common.Response failure = 2;
+    optional common.Failure failure = 2;
 }
 
 message Ban {
@@ -83,12 +83,12 @@ message AllBans {
 
 message AllBansFailure {
     optional AllBans bans = 1;
-    optional common.Response failure = 2;
+    optional common.Failure failure = 2;
 }
 
 message CountOfActiveWarns {
     int32 countWarns = 1;
-    optional common.Response failure = 2;
+    optional common.Failure failure = 2;
 }
 
 message ModerUserReason {
