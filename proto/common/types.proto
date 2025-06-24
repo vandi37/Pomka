@@ -41,8 +41,10 @@ enum TransactionType {
   AddActivationPromoCodeToHistory = 18;
   
   // Checks
-  Create = 19;
-  Activate = 20;
+  CreateCheck = 19;
+  UseCheck = 20;
+  DeleteCheck = 21;
+
   // ...
 }
 
@@ -50,9 +52,10 @@ enum ErrorCode {
   UserNotFound = 0;
   NotEnoughMoney = 1;
   Forbidden = 2;
-  Promos = 3;
-  Warns = 4;
-  Checks = 5;
+  PromoNotValid = 3;
+  CheckNotValid = 4;
+  UserBadRole = 5;
+  UserAlreadyBanned = 6;
 }
 
 message Failure {
