@@ -11,6 +11,7 @@ import (
 )
 
 func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (promoFailure *promos.PromoFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	promoFailure = new(promos.PromoFailure)
 
 	// Run in transaction
@@ -24,12 +25,14 @@ func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (pro
 
 		// Check creator is owner or not
 		if b, err := s.repo.CreatorIsOwner(ctx, user); err != nil || !b {
+			codeError = common.ErrorCode_UserBadRole
 			return err
 		}
 
 		// Creating promo
 		promoFailure.PromoCode, err = s.repo.CreatePromo(ctx, tx, in)
 		if err != nil {
+			codeError = common.ErrorCode_PromoNotValid
 			return err
 		}
 
@@ -46,7 +49,7 @@ func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (pro
 	}); errTx != nil {
 		return &promos.PromoFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Promos,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -57,6 +60,7 @@ func (s *ServicePromos) Create(ctx context.Context, in *promos.CreatePromo) (pro
 }
 
 func (s *ServicePromos) Delete(ctx context.Context, in *promos.PromoId) (*common.Response, error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
@@ -82,7 +86,7 @@ func (s *ServicePromos) Delete(ctx context.Context, in *promos.PromoId) (*common
 	}); errTx != nil {
 		return &common.Response{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Promos,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -93,6 +97,7 @@ func (s *ServicePromos) Delete(ctx context.Context, in *promos.PromoId) (*common
 }
 
 func (s *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (*common.Response, error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
@@ -105,16 +110,19 @@ func (s *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (*commo
 
 		// Check promo is expired or not
 		if b, err := s.repo.PromoIsExpired(promo); err != nil || !b {
+			codeError = common.ErrorCode_PromoNotValid
 			return err
 		}
 
 		// Check promo is in stock or not
 		if b, err := s.repo.PromoIsNotInStock(promo); err != nil || !b {
+			codeError = common.ErrorCode_PromoNotValid
 			return err
 		}
 
 		// Query to db for check activation promo from user
 		if b, err := s.repo.PromoIsAlreadyActivated(ctx, tx, in); err != nil || b {
+			codeError = common.ErrorCode_PromoAlreadyActivated
 			return err
 		}
 
@@ -157,7 +165,7 @@ func (s *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (*commo
 	}); errTx != nil {
 		return &common.Response{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Promos,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -168,6 +176,7 @@ func (s *ServicePromos) Use(ctx context.Context, in *promos.PromoUserId) (*commo
 }
 
 func (s *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (promoFailure *promos.PromoFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	promoFailure = new(promos.PromoFailure)
 
 	// Run in transaction
@@ -185,7 +194,7 @@ func (s *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (promoF
 	}); errTx != nil {
 		return &promos.PromoFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Promos,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -197,6 +206,7 @@ func (s *ServicePromos) GetById(ctx context.Context, in *promos.PromoId) (promoF
 }
 
 func (s *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (promoFailure *promos.PromoFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	promoFailure = new(promos.PromoFailure)
 
 	// Run in transaction
@@ -214,7 +224,7 @@ func (s *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (pr
 	}); errTx != nil {
 		return &promos.PromoFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Promos,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -225,6 +235,7 @@ func (s *ServicePromos) GetByName(ctx context.Context, in *promos.PromoName) (pr
 }
 
 func (s *ServicePromos) AddTime(ctx context.Context, in *promos.AddTimeIn) (*common.Response, error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
@@ -245,7 +256,7 @@ func (s *ServicePromos) AddTime(ctx context.Context, in *promos.AddTimeIn) (*com
 	}); errTx != nil {
 		return &common.Response{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Promos,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -256,6 +267,7 @@ func (s *ServicePromos) AddTime(ctx context.Context, in *promos.AddTimeIn) (*com
 }
 
 func (s *ServicePromos) AddUses(ctx context.Context, in *promos.AddUsesIn) (*common.Response, error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
@@ -276,7 +288,7 @@ func (s *ServicePromos) AddUses(ctx context.Context, in *promos.AddUsesIn) (*com
 	}); errTx != nil {
 		return &common.Response{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Promos,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},

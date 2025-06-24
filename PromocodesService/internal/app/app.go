@@ -6,6 +6,7 @@ import (
 	"promos/config"
 	"promos/internal/repository"
 	service "promos/internal/transport/grpc/handlers"
+	migrations "promos/pkg/goose"
 	"promos/pkg/grpc/conn"
 	"promos/pkg/grpc/server"
 	"promos/pkg/models/promos"
@@ -34,6 +35,12 @@ func Run() {
 		logger.WithField("ERROR", err).Fatal("SETUP APP")
 	}
 	logger.WithField("MSG", "Succecs connect to postgres").Debug("SETUP APP")
+
+	// Run migrations
+	if err := migrations.Up(context.TODO(), pool); err != nil {
+		logger.WithField("ERROR", err).Panic("SETUP APP")
+	}
+	logger.WithField("MSG", "Succecs run migrations").Debug("SETUP APP")
 
 	// Connect to service users
 	clientServices, err := conn.NewClientsServices(cfg.Conn)

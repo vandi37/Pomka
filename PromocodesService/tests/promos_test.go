@@ -7,6 +7,7 @@ import (
 	"promos/internal/repository"
 	service "promos/internal/transport/grpc/handlers"
 	Err "promos/pkg/errors"
+	migrations "promos/pkg/goose"
 	"promos/pkg/grpc/server"
 	"promos/pkg/models/promos"
 	"promos/tests/mock"
@@ -75,10 +76,13 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.WithField("ERROR", err).Panic("SETUP APP")
 	}
-	if err := pool.Ping(context.TODO()); err != nil {
+	log.WithField("MSG", "Succecs connect to postgres").Debug("SETUP APP")
+
+	// Run migrations
+	if err := migrations.Up(context.TODO(), pool); err != nil {
 		log.WithField("ERROR", err).Panic("SETUP APP")
 	}
-	log.WithField("MSG", "Succecs connect to postgres").Debug("SETUP APP")
+	log.WithField("MSG", "Succecs run migrations").Debug("SETUP APP")
 
 	// gRPC server
 	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(server.NewServerLogger(log).LoggingUnaryInterceptor))

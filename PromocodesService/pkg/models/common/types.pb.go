@@ -98,8 +98,9 @@ const (
 	TransactionType_DecrementUsesPromo              TransactionType = 17
 	TransactionType_AddActivationPromoCodeToHistory TransactionType = 18
 	// Checks
-	TransactionType_Create   TransactionType = 19
-	TransactionType_Activate TransactionType = 20 // ...
+	TransactionType_CreateCheck TransactionType = 19
+	TransactionType_UseCheck    TransactionType = 20
+	TransactionType_DeleteCheck TransactionType = 21
 )
 
 // Enum value maps for TransactionType.
@@ -124,8 +125,9 @@ var (
 		16: "AddTimeForPromo",
 		17: "DecrementUsesPromo",
 		18: "AddActivationPromoCodeToHistory",
-		19: "Create",
-		20: "Activate",
+		19: "CreateCheck",
+		20: "UseCheck",
+		21: "DeleteCheck",
 	}
 	TransactionType_value = map[string]int32{
 		"Get":                             0,
@@ -147,8 +149,9 @@ var (
 		"AddTimeForPromo":                 16,
 		"DecrementUsesPromo":              17,
 		"AddActivationPromoCodeToHistory": 18,
-		"Create":                          19,
-		"Activate":                        20,
+		"CreateCheck":                     19,
+		"UseCheck":                        20,
+		"DeleteCheck":                     21,
 	}
 )
 
@@ -182,12 +185,14 @@ func (TransactionType) EnumDescriptor() ([]byte, []int) {
 type ErrorCode int32
 
 const (
-	ErrorCode_UserNotFound   ErrorCode = 0
-	ErrorCode_NotEnoughMoney ErrorCode = 1
-	ErrorCode_Forbidden      ErrorCode = 2
-	ErrorCode_Promos         ErrorCode = 3
-	ErrorCode_Warns          ErrorCode = 4
-	ErrorCode_Checks         ErrorCode = 5
+	ErrorCode_UserNotFound          ErrorCode = 0
+	ErrorCode_NotEnoughMoney        ErrorCode = 1
+	ErrorCode_Forbidden             ErrorCode = 2
+	ErrorCode_PromoNotValid         ErrorCode = 3
+	ErrorCode_PromoAlreadyActivated ErrorCode = 4
+	ErrorCode_CheckNotValid         ErrorCode = 5
+	ErrorCode_UserBadRole           ErrorCode = 6
+	ErrorCode_UserAlreadyBanned     ErrorCode = 7
 )
 
 // Enum value maps for ErrorCode.
@@ -196,17 +201,21 @@ var (
 		0: "UserNotFound",
 		1: "NotEnoughMoney",
 		2: "Forbidden",
-		3: "Promos",
-		4: "Warns",
-		5: "Checks",
+		3: "PromoNotValid",
+		4: "PromoAlreadyActivated",
+		5: "CheckNotValid",
+		6: "UserBadRole",
+		7: "UserAlreadyBanned",
 	}
 	ErrorCode_value = map[string]int32{
-		"UserNotFound":   0,
-		"NotEnoughMoney": 1,
-		"Forbidden":      2,
-		"Promos":         3,
-		"Warns":          4,
-		"Checks":         5,
+		"UserNotFound":          0,
+		"NotEnoughMoney":        1,
+		"Forbidden":             2,
+		"PromoNotValid":         3,
+		"PromoAlreadyActivated": 4,
+		"CheckNotValid":         5,
+		"UserBadRole":           6,
+		"UserAlreadyBanned":     7,
 	}
 )
 
@@ -389,7 +398,7 @@ const file_common_types_proto_rawDesc = "" +
 	"\fNoneCurrency\x10\x00\x12\v\n" +
 	"\aCredits\x10\x01\x12\n" +
 	"\n" +
-	"\x06Stocks\x10\x02*\xe5\x02\n" +
+	"\x06Stocks\x10\x02*\xfb\x02\n" +
 	"\x0fTransactionType\x12\a\n" +
 	"\x03Get\x10\x00\x12\a\n" +
 	"\x03Set\x10\x01\x12\f\n" +
@@ -410,19 +419,19 @@ const file_common_types_proto_rawDesc = "" +
 	"\x0fAddUsesForPromo\x10\x0f\x12\x13\n" +
 	"\x0fAddTimeForPromo\x10\x10\x12\x16\n" +
 	"\x12DecrementUsesPromo\x10\x11\x12#\n" +
-	"\x1fAddActivationPromoCodeToHistory\x10\x12\x12\n" +
-	"\n" +
-	"\x06Create\x10\x13\x12\f\n" +
-	"\bActivate\x10\x14*c\n" +
+	"\x1fAddActivationPromoCodeToHistory\x10\x12\x12\x0f\n" +
+	"\vCreateCheck\x10\x13\x12\f\n" +
+	"\bUseCheck\x10\x14\x12\x0f\n" +
+	"\vDeleteCheck\x10\x15*\xa9\x01\n" +
 	"\tErrorCode\x12\x10\n" +
 	"\fUserNotFound\x10\x00\x12\x12\n" +
 	"\x0eNotEnoughMoney\x10\x01\x12\r\n" +
-	"\tForbidden\x10\x02\x12\n" +
-	"\n" +
-	"\x06Promos\x10\x03\x12\t\n" +
-	"\x05Warns\x10\x04\x12\n" +
-	"\n" +
-	"\x06Checks\x10\x05B\n" +
+	"\tForbidden\x10\x02\x12\x11\n" +
+	"\rPromoNotValid\x10\x03\x12\x19\n" +
+	"\x15PromoAlreadyActivated\x10\x04\x12\x11\n" +
+	"\rCheckNotValid\x10\x05\x12\x0f\n" +
+	"\vUserBadRole\x10\x06\x12\x15\n" +
+	"\x11UserAlreadyBanned\x10\aB\n" +
 	"Z\b./commonb\x06proto3"
 
 var (
