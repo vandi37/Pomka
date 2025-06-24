@@ -1,0 +1,11 @@
+package repository
+
+import "checks/pkg/hasher"
+
+type Repository struct {
+	h *hasher.Hasher
+}
+
+func NewRepository(hasher *hasher.Hasher) *Repository {
+	return &Repository{h: hasher}
+}
