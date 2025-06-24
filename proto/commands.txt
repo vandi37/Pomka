@@ -1,7 +1,7 @@
-protoc --go-grpc_out=./WarnsService/pkg/models --proto_path=./proto proto/warns/service.proto
-protoc --go_out=./WarnsService/pkg/models --proto_path=./proto proto/warns/service.proto
+protoc --go-grpc_out=./ChecksService/pkg/models --proto_path=./proto proto/checks/service.proto
+protoc --go_out=./ChecksService/pkg/models --proto_path=./proto proto/checks/service.proto
 
-protoc --go-grpc_out=./WarnsService/pkg/models --proto_path=./proto proto/users/service.proto
-protoc --go_out=./WarnsService/pkg/models --proto_path=./proto proto/users/service.proto
+protoc --go-grpc_out=./ChecksService/pkg/models --proto_path=./proto proto/users/service.proto
+protoc --go_out=./ChecksService/pkg/models --proto_path=./proto proto/users/service.proto
 
-protoc --go_out=./WarnsService/pkg/models --proto_path=./proto proto/common/types.proto
+protoc --go_out=./ChecksService/pkg/models --proto_path=./proto proto/common/types.proto

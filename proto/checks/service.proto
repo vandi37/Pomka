@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package checks;
+
+import "common/types.proto";
+import "users/service.proto";
+
+import "google/protobuf/timestamp.proto";
+option go_package = "./checks"; // для Go
+
+service Checks {
+    // Create check
+    rpc Create(CheckCreate) returns (CheckFailure);
+
+    // Make check used
+    rpc Remove(CheckId) returns (common.Response);
+
+    // Use check
+    rpc Use(CheckUse) returns (common.Response);
+
+    // Get check created by user
+    rpc GetUserChecks(users.Id) returns (AllChecksFailure);
+}
+
+message Check {
+    int64 id = 1;
+    string key = 2;
+    common.Currency currency = 3;
+    int64 amount = 4;
+    int64 creator = 5;
+    google.protobuf.Timestamp createdAt = 6;
+}
+
+message CheckFailure {
+    optional Check check = 1;
+    optional common.Failure failure = 2;
+}
+
+message AllChecks {
+    repeated Check Checks = 1;
+}
+
+message AllChecksFailure {
+    optional AllChecks allChecks = 1;
+    optional common.Failure failure = 2;
+}
+
+message CheckCreate {
+    int64 creator = 1;
+    common.Currency currency = 2;
+    int64 amount = 3;
+}
+
+message CheckUse {
+    int64 userId = 1;
+    string key = 2;
+}
+
+message CheckId {
+    int64 id = 1;
+}

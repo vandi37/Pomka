@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: postgres-warns
+    container_name: postgres-checks
     image: postgres:latest
 
     environment:
@@ -13,10 +13,10 @@ services:
 
     restart: always
 
-  warns:
-    container_name: service-warns
+  checks:
+    container_name: service-checks-
 
-    build: ./WarnsService
+    build: ./ChecksService
 
     environment:
       - SERVER_NETWORK=${SERVER_NETWORK:-}
@@ -32,8 +32,7 @@ services:
 
       - SERVICE_USERS_HOST=${SERVICE_USERS_HOST:-}
       - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
-
-      - WARNS_BEFORE_BAN=${WARNS_BEFORE_BAN:-}
+      - HASH_SALT=${HASH_SALT:-}
 
     ports:
      - "${SERVER_PORT:-}:${SERVER_PORT:-}"
