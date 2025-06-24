@@ -1,0 +1,41 @@
+services:
+  postgres:
+    container_name: postgres-checks
+    image: postgres:latest
+
+    environment:
+      - POSTGRES_USER=${DB_USER:-}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-}
+      - POSTGRES_DB=${DB_NAME:-}
+
+    ports:
+      - "${DB_PORT:-}:${DB_PORT:-}"
+
+    restart: always
+
+  checks:
+    container_name: service-checks-
+
+    build: ./
+
+    environment:
+      - SERVER_NETWORK=${SERVER_NETWORK:-}
+      - SERVER_PORT=${SERVER_PORT:-}
+
+      - DB_HOST=${DB_HOST:-}
+      - DB_PORT=${DB_PORT:-}
+      - DB_MAX_ATMPS=${DB_MAX_ATMPS:-}
+      - DB_DELAY_ATMPS_S=${DB_DELAY_ATMPS_S:-}
+      - DB_USER=${DB_USER:-}
+      - DB_PASSWORD=${DB_PASSWORD:-}
+      - DB_NAME=${DB_NAME:-}
+
+      - SERVICE_USERS_HOST=${SERVICE_USERS_HOST:-}
+      - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
+      - HASH_SALT=${HASH_SALT:-}
+
+    ports:
+     - "${SERVER_PORT:-}:${SERVER_PORT:-}"
+
+    depends_on:
+     - postgres

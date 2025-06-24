@@ -16,7 +16,7 @@ services:
   warns:
     container_name: service-warns
 
-    build: ./warns/WarnsService
+    build: ./WarnsService
 
     environment:
       - SERVER_NETWORK=tcp
@@ -44,7 +44,7 @@ services:
   promos:
     container_name: service-promos
 
-    build: ./promos/PromocodesService
+    build: ./PromocodesService
 
     environment:
       - SERVER_NETWORK=tcp
@@ -70,7 +70,7 @@ services:
   checks:
     container_name: service-checks
 
-    build: ./checks/ChecksService
+    build: ./ChecksService
 
     environment:
       - SERVER_NETWORK=tcp
