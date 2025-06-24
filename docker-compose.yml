@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: postgres-warns
+    container_name: postgres
     image: postgres:latest
 
     environment:
@@ -16,11 +16,11 @@ services:
   warns:
     container_name: service-warns
 
-    build: ./WarnsService
+    build: ./warns/WarnsService
 
     environment:
-      - SERVER_NETWORK=${SERVER_NETWORK:-}
-      - SERVER_PORT=${SERVER_PORT:-}
+      - SERVER_NETWORK=tcp
+      - SERVER_PORT=${SERVICE_WARNS_PORT:-}
 
       - DB_HOST=${DB_HOST:-}
       - DB_PORT=${DB_PORT:-}
@@ -30,13 +30,67 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-}
       - DB_NAME=${DB_NAME:-}
 
-      - SERVICE_USERS_HOST=${SERVICE_USERS_HOST:-}
+      - SERVICE_USERS_HOST=localhost
       - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
 
       - WARNS_BEFORE_BAN=${WARNS_BEFORE_BAN:-}
 
     ports:
-     - "${SERVER_PORT:-}:${SERVER_PORT:-}"
+     - "${SERVICE_WARNS_PORT:-}:${SERVICE_WARNS_PORT:-}"
+
+    depends_on:
+     - postgres
+
+  promos:
+    container_name: service-promos
+
+    build: ./promos/PromocodesService
+
+    environment:
+      - SERVER_NETWORK=tcp
+      - SERVER_PORT=${SERVICE_PROMOS_PORT:-}
+
+      - DB_HOST=${DB_HOST:-}
+      - DB_PORT=${DB_PORT:-}
+      - DB_MAX_ATMPS=${DB_MAX_ATMPS:-}
+      - DB_DELAY_ATMPS_S=${DB_DELAY_ATMPS_S:-}
+      - DB_USER=${DB_USER:-}
+      - DB_PASSWORD=${DB_PASSWORD:-}
+      - DB_NAME=${DB_NAME:-}
+
+      - SERVICE_USERS_HOST=localhost
+      - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
+
+    ports:
+     - "${SERVICE_PROMOS_PORT:-}:${SERVICE_PROMOS_PORT:-}"
+
+    depends_on:
+     - postgres
+
+  checks:
+    container_name: service-checks
+
+    build: ./checks/ChecksService
+
+    environment:
+      - SERVER_NETWORK=tcp
+      - SERVER_PORT=${SERVICE_CHECKS_PORT:-}
+
+      - DB_HOST=${DB_HOST:-}
+      - DB_PORT=${DB_PORT:-}
+      - DB_MAX_ATMPS=${DB_MAX_ATMPS:-}
+      - DB_DELAY_ATMPS_S=${DB_DELAY_ATMPS_S:-}
+      - DB_USER=${DB_USER:-}
+      - DB_PASSWORD=${DB_PASSWORD:-}
+      - DB_NAME=${DB_NAME:-}
+
+      - SERVICE_USERS_HOST=localhost
+      - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
+
+      - HASH_SALT=${HASH_SALT:-}
+
+    ports:
+     - "${SERVICE_CHECKS_PORT:-}:${SERVICE_CHECKS_PORT:-}"
 
     depends_on:
      - postgres

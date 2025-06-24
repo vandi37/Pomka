@@ -1,2 +1,4 @@
-service/tests/config.env
+PromocodesService/tests/config.env
+WarnsService/tests/config.env
+ChecksService/tests/config.env
 .env
