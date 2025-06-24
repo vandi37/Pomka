@@ -17,6 +17,8 @@ import (
 
 	log "warns/pkg/logger"
 
+	migrations "warns/pkg/goose"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -75,10 +77,13 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		logger.WithField("ERROR", err).Panic("SETUP APP")
 	}
-	if err := pool.Ping(context.TODO()); err != nil {
+	logger.WithField("MSG", "Succecs connect to postgres").Debug("SETUP APP")
+
+	// Run migrations
+	if err := migrations.Up(context.TODO(), pool); err != nil {
 		logger.WithField("ERROR", err).Panic("SETUP APP")
 	}
-	logger.WithField("MSG", "Succecs connect to postgres").Debug("SETUP APP")
+	logger.WithField("MSG", "Succecs run migrations").Debug("SETUP APP")
 
 	// gRPC server
 	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(server.NewServerLogger(logger).LoggingUnaryInterceptor))

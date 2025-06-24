@@ -15,6 +15,7 @@ import (
 )
 
 func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (warnsFailure *warns.WarnFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	warnsFailure = new(warns.WarnFailure)
 
 	// Run in transaction
@@ -22,6 +23,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 
 		// Check user already banned
 		if b, err := s.repo.IsAlreadyBanned(ctx, tx, &users.Id{Id: in.UserId}); b || err == Err.ErrExecQuery {
+			codeError = common.ErrorCode_UserAlreadyBanned
 			return err
 		}
 
@@ -33,6 +35,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 
 		// Check moderator role
 		if b, err := s.repo.IsUserModerator(ctx, user); !b || err != nil {
+			codeError = common.ErrorCode_UserBadRole
 			return errors.Join(err)
 		}
 
@@ -100,7 +103,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 	}); errTx != nil {
 		return &warns.WarnFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -112,6 +115,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 }
 
 func (s *ServiceWarns) AllUnWarn(ctx context.Context, in *warns.ModerUserReason) (*common.Response, error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
@@ -124,6 +128,7 @@ func (s *ServiceWarns) AllUnWarn(ctx context.Context, in *warns.ModerUserReason)
 
 		// Check moderator role
 		if b, err := s.repo.IsUserModerator(ctx, user); !b || err != nil {
+			codeError = common.ErrorCode_UserBadRole
 			return errors.Join(err)
 		}
 
@@ -145,7 +150,7 @@ func (s *ServiceWarns) AllUnWarn(ctx context.Context, in *warns.ModerUserReason)
 	}); errTx != nil {
 		return &common.Response{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -157,6 +162,7 @@ func (s *ServiceWarns) AllUnWarn(ctx context.Context, in *warns.ModerUserReason)
 }
 
 func (s *ServiceWarns) LastUnWarn(ctx context.Context, in *warns.ModerUserReason) (*common.Response, error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
@@ -169,6 +175,7 @@ func (s *ServiceWarns) LastUnWarn(ctx context.Context, in *warns.ModerUserReason
 
 		// Check moderator role
 		if b, err := s.repo.IsUserModerator(ctx, user); !b || err != nil {
+			codeError = common.ErrorCode_UserBadRole
 			return errors.Join(err)
 		}
 
@@ -190,7 +197,7 @@ func (s *ServiceWarns) LastUnWarn(ctx context.Context, in *warns.ModerUserReason
 	}); errTx != nil {
 		return &common.Response{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -202,6 +209,7 @@ func (s *ServiceWarns) LastUnWarn(ctx context.Context, in *warns.ModerUserReason
 }
 
 func (s *ServiceWarns) Ban(ctx context.Context, in *warns.ModerUserReason) (banFailure *warns.BanFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	banFailure = new(warns.BanFailure)
 
 	// Run in transaction
@@ -215,6 +223,7 @@ func (s *ServiceWarns) Ban(ctx context.Context, in *warns.ModerUserReason) (banF
 
 		// Check moderator role
 		if b, err := s.repo.IsUserModerator(ctx, user); !b || err != nil {
+			codeError = common.ErrorCode_UserBadRole
 			return errors.Join(err)
 		}
 
@@ -252,7 +261,7 @@ func (s *ServiceWarns) Ban(ctx context.Context, in *warns.ModerUserReason) (banF
 	}); errTx != nil {
 		return &warns.BanFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -264,6 +273,8 @@ func (s *ServiceWarns) Ban(ctx context.Context, in *warns.ModerUserReason) (banF
 }
 
 func (s *ServiceWarns) Unban(ctx context.Context, in *warns.ModerUserReason) (*common.Response, error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
+
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
@@ -275,6 +286,7 @@ func (s *ServiceWarns) Unban(ctx context.Context, in *warns.ModerUserReason) (*c
 
 		// Check moderator role
 		if b, err := s.repo.IsUserModerator(ctx, user); !b || err != nil {
+			codeError = common.ErrorCode_UserBadRole
 			return errors.Join(err)
 		}
 
@@ -305,7 +317,7 @@ func (s *ServiceWarns) Unban(ctx context.Context, in *warns.ModerUserReason) (*c
 	}); errTx != nil {
 		return &common.Response{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -317,6 +329,7 @@ func (s *ServiceWarns) Unban(ctx context.Context, in *warns.ModerUserReason) (*c
 }
 
 func (s *ServiceWarns) GetHistoryWarns(ctx context.Context, in *users.Id) (warnsFailure *warns.AllWarnsFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	warnsFailure = new(warns.AllWarnsFailure)
 
 	// Run in transaction
@@ -330,7 +343,7 @@ func (s *ServiceWarns) GetHistoryWarns(ctx context.Context, in *users.Id) (warns
 	}); errTx != nil {
 		return &warns.AllWarnsFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -342,6 +355,7 @@ func (s *ServiceWarns) GetHistoryWarns(ctx context.Context, in *users.Id) (warns
 }
 
 func (s *ServiceWarns) GetHistoryBans(ctx context.Context, in *users.Id) (bansFailure *warns.AllBansFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	bansFailure = new(warns.AllBansFailure)
 
 	// Run in transaction
@@ -355,7 +369,7 @@ func (s *ServiceWarns) GetHistoryBans(ctx context.Context, in *users.Id) (bansFa
 	}); errTx != nil {
 		return &warns.AllBansFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -367,6 +381,7 @@ func (s *ServiceWarns) GetHistoryBans(ctx context.Context, in *users.Id) (bansFa
 }
 
 func (s *ServiceWarns) GetActiveWarns(ctx context.Context, in *users.Id) (warnsFailure *warns.AllWarnsFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	warnsFailure = new(warns.AllWarnsFailure)
 
 	// Run in transaction
@@ -380,7 +395,7 @@ func (s *ServiceWarns) GetActiveWarns(ctx context.Context, in *users.Id) (warnsF
 	}); errTx != nil {
 		return &warns.AllWarnsFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -392,6 +407,7 @@ func (s *ServiceWarns) GetActiveWarns(ctx context.Context, in *users.Id) (warnsF
 }
 
 func (s *ServiceWarns) GetActiveBan(ctx context.Context, in *users.Id) (banFailure *warns.BanFailure, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 	banFailure = new(warns.BanFailure)
 
 	// Run in transaction
@@ -405,7 +421,7 @@ func (s *ServiceWarns) GetActiveBan(ctx context.Context, in *users.Id) (banFailu
 	}); errTx != nil {
 		return &warns.BanFailure{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
@@ -417,6 +433,7 @@ func (s *ServiceWarns) GetActiveBan(ctx context.Context, in *users.Id) (banFailu
 }
 
 func (s *ServiceWarns) GetCountOfActiveWarns(ctx context.Context, in *users.Id) (count *warns.CountOfActiveWarns, err error) {
+	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
 	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
@@ -430,7 +447,7 @@ func (s *ServiceWarns) GetCountOfActiveWarns(ctx context.Context, in *users.Id) 
 	}); errTx != nil {
 		return &warns.CountOfActiveWarns{
 			Failure: &common.Failure{
-				Code: common.ErrorCode_Warns,
+				Code: codeError,
 				Details: map[string]string{
 					"ERROR": errTx.Error(),
 				},
