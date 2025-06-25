@@ -1,17 +1,17 @@
 services:
-  postgres:
-    container_name: postgres
-    image: postgres:latest
+  # postgres:
+  #   container_name: postgres-go
+  #   image: postgres:latest
 
-    environment:
-      - POSTGRES_USER=${DB_USER:-}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-}
-      - POSTGRES_DB=${DB_NAME:-}
+  #   environment:
+  #     - POSTGRES_USER=${DB_USER:-}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD:-}
+  #     - POSTGRES_DB=${DB_NAME:-}
 
-    ports:
-      - "${DB_PORT:-}:${DB_PORT:-}"
+  #   ports:
+  #     - "${DB_PORT:-}:${DB_PORT:-}"
 
-    restart: always
+  #   restart: always
 
   warns:
     container_name: service-warns

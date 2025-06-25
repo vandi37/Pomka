@@ -39,4 +39,4 @@ services:
      - "${SERVICE_WARNS_PORT:-}:${SERVICE_WARNS_PORT:-}"
 
     depends_on:
-     - postgres
+     - postgres-warns

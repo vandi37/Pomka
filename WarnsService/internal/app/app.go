@@ -33,7 +33,8 @@ func Run() {
 	if err != nil {
 		logger.WithField("ERROR", err).Fatal("SETUP APP")
 	}
-	logger.WithField("MSG", "Succecs connect to postgres").Debug("SETUP APP")
+	logger.WithField("MSG", fmt.Sprintf("Succecs connect to postgres://%s:%s@%s:%s/%s",
+		cfg.DB.User, "<PASSWORD>", cfg.DB.Host, cfg.DB.Port, cfg.DB.Database)).Debug("SETUP APP")
 
 	// Run migrations
 	if err := migrations.Up(context.TODO(), pool); err != nil {
@@ -58,8 +59,24 @@ func Run() {
 
 	// Run server
 	logger.WithField("MSG", fmt.Sprintf("Running server on %s:%s", cfg.Server.Network, cfg.Server.Port)).Debug("SETUP APP")
-
 	server := server.NewServer(grpcSrv)
+
+	// defer all stoping
+	defer func() {
+		pool.Close()
+		logger.WithField("MSG", fmt.Sprintf("Closing connect to postgres://%s:%s@%s:%s/%s",
+			cfg.DB.User, "<PASSWORD>", cfg.DB.Host, cfg.DB.Port, cfg.DB.Database)).Debug("CLOSING APP")
+
+		if err := clientServices.ClientConn.Close(); err != nil {
+			logger.WithField("ERROR", err).Fatal("CLOSING APP")
+		}
+		logger.WithField("MSG", fmt.Sprintf("Closing connect to gRPC server (service Users) on %s:%s",
+			cfg.Conn.CfgSrvUsers.Host, cfg.Conn.CfgSrvUsers.Port)).Debug("CLOSING APP")
+
+		server.Stop()
+		logger.WithField("MSG", fmt.Sprintf("Closing server on %s:%s", cfg.Server.Network, cfg.Server.Port)).Debug("CLOSING APP")
+	}()
+
 	if err := server.Run(cfg.Server); err != nil {
 		logger.WithField("ERROR", err).Fatal("SETUP APP")
 	}

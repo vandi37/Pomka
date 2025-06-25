@@ -27,8 +27,8 @@ func (r *Repository) CreatePromo(
 	var expiredAt, createdAt time.Time // Scan() cannot convert sql timestamp to protobuf/types/known/timestamppb
 	var out = new(promos.PromoCode)
 
-	q := `INSERT INTO Promos (Name, Currency, Amount, Uses, Creator, ExpAt)
-    VALUES ($1, $2, $3, $4, $5, $6) RETURNING Id, Name, Currency, Amount, Uses, Creator, ExpAt, CreatedAt`
+	q := `INSERT INTO "Promos" ("Name", "Currency", "Amount", "Uses", "Creator", "ExpAt")
+    VALUES ($1, $2, $3, $4, $5, $6) RETURNING "Id", "Name", "Currency", "Amount", "Uses", "Creator", "ExpAt", "CreatedAt"`
 	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
 
 	err := db.QueryRow(ctx, q,
@@ -60,7 +60,8 @@ func (r *Repository) DeletePromoById(
 	ctx context.Context,
 	db postgres.DB,
 	in *promos.PromoId) error {
-	q := `DELETE FROM Promos WHERE Id = $1`
+	q := `DELETE FROM "Promos"
+	      WHERE "Id" = $1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
 		return errors.Join(Err.ErrExecQuery, err)
@@ -74,7 +75,8 @@ func (r *Repository) DeletePromoByName(
 	ctx context.Context,
 	db postgres.DB,
 	in *promos.PromoName) error {
-	q := `DELETE FROM Promos WHERE Name = $1`
+	q := `DELETE FROM "Promos"
+	      WHERE "Name" = $1`
 
 	if _, err := db.Exec(ctx, q, in.Name); err != nil {
 		return errors.Join(Err.ErrExecQuery, err)
@@ -92,7 +94,8 @@ func (r *Repository) GetPromoById(
 	var expiredAt, createdAt time.Time
 	var out = new(promos.PromoCode)
 
-	q := `SELECT * FROM Promos WHERE Id = $1`
+	q := `SELECT * FROM "Promos"
+	      WHERE "Id" = $1`
 	row := db.QueryRow(ctx, q, in.Id)
 
 	err := row.Scan(
@@ -127,7 +130,8 @@ func (r *Repository) GetPromoByName(
 	var expiredAt, createdAt time.Time
 	var out = new(promos.PromoCode)
 
-	q := `SELECT * FROM Promos WHERE Name = $1`
+	q := `SELECT * FROM "Promos"
+	      WHERE "Name" = $1`
 	row := db.QueryRow(ctx, q, in.Name)
 
 	err := row.Scan(
@@ -162,7 +166,9 @@ func (r *Repository) DecrementPromoUses(
 		return nil
 	}
 
-	q := `UPDATE Promos SET Uses = Uses-1 WHERE Id = $1`
+	q := `UPDATE "Promos"
+	      SET "Uses" = "Uses"-1
+		  WHERE "Id" = $1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
 		return errors.Join(Err.ErrExecQuery, err)
@@ -176,7 +182,8 @@ func (r *Repository) AddActivatePromoToHistory(
 	ctx context.Context,
 	db postgres.DB,
 	in *promos.PromoUserId) (err error) {
-	q := `INSERT INTO UserToPromo (UserId, PromoId, ActivatedAt) VALUES ($1, $2, $3)`
+	q := `INSERT INTO "UserToPromo" ("UserId", "PromoId", "ActivatedAt")
+	      VALUES ($1, $2, $3)`
 
 	actAt := time.Now().Format("2006-01-02 15:04:05")
 	if _, err := db.Exec(ctx, q, in.UserId, in.PromoId, actAt); err != nil {
@@ -191,7 +198,8 @@ func (r *Repository) DeleteActivatePromoFromHistory(
 	db postgres.DB,
 	in *promos.PromoId) (err error) {
 
-	q := `DELETE FROM UserToPromo WHERE PromoId=$1`
+	q := `DELETE FROM "UserToPromo"
+	      WHERE "PromoId"=$1`
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
 		return errors.Join(Err.ErrExecQuery, err)
 	}
@@ -207,7 +215,10 @@ func (r *Repository) PromoIsAlreadyActivated(
 
 	var activated = new(bool)
 
-	q := `SELECT EXISTS(SELECT * FROM UserToPromo WHERE UserId = $1 AND PromoId = $2)`
+	q := `SELECT EXISTS(
+	      SELECT * FROM "UserToPromo"
+		  WHERE "UserId" = $1 AND "PromoId" = $2
+		  )`
 
 	row := db.QueryRow(ctx, q, in.UserId, in.PromoId)
 	if err := row.Scan(&activated); err != nil {
@@ -252,7 +263,9 @@ func (r *Repository) CreatorIsOwner(ctx context.Context, user *users.User) (b bo
 // Add time for promo
 func (r *Repository) AddTime(ctx context.Context, db postgres.DB, in *promos.AddTimeIn) (err error) {
 
-	q := `UPDATE Promos SET ExpAt = $1 WHERE Id = $2`
+	q := `UPDATE "Promos"
+	      SET "ExpAt" = $1
+		  WHERE "Id" = $2`
 	expAt := in.ExpAt.AsTime().Format("2006-01-02 15:04:05")
 
 	if _, err := db.Exec(ctx, q, expAt, in.PromoId); err != nil {
@@ -265,7 +278,9 @@ func (r *Repository) AddTime(ctx context.Context, db postgres.DB, in *promos.Add
 // Add uses for promo
 func (r *Repository) AddUses(ctx context.Context, db postgres.DB, in *promos.AddUsesIn) (err error) {
 
-	q := `UPDATE Promos SET Uses = Uses+$1 WHERE Id = $2`
+	q := `UPDATE "Promos"
+	      SET "Uses" = "Uses"+$1
+		  WHERE "Id" = $2`
 
 	if _, err := db.Exec(ctx, q, in.Uses, in.PromoId); err != nil {
 		return errors.Join(Err.ErrExecQuery, err)

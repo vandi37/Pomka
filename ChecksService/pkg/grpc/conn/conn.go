@@ -9,6 +9,7 @@ import (
 )
 
 type ClientsServices struct {
+	*grpc.ClientConn
 	users.UsersClient
 }
 
@@ -21,6 +22,7 @@ func NewClientsServices(cfg Config) (*ClientsServices, error) {
 
 	clientUsers := users.NewUsersClient(conn)
 	return &ClientsServices{
+		conn,
 		clientUsers,
 	}, nil
 }

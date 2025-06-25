@@ -132,7 +132,7 @@ func TestAll(t *testing.T) {
 		}
 	})
 
-	creatorId, err := serviceUsers.Create(context.TODO(), 1, 1000)
+	creatorId, err := serviceUsers.Create(context.TODO(), 1)
 	if err != nil {
 		t.Fatal()
 	}

@@ -37,4 +37,4 @@ services:
      - "${SERVER_PORT:-}:${SERVER_PORT:-}"
 
     depends_on:
-     - postgres
+     - postgres-promos

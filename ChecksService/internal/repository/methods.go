@@ -19,9 +19,9 @@ func (r *Repository) CreateCheck(ctx context.Context, db postgres.DB, in *checks
 	var createdAt = new(time.Time)
 	var key = uuid.New().String()
 
-	q := `INSERT INTO Checks (CreatorId, Key, Currency, Amount) 
+	q := `INSERT INTO "Checks" ("CreatorId", "Key", "Currency", "Amount") 
 		  VALUES ($1, $2, $3, $4)
-		  RETURNING Id, CreatorId, Key, Currency, Amount, CreatedAt`
+		  RETURNING "Id", "CreatorId", "Key", "Currency", "Amount", "CreatedAt"`
 
 	if err := db.QueryRow(
 		ctx, q, in.Creator, r.h.Hash(key), in.Currency, in.Amount).
@@ -36,7 +36,8 @@ func (r *Repository) CreateCheck(ctx context.Context, db postgres.DB, in *checks
 }
 
 func (r *Repository) RemoveCheck(ctx context.Context, db postgres.DB, in *checks.CheckId) error {
-	q := `DELETE FROM Checks WHERE Id=$1`
+	q := `DELETE FROM "Checks"
+	      WHERE "Id"=$1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
 		return errors.Join(Err.ErrExecQuery, err)
@@ -48,8 +49,8 @@ func (r *Repository) RemoveCheck(ctx context.Context, db postgres.DB, in *checks
 func (r *Repository) GetUsersCheck(ctx context.Context, db postgres.DB, in *users.Id) (*checks.AllChecks, error) {
 	var allChecks = new(checks.AllChecks)
 
-	q := `SELECT * FROM Checks
-	      WHERE CreatorId=$1`
+	q := `SELECT * FROM "Checks"
+	      WHERE "CreatorId"=$1`
 
 	rows, err := db.Query(ctx, q, in.Id)
 	if err != nil {
@@ -82,7 +83,8 @@ func (r *Repository) GetCheckByKey(ctx context.Context, db postgres.DB, key stri
 	var createdAt = new(time.Time)
 	key = r.h.Hash(key)
 
-	q := `SELECT * FROM Checks WHERE Key=$1`
+	q := `SELECT * FROM "Checks"
+	      WHERE "Key"=$1`
 
 	err := db.QueryRow(
 		ctx, q, key).
