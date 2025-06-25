@@ -38,9 +38,6 @@ services:
     ports:
      - "${SERVICE_WARNS_PORT:-}:${SERVICE_WARNS_PORT:-}"
 
-    depends_on:
-     - postgres
-
   promos:
     container_name: service-promos
 
@@ -63,9 +60,6 @@ services:
 
     ports:
      - "${SERVICE_PROMOS_PORT:-}:${SERVICE_PROMOS_PORT:-}"
-
-    depends_on:
-     - postgres
 
   checks:
     container_name: service-checks
@@ -91,6 +85,3 @@ services:
 
     ports:
      - "${SERVICE_CHECKS_PORT:-}:${SERVICE_CHECKS_PORT:-}"
-
-    depends_on:
-     - postgres
