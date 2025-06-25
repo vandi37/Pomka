@@ -3,6 +3,9 @@ package migrations
 import (
 	"context"
 	"embed"
+	"time"
+
+	repeatible "warns/pkg/utils"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
@@ -13,18 +16,20 @@ import (
 var embedMigrations embed.FS
 
 func Up(ctx context.Context, pool *pgxpool.Pool) error {
-	goose.SetBaseFS(embedMigrations)
+	if err := repeatible.DoWithTries(func() error {
+		goose.SetBaseFS(embedMigrations)
 
-	if err := goose.SetDialect(string(goose.DialectPostgres)); err != nil {
-		return err
-	}
+		if err := goose.SetDialect(string(goose.DialectPostgres)); err != nil {
+			return err
+		}
 
-	db := stdlib.OpenDBFromPool(pool)
-	if err := goose.UpContext(ctx, db, "migrations"); err != nil {
-		return err
-	}
+		db := stdlib.OpenDBFromPool(pool)
+		if err := goose.UpContext(ctx, db, "migrations"); err != nil {
+			return err
+		}
 
-	if err := db.Close(); err != nil {
+		return nil
+	}, 5, time.Second*3); err != nil {
 		return err
 	}
 
