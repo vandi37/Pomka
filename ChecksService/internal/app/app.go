@@ -1,19 +1,18 @@
 package app
 
 import (
-	"checks/config"
 	"checks/internal/repository"
 	service "checks/internal/transport/grpc/handlers"
-	migrations "checks/pkg/goose"
-	"checks/pkg/grpc/conn"
-	"checks/pkg/grpc/server"
-	"checks/pkg/hasher"
-	"checks/pkg/models/checks"
+	"config"
+	"conn"
 	"context"
 	"fmt"
-
-	log "checks/pkg/logger"
-	"checks/pkg/postgres"
+	log "logger"
+	"migrations"
+	"postgres"
+	"protobuf/checks"
+	"server"
+	"utils/hasher"
 
 	"google.golang.org/grpc"
 )
@@ -48,16 +47,16 @@ func Run() {
 	if err != nil {
 		logger.WithField("ERROR", err).Fatal("SETUP APP")
 	}
-	logger.WithField("MSG", fmt.Sprintf("Succecs connect to gRPC server (service Users) on %s:%s", cfg.Conn.CfgSrvUsers.Host, cfg.Conn.CfgSrvUsers.Port)).Debug("SETUP APP")
+	logger.WithField("MSG", fmt.Sprintf("Succecs connect to gRPC server (service Users) on %s:%s", cfg.Conn.ConfigServiceUsers.Host, cfg.Conn.ConfigServiceUsers.Port)).Debug("SETUP APP")
 
 	// Creating hasher
-	hasher := hasher.NewHasher(cfg.Hash)
+	hasher := hasher.NewHasher(cfg.Storage.HashSalt)
 
 	// Creating repository
 	repo := repository.NewRepository(hasher)
 
 	// Register service promos
-	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(server.NewServerLogger(logger).LoggingUnaryInterceptor))
+	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(logger.LoggingUnaryInterceptor))
 	service := service.NewServiceChecks(repo, pool, clientServices)
 	checks.RegisterChecksServer(grpcSrv, service)
 
@@ -71,11 +70,11 @@ func Run() {
 		logger.WithField("MSG", fmt.Sprintf("Closing connect to postgres://%s:%s@%s:%s/%s",
 			cfg.DB.User, "<PASSWORD>", cfg.DB.Host, cfg.DB.Port, cfg.DB.Database)).Debug("CLOSING APP")
 
-		if err := clientServices.ClientConn.Close(); err != nil {
+		if err := clientServices.Close(); err != nil {
 			logger.WithField("ERROR", err).Fatal("CLOSING APP")
 		}
 		logger.WithField("MSG", fmt.Sprintf("Closing connect to gRPC server (service Users) on %s:%s",
-			cfg.Conn.CfgSrvUsers.Host, cfg.Conn.CfgSrvUsers.Port)).Debug("CLOSING APP")
+			cfg.Conn.ConfigServiceUsers.Host, cfg.Conn.ConfigServiceUsers.Port)).Debug("CLOSING APP")
 
 		server.Stop()
 		logger.WithField("MSG", fmt.Sprintf("Closing server on %s:%s", cfg.Server.Network, cfg.Server.Port)).Debug("CLOSING APP")

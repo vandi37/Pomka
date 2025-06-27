@@ -1,27 +1,26 @@
 package warns_test
 
 import (
+	"config"
 	"context"
+	e "errorspomka"
 	"fmt"
+	"protobuf/users"
+	"protobuf/warns"
+	"server"
 	"testing"
-	"warns/config"
 	"warns/internal/repository"
 	service "warns/internal/transport/grpc/handlers"
-	Err "warns/pkg/errors"
-	"warns/pkg/grpc/server"
-	"warns/pkg/models/users"
-	"warns/pkg/models/warns"
 	"warns/tests/mock"
 
-	"warns/pkg/postgres"
+	"postgres"
 
-	log "warns/pkg/logger"
+	log "logger"
 
-	migrations "warns/pkg/goose"
+	"migrations"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -30,7 +29,6 @@ var srv *server.Server
 var client warns.WarnsClient
 var serviceUsers *mock.MockServiceUsers
 var dockerpostgres *mock.DockerPool
-var logger *logrus.Logger
 var repo *repository.Repository
 var pool *pgxpool.Pool
 var cfg config.Config
@@ -44,13 +42,13 @@ func TestMain(m *testing.M) {
 
 		// Stoping docker postgres
 		if err := dockerpostgres.PostgresDown(); err != nil {
-			logger.Fatal(err)
+			panic(err)
 		}
 
 	}()
 
 	// Setup logger
-	logger = log.NewLogger()
+	logger := log.NewLogger()
 
 	// Load enviroment
 	if err := godotenv.Load("config.env"); err != nil {
@@ -86,7 +84,7 @@ func TestMain(m *testing.M) {
 	logger.WithField("MSG", "Succecs run migrations").Debug("SETUP APP")
 
 	// gRPC server
-	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(server.NewServerLogger(logger).LoggingUnaryInterceptor))
+	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(logger.LoggingUnaryInterceptor))
 
 	// Creating mock service users
 	serviceUsers = mock.NewMockServiceUsers(pool)
@@ -95,7 +93,7 @@ func TestMain(m *testing.M) {
 	repo = repository.NewRepository()
 
 	// Register promo service
-	service := service.NewServiceWarns(repo, pool, cfg.Warns, serviceUsers)
+	service := service.NewServiceWarns(repo, pool, service.Config{WarnsBeforeBan: cfg.Storage.WarnsBeforeBan}, serviceUsers)
 	warns.RegisterWarnsServer(grpcSrv, service)
 
 	// Run server
@@ -157,7 +155,7 @@ func TestAll(t *testing.T) {
 				UserId:  userId,
 				Reason:  nil,
 			},
-			err: Err.ErrUserAlreadyBanned,
+			err: e.ErrUserAlreadyBanned,
 		},
 	}
 
@@ -165,7 +163,7 @@ func TestAll(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			// Send warns before user got banned
-			for i := 0; i < cfg.Warns.WarnsBeforeBan; i++ {
+			for i := 0; i < cfg.Storage.WarnsBeforeBan; i++ {
 				if _, err := client.Warn(context.TODO(), tt.in); err != nil {
 					t.Fail()
 				}

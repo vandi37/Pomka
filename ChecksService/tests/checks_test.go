@@ -1,27 +1,26 @@
 package cheks_test
 
 import (
-	"checks/config"
 	"checks/internal/repository"
 	service "checks/internal/transport/grpc/handlers"
-	migrations "checks/pkg/goose"
-	"checks/pkg/grpc/server"
-	"checks/pkg/hasher"
-	"checks/pkg/models/checks"
-	"checks/pkg/models/common"
-	"checks/pkg/models/users"
 	"checks/tests/mock"
+	"config"
 	"context"
 	"fmt"
+	"migrations"
+	"protobuf/checks"
+	"protobuf/common"
+	"protobuf/users"
+	"server"
 	"testing"
+	"utils/hasher"
 
-	"checks/pkg/postgres"
+	"postgres"
 
-	log "checks/pkg/logger"
+	log "logger"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -30,10 +29,8 @@ var srv *server.Server
 var client checks.ChecksClient
 var serviceUsers *mock.MockServiceUsers
 var dockerpostgres *mock.DockerPool
-var logger *logrus.Logger
 var repo *repository.Repository
 var pool *pgxpool.Pool
-var cfg config.Config
 
 func TestMain(m *testing.M) {
 
@@ -44,13 +41,13 @@ func TestMain(m *testing.M) {
 
 		// Stoping docker postgres
 		if err := dockerpostgres.PostgresDown(); err != nil {
-			logger.Fatal(err)
+			panic(err)
 		}
 
 	}()
 
 	// Setup logger
-	logger = log.NewLogger()
+	logger := log.NewLogger()
 
 	// Load enviroment
 	if err := godotenv.Load("config.env"); err != nil {
@@ -86,13 +83,13 @@ func TestMain(m *testing.M) {
 	logger.WithField("MSG", "Succecs run migrations").Debug("SETUP APP")
 
 	// gRPC server
-	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(server.NewServerLogger(logger).LoggingUnaryInterceptor))
+	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(logger.LoggingUnaryInterceptor))
 
 	// Creating mock service users
 	serviceUsers = mock.NewMockServiceUsers(pool)
 
 	// Creating hasher
-	hasher := hasher.NewHasher(cfg.Hash)
+	hasher := hasher.NewHasher(cfg.Storage.HashSalt)
 
 	// Creating repository
 	repo = repository.NewRepository(hasher)

@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"warns/pkg/models/common"
-	"warns/pkg/models/users"
-	"warns/pkg/models/warns"
-	repeatible "warns/pkg/utils"
+	"protobuf/common"
+	"protobuf/users"
+	"protobuf/warns"
+	"utils"
 
-	Err "warns/pkg/errors"
+	e "errorspomka"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -19,10 +19,10 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 	warnsFailure = new(warns.WarnFailure)
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Check user already banned
-		if b, err := s.repo.IsAlreadyBanned(ctx, tx, &users.Id{Id: in.UserId}); b || err == Err.ErrExecQuery {
+		if b, err := s.repo.IsAlreadyBanned(ctx, tx, &users.Id{Id: in.UserId}); b || err == e.ErrExecQuery {
 			codeError = common.ErrorCode_UserAlreadyBanned
 			return err
 		}
@@ -30,7 +30,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 		// Get info about moderator
 		user, err := s.users.GetUser(ctx, &users.Id{Id: in.ModerId})
 		if err != nil {
-			errors.Join(Err.ErrServiceUsers, err)
+			errors.Join(e.ErrServiceUsers, err)
 		}
 
 		// Check moderator role
@@ -42,7 +42,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 		// Create warn for this user
 		warnsFailure.Warn, err = s.repo.CreateWarn(ctx, tx, in)
 		if err != nil {
-			return errors.Join(Err.ErrCreateWarn, err)
+			return errors.Join(e.ErrCreateWarn, err)
 		}
 
 		// Send transaction to service users
@@ -51,13 +51,13 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_Warn,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		// Check count of warns for this user
 		cntWarns, err := s.repo.GetCountOfActiveWarns(ctx, tx, &users.Id{Id: in.UserId})
 		if err != nil {
-			return errors.Join(Err.ErrCountActiveWarns, err)
+			return errors.Join(e.ErrCountActiveWarns, err)
 		}
 
 		// Pass, if user dont have too many warns
@@ -67,7 +67,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 
 		// Make warns for this user inactive
 		if err := s.repo.MakeWarnsInActive(ctx, tx, &users.Id{Id: in.UserId}); err != nil {
-			return errors.Join(Err.ErrMakeWarnsInActive, err)
+			return errors.Join(e.ErrMakeWarnsInActive, err)
 		}
 
 		// Send transaction to service users
@@ -76,7 +76,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_InActiveWarn,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		// Insert ban into Bans
@@ -86,7 +86,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 			ModerId: in.ModerId,
 			Reason:  &banReason,
 		}); err != nil {
-			return errors.Join(Err.ErrCreateBan, err)
+			return errors.Join(e.ErrCreateBan, err)
 		}
 
 		// Send transaction to service users
@@ -95,7 +95,7 @@ func (s *ServiceWarns) Warn(ctx context.Context, in *warns.ModerUserReason) (war
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_Ban,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		return nil
@@ -118,12 +118,12 @@ func (s *ServiceWarns) AllUnWarn(ctx context.Context, in *warns.ModerUserReason)
 	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Get info about moderator
 		user, err := s.users.GetUser(ctx, &users.Id{Id: in.ModerId})
 		if err != nil {
-			errors.Join(Err.ErrServiceUsers, err)
+			errors.Join(e.ErrServiceUsers, err)
 		}
 
 		// Check moderator role
@@ -133,7 +133,7 @@ func (s *ServiceWarns) AllUnWarn(ctx context.Context, in *warns.ModerUserReason)
 		}
 
 		if err := s.repo.MakeWarnsInActive(ctx, tx, &users.Id{Id: in.UserId}); err != nil {
-			return errors.Join(Err.ErrMakeWarnsInActive, err)
+			return errors.Join(e.ErrMakeWarnsInActive, err)
 		}
 
 		// Send transaction to service users
@@ -142,7 +142,7 @@ func (s *ServiceWarns) AllUnWarn(ctx context.Context, in *warns.ModerUserReason)
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_InActiveWarn,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		return nil
@@ -165,12 +165,12 @@ func (s *ServiceWarns) LastUnWarn(ctx context.Context, in *warns.ModerUserReason
 	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Get info about moderator
 		user, err := s.users.GetUser(ctx, &users.Id{Id: in.ModerId})
 		if err != nil {
-			errors.Join(Err.ErrServiceUsers, err)
+			errors.Join(e.ErrServiceUsers, err)
 		}
 
 		// Check moderator role
@@ -180,7 +180,7 @@ func (s *ServiceWarns) LastUnWarn(ctx context.Context, in *warns.ModerUserReason
 		}
 
 		if err := s.repo.MakeLastWarnInActive(ctx, tx, &users.Id{Id: in.UserId}); err != nil {
-			return errors.Join(Err.ErrMakeWarnsInActive, err)
+			return errors.Join(e.ErrMakeWarnsInActive, err)
 		}
 
 		// Send transaction to service users
@@ -189,7 +189,7 @@ func (s *ServiceWarns) LastUnWarn(ctx context.Context, in *warns.ModerUserReason
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_InActiveWarn,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		return nil
@@ -213,12 +213,12 @@ func (s *ServiceWarns) Ban(ctx context.Context, in *warns.ModerUserReason) (banF
 	banFailure = new(warns.BanFailure)
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Get info about moderator
 		user, err := s.users.GetUser(ctx, &users.Id{Id: in.ModerId})
 		if err != nil {
-			errors.Join(Err.ErrServiceUsers, err)
+			errors.Join(e.ErrServiceUsers, err)
 		}
 
 		// Check moderator role
@@ -238,13 +238,13 @@ func (s *ServiceWarns) Ban(ctx context.Context, in *warns.ModerUserReason) (banF
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_Block,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		// Insert ban into bans
 		banFailure.Ban, err = s.repo.CreateBan(ctx, tx, in)
 		if err != nil {
-			return errors.Join(Err.ErrCreateBan, err)
+			return errors.Join(e.ErrCreateBan, err)
 		}
 
 		// Send transaction to service users
@@ -253,7 +253,7 @@ func (s *ServiceWarns) Ban(ctx context.Context, in *warns.ModerUserReason) (banF
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_Ban,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		return nil
@@ -276,12 +276,12 @@ func (s *ServiceWarns) Unban(ctx context.Context, in *warns.ModerUserReason) (*c
 	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Get info about moderator
 		user, err := s.users.GetUser(ctx, &users.Id{Id: in.ModerId})
 		if err != nil {
-			errors.Join(Err.ErrServiceUsers, err)
+			errors.Join(e.ErrServiceUsers, err)
 		}
 
 		// Check moderator role
@@ -296,12 +296,12 @@ func (s *ServiceWarns) Unban(ctx context.Context, in *warns.ModerUserReason) (*c
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_User,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		// Remove ban
 		if err := s.repo.MakeBanInActive(ctx, tx, &users.Id{Id: in.UserId}); err != nil {
-			return errors.Join(Err.ErrMakeBansInActive, err)
+			return errors.Join(e.ErrMakeBansInActive, err)
 		}
 
 		// Send transaction to service users
@@ -310,7 +310,7 @@ func (s *ServiceWarns) Unban(ctx context.Context, in *warns.ModerUserReason) (*c
 			Receiver: &users.UserTransaction{UserId: in.UserId},
 			Type:     common.TransactionType_InActiveBan,
 		}); err != nil {
-			return errors.Join(Err.ErrSendTransaction, err)
+			return errors.Join(e.ErrSendTransaction, err)
 		}
 
 		return nil
@@ -333,7 +333,7 @@ func (s *ServiceWarns) GetHistoryWarns(ctx context.Context, in *users.Id) (warns
 	warnsFailure = new(warns.AllWarnsFailure)
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 		warnsFailure.Warns, err = s.repo.GetWarns(ctx, tx, in)
 		if err != nil {
 			return err
@@ -359,7 +359,7 @@ func (s *ServiceWarns) GetHistoryBans(ctx context.Context, in *users.Id) (bansFa
 	bansFailure = new(warns.AllBansFailure)
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 		bansFailure.Bans, err = s.repo.GetBans(ctx, tx, in)
 		if err != nil {
 			return err
@@ -385,7 +385,7 @@ func (s *ServiceWarns) GetActiveWarns(ctx context.Context, in *users.Id) (warnsF
 	warnsFailure = new(warns.AllWarnsFailure)
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 		warnsFailure.Warns, err = s.repo.GetActiveWarns(ctx, tx, in)
 		if err != nil {
 			return err
@@ -411,7 +411,7 @@ func (s *ServiceWarns) GetActiveBan(ctx context.Context, in *users.Id) (banFailu
 	banFailure = new(warns.BanFailure)
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 		banFailure.Ban, err = s.repo.GetActiveBan(ctx, tx, in)
 		if err != nil {
 			return err
@@ -436,7 +436,7 @@ func (s *ServiceWarns) GetCountOfActiveWarns(ctx context.Context, in *users.Id) 
 	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 		count, err = s.repo.GetCountOfActiveWarns(ctx, tx, in)
 		if err != nil {
 			return err

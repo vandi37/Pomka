@@ -1,4 +1,2 @@
-PromocodesService/tests/config.env
-WarnsService/tests/config.env
-ChecksService/tests/config.env
-.env
+*.env
+/postgres-data
