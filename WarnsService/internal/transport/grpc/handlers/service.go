@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"warns/pkg/models/users"
-	"warns/pkg/models/warns"
+	"protobuf/users"
+	"protobuf/warns"
 
-	"warns/pkg/postgres"
+	"postgres"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"

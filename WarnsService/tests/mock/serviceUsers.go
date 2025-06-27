@@ -3,10 +3,10 @@ package mock
 import (
 	"context"
 	"fmt"
-	"warns/pkg/models/users"
-	repeatible "warns/pkg/utils"
+	"protobuf/users"
+	"utils"
 
-	Err "warns/pkg/errors"
+	e "errorspomka"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -23,7 +23,7 @@ func NewMockServiceUsers(pool *pgxpool.Pool) *MockServiceUsers {
 }
 func (m *MockServiceUsers) GetUser(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*users.User, error) {
 	var user = new(users.User)
-	if errTx := repeatible.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
 		q := `SELECT * FROM "Users" WHERE "Id"=$1`
 		if err := tx.QueryRow(ctx, q, in.Id).Scan(nil, nil, nil, nil, &user.Role, nil, nil, nil); err != nil {
 			return err
@@ -43,10 +43,10 @@ func (m *MockServiceUsers) SendTransaction(ctx context.Context, in *users.Transa
 
 func (m *MockServiceUsers) Create(ctx context.Context, role int) (int64, error) {
 	var userId = new(int64)
-	if errTx := repeatible.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
 		q := `INSERT INTO "Users" ("Credits", "Stocks", "PremiumCredits", "Role", "AutoBuyEnabled", "LastFarmingAt", "CreatedAt") VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING "Id"`
 		if err := tx.QueryRow(ctx, q, 0, 0, 0, role, false, timestamppb.Now().AsTime().Format("2006-01-02 15:04:05"), timestamppb.Now().AsTime().Format("2006-01-02 15:04:05")).Scan(&userId); err != nil {
-			return Err.ErrExecQuery
+			return e.ErrExecQuery
 		}
 
 		return nil
@@ -58,11 +58,11 @@ func (m *MockServiceUsers) Create(ctx context.Context, role int) (int64, error) 
 }
 
 func (m *MockServiceUsers) Delete(ctx context.Context, userId int64) (err error) {
-	if errTx := repeatible.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(m.db, ctx, func(tx pgx.Tx) error {
 		q := `DELETE FROM "Users" WHERE "Id" = $1`
 		if _, err := tx.Exec(ctx, q, userId); err != nil {
 			fmt.Println(err)
-			return Err.ErrExecQuery
+			return e.ErrExecQuery
 		}
 
 		return nil

@@ -1,22 +1,24 @@
 services:
-  # postgres:
-  #   container_name: postgres-go
-  #   image: postgres:latest
+  postgres:
+    container_name: postgres-go
+    image: postgres:latest
+    volumes: 
+    - ./postgres-data:/var/lib/postgresql/data
 
-  #   environment:
-  #     - POSTGRES_USER=${DB_USER:-}
-  #     - POSTGRES_PASSWORD=${DB_PASSWORD:-}
-  #     - POSTGRES_DB=${DB_NAME:-}
+    environment:
+      - POSTGRES_USER=${DB_USER:-}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-}
+      - POSTGRES_DB=${DB_NAME:-}
 
-  #   ports:
-  #     - "${DB_PORT:-}:${DB_PORT:-}"
+    ports:
+      - "${DB_PORT:-}:${DB_PORT:-}"
 
-  #   restart: always
+    restart: always
 
   warns:
     container_name: service-warns
 
-    build: ./WarnsService
+    build: ./
 
     environment:
       - SERVER_NETWORK=tcp
@@ -33,15 +35,18 @@ services:
       - SERVICE_USERS_HOST=localhost
       - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
 
+      - HASH_SALT=${HASH_SALT:-}
       - WARNS_BEFORE_BAN=${WARNS_BEFORE_BAN:-}
 
     ports:
      - "${SERVICE_WARNS_PORT:-}:${SERVICE_WARNS_PORT:-}"
 
+    command: "/warns"
+
   promos:
     container_name: service-promos
 
-    build: ./PromocodesService
+    build: ./
 
     environment:
       - SERVER_NETWORK=tcp
@@ -57,14 +62,20 @@ services:
 
       - SERVICE_USERS_HOST=localhost
       - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
+  
+      - HASH_SALT=${HASH_SALT:-}
+      - WARNS_BEFORE_BAN=${WARNS_BEFORE_BAN:-}
 
     ports:
      - "${SERVICE_PROMOS_PORT:-}:${SERVICE_PROMOS_PORT:-}"
 
+    command: "/promos"
+
   checks:
+
     container_name: service-checks
 
-    build: ./ChecksService
+    build: ./
 
     environment:
       - SERVER_NETWORK=tcp
@@ -82,6 +93,9 @@ services:
       - SERVICE_USERS_PORT=${SERVICE_USERS_PORT:-}
 
       - HASH_SALT=${HASH_SALT:-}
+      - WARNS_BEFORE_BAN=${WARNS_BEFORE_BAN:-}
 
     ports:
      - "${SERVICE_CHECKS_PORT:-}:${SERVICE_CHECKS_PORT:-}"
+
+    command: "/checks"

@@ -1,12 +1,12 @@
 package service
 
 import (
-	"checks/pkg/models/checks"
-	"checks/pkg/models/common"
-	"checks/pkg/models/users"
 	"context"
+	"protobuf/checks"
+	"protobuf/common"
+	"protobuf/users"
 
-	repeatible "checks/pkg/utils"
+	"utils"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -16,7 +16,7 @@ func (s *ServiceChecks) Create(ctx context.Context, in *checks.CheckCreate) (che
 	checkFailure = new(checks.CheckFailure)
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Create check
 		checkFailure.Check, err = s.CreateCheck(ctx, tx, in)
@@ -58,7 +58,7 @@ func (s *ServiceChecks) Remove(ctx context.Context, in *checks.CheckId) (*common
 	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Remove check
 		if err := s.RemoveCheck(ctx, tx, in); err != nil {
@@ -91,7 +91,7 @@ func (s *ServiceChecks) Use(ctx context.Context, in *checks.CheckUse) (*common.R
 	var codeError common.ErrorCode = common.ErrorCode_Forbidden
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Get check
 		check, err := s.GetCheckByKey(ctx, tx, in.Key)
@@ -139,7 +139,7 @@ func (s *ServiceChecks) GetUserChecks(ctx context.Context, in *users.Id) (allChe
 	allChecksFailure = new(checks.AllChecksFailure)
 
 	// Run in transaction
-	if errTx := repeatible.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
+	if errTx := utils.RunInTx(s.db, ctx, func(tx pgx.Tx) error {
 
 		// Get checks user
 		allChecksFailure.AllChecks, err = s.GetUsersCheck(ctx, tx, in)

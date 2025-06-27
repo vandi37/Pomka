@@ -1,6 +1,6 @@
 package repository
 
-import "checks/pkg/hasher"
+import "utils/hasher"
 
 type Repository struct {
 	h *hasher.Hasher

@@ -1,18 +1,18 @@
 package app
 
 import (
+	"config"
+	"conn"
 	"context"
 	"fmt"
-	"warns/config"
+	"migrations"
+	"protobuf/warns"
+	"server"
 	"warns/internal/repository"
 	service "warns/internal/transport/grpc/handlers"
-	migrations "warns/pkg/goose"
-	"warns/pkg/grpc/conn"
-	"warns/pkg/grpc/server"
-	"warns/pkg/models/warns"
 
-	log "warns/pkg/logger"
-	"warns/pkg/postgres"
+	log "logger"
+	"postgres"
 
 	"google.golang.org/grpc"
 )
@@ -47,14 +47,14 @@ func Run() {
 	if err != nil {
 		logger.WithField("ERROR", err).Fatal("SETUP APP")
 	}
-	logger.WithField("MSG", fmt.Sprintf("Succecs connect to gRPC server (service Users) on %s:%s", cfg.Conn.CfgSrvUsers.Host, cfg.Conn.CfgSrvUsers.Port)).Debug("SETUP APP")
+	logger.WithField("MSG", fmt.Sprintf("Succecs connect to gRPC server (service Users) on %s:%s", cfg.Conn.ConfigServiceUsers.Host, cfg.Conn.ConfigServiceUsers.Port)).Debug("SETUP APP")
 
 	// Creating repository
 	repo := repository.NewRepository()
 
 	// Register service promos
-	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(server.NewServerLogger(logger).LoggingUnaryInterceptor))
-	service := service.NewServiceWarns(repo, pool, cfg.Warns, clientServices)
+	grpcSrv := grpc.NewServer(grpc.UnaryInterceptor(logger.LoggingUnaryInterceptor))
+	service := service.NewServiceWarns(repo, pool, service.Config{WarnsBeforeBan: cfg.Storage.WarnsBeforeBan}, clientServices)
 	warns.RegisterWarnsServer(grpcSrv, service)
 
 	// Run server
@@ -67,11 +67,11 @@ func Run() {
 		logger.WithField("MSG", fmt.Sprintf("Closing connect to postgres://%s:%s@%s:%s/%s",
 			cfg.DB.User, "<PASSWORD>", cfg.DB.Host, cfg.DB.Port, cfg.DB.Database)).Debug("CLOSING APP")
 
-		if err := clientServices.ClientConn.Close(); err != nil {
+		if err := clientServices.Close(); err != nil {
 			logger.WithField("ERROR", err).Fatal("CLOSING APP")
 		}
 		logger.WithField("MSG", fmt.Sprintf("Closing connect to gRPC server (service Users) on %s:%s",
-			cfg.Conn.CfgSrvUsers.Host, cfg.Conn.CfgSrvUsers.Port)).Debug("CLOSING APP")
+			cfg.Conn.ConfigServiceUsers.Host, cfg.Conn.ConfigServiceUsers.Port)).Debug("CLOSING APP")
 
 		server.Stop()
 		logger.WithField("MSG", fmt.Sprintf("Closing server on %s:%s", cfg.Server.Network, cfg.Server.Port)).Debug("CLOSING APP")

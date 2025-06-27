@@ -1,0 +1,16 @@
+go 1.24.2
+
+use (
+	./ChecksService
+	./PromosService
+	./WarnsService
+	./repeatable/config
+	./repeatable/conn
+	./repeatable/errors
+	./repeatable/logger
+	./repeatable/migrations
+	./repeatable/postgres
+	./repeatable/protobuf
+	./repeatable/server
+	./repeatable/utils
+)

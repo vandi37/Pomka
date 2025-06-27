@@ -1,13 +1,13 @@
 package repository
 
 import (
-	Err "checks/pkg/errors"
-	"checks/pkg/models/checks"
-	"checks/pkg/models/users"
-	"checks/pkg/postgres"
 	"context"
 	"database/sql"
 	"errors"
+	e "errorspomka"
+	"postgres"
+	"protobuf/checks"
+	"protobuf/users"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,7 +26,7 @@ func (r *Repository) CreateCheck(ctx context.Context, db postgres.DB, in *checks
 	if err := db.QueryRow(
 		ctx, q, in.Creator, r.h.Hash(key), in.Currency, in.Amount).
 		Scan(&check.Id, &check.Creator, nil, &check.Currency, &check.Amount, &createdAt); err != nil {
-		return nil, errors.Join(Err.ErrExecQuery, err)
+		return nil, errors.Join(e.ErrExecQuery, err)
 	}
 
 	check.CreatedAt = timestamppb.New(*createdAt)
@@ -40,7 +40,7 @@ func (r *Repository) RemoveCheck(ctx context.Context, db postgres.DB, in *checks
 	      WHERE "Id"=$1`
 
 	if _, err := db.Exec(ctx, q, in.Id); err != nil {
-		return errors.Join(Err.ErrExecQuery, err)
+		return errors.Join(e.ErrExecQuery, err)
 	}
 
 	return nil
@@ -58,7 +58,7 @@ func (r *Repository) GetUsersCheck(ctx context.Context, db postgres.DB, in *user
 		case sql.ErrNoRows:
 			return nil, nil
 		default:
-			return nil, errors.Join(Err.ErrExecQuery, err)
+			return nil, errors.Join(e.ErrExecQuery, err)
 		}
 	}
 	defer rows.Close()
@@ -68,7 +68,7 @@ func (r *Repository) GetUsersCheck(ctx context.Context, db postgres.DB, in *user
 		var createdAt = new(time.Time)
 
 		if err := rows.Scan(&check.Id, &check.Creator, &check.Key, &check.Currency, &check.Amount, &createdAt); err != nil {
-			return nil, errors.Join(Err.ErrIncorrectData, err)
+			return nil, errors.Join(e.ErrIncorrectData, err)
 		}
 
 		check.CreatedAt = timestamppb.New(*createdAt)
@@ -93,9 +93,9 @@ func (r *Repository) GetCheckByKey(ctx context.Context, db postgres.DB, key stri
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:
-			return nil, errors.Join(Err.ErrCheckNotValid, err)
+			return nil, errors.Join(e.ErrCheckNotValid, err)
 		default:
-			return nil, errors.Join(Err.ErrExecQuery, err)
+			return nil, errors.Join(e.ErrExecQuery, err)
 		}
 	}
 

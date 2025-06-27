@@ -1,10 +1,10 @@
 package service
 
 import (
-	"checks/pkg/models/checks"
-	"checks/pkg/models/users"
-	"checks/pkg/postgres"
 	"context"
+	"postgres"
+	"protobuf/checks"
+	"protobuf/users"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
