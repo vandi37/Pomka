@@ -4,13 +4,13 @@ use (
 	./ChecksService
 	./PromosService
 	./WarnsService
-	./repeatable/config
-	./repeatable/conn
-	./repeatable/errors
-	./repeatable/logger
-	./repeatable/migrations
-	./repeatable/postgres
-	./repeatable/protobuf
-	./repeatable/server
-	./repeatable/utils
+	./ForServices/config
+	./ForServices/conn
+	./ForServices/errors
+	./ForServices/logger
+	./ForServices/migrations
+	./ForServices/postgres
+	./ForServices/protobuf
+	./ForServices/server
+	./ForServices/utils
 )
