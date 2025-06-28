@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package promocodes;
+
+import "common/types.proto";
+
+import "google/protobuf/timestamp.proto";
+option go_package = "./promos"; // для Go
+
+// Promocode/s <=> Promo/s
+
+service Promos {
+    // Check creator role, insert promo to Promos
+    rpc Create(CreatePromo) returns (PromoFailure);
+
+    // Delete promo from Promos
+    rpc Delete(PromoId) returns (common.Response);
+
+    // Delete all records from UserToPromo
+    rpc DeleteHistory(PromoId) returns (common.Response);
+    
+    // Get promo from Promos
+    rpc GetById(PromoId) returns (PromoFailure);
+    rpc GetByName(PromoName) returns (PromoFailure);
+
+    // Check promo valid (count of uses, expiration data, already activate by user), query to service users
+    rpc Use(PromoUserId) returns (common.Response);
+
+    // Update expAt of promo in Promos
+    rpc AddTime(AddTimeIn) returns (common.Response);
+
+    // Update uses of promo in Promos
+    rpc AddUses(AddUsesIn) returns (common.Response);
+}
+
+message AddTimeIn {
+    int64 promoId = 1;
+    google.protobuf.Timestamp expAt = 2;
+}
+
+message AddUsesIn {
+    int64 promoId = 1;
+    int32 uses = 2;
+}
+
+message PromoName {
+    string name = 1;
+}
+
+message PromoId {
+    int64 id = 1;
+}
+
+message PromoCode {
+    int64 id = 1;
+    string name = 2;
+    common.Currency currency = 3; 
+    int64 amount = 4;
+    int32 uses = 5; 
+    int64 creator = 6;
+    google.protobuf.Timestamp expAt = 7;
+    google.protobuf.Timestamp createdAt = 8;
+}
+
+message CreatePromo {
+    string name = 1;
+    int64 amount = 2;
+    common.Currency currency = 3;
+    int64 creator = 4;
+    int32 uses = 5;
+    google.protobuf.Timestamp expAt = 6;
+}
+
+message PromoFailure{
+    optional PromoCode promoCode = 1;
+    optional common.Failure failure = 2;
+}
+
+message PromoUserId {
+    int64 userId = 1;
+    int64 promoId = 2;
+}
+
