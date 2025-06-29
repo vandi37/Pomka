@@ -29,7 +29,7 @@ func Up(ctx context.Context, pool *pgxpool.Pool) error {
 		}
 
 		return nil
-	}, 3, time.Second*3); err != nil {
+	}, 5, time.Second*5); err != nil {
 		return err
 	}
 
