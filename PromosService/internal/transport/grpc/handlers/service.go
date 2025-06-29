@@ -6,19 +6,15 @@ import (
 	"protobuf/promos"
 	"protobuf/users"
 
-	"github.com/jackc/pgx/v5/pgxpool"
-	"google.golang.org/grpc"
-)
+	"conn"
 
-type UserService interface {
-	SendTransaction(ctx context.Context, in *users.TransactionRequest, opts ...grpc.CallOption) (*users.TransactionResponse, error)
-	GetUser(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*users.User, error)
-}
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 type ServicePromos struct {
 	repo  RepositoryPromos
 	db    *pgxpool.Pool
-	users UserService
+	users conn.UserService
 	promos.UnimplementedPromosServer
 }
 
@@ -42,6 +38,6 @@ type RepositoryPromos interface {
 	AddUses(ctx context.Context, db postgres.DB, in *promos.AddUsesIn) (err error)
 }
 
-func NewServicePromos(repo RepositoryPromos, db *pgxpool.Pool, serviceUsers UserService) *ServicePromos {
+func NewServicePromos(repo RepositoryPromos, db *pgxpool.Pool, serviceUsers conn.UserService) *ServicePromos {
 	return &ServicePromos{repo: repo, db: db, users: serviceUsers}
 }

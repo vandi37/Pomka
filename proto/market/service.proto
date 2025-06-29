@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package market;
+
+import "common/types.proto";
+
+import "google/protobuf/timestamp.proto";
+option go_package = "./market"; 
+
+service Market {
+    
+    // add offer in db
+    rpc Sell(OfferCreate) returns (common.Response);
+
+    // delete offer from db, query to service Commands for change owner
+    rpc Buy (TypeName) returns (common.Response);
+
+    // return all offers from db
+    rpc GetOffers(OffersSorting) returns (OffersFailure);
+
+    // delete offer from db
+    rpc RemoveFromSell (TypeName) returns (common.Response);
+}
+
+enum Type {
+    Command = 0;
+    Pack = 1;
+}
+
+enum SortingMethod {
+    Asc = 0;
+    Desc = 1;
+}
+
+enum SortingBy {
+    recent = 0;
+    cost = 1;
+    type = 2;
+}
+
+message TypeName {
+    Type type = 1;
+    string name = 2;
+}
+
+message Offer {
+    int64 id = 1;
+    Type type = 2;
+    string name = 3;
+    int64 seller = 4;
+    int64 cost = 5;
+    google.protobuf.Timestamp upForSaleAt = 6;
+}
+
+message OfferCreate {
+    Type type = 1;
+    string name = 2;
+    int64 cost = 3;
+    int64 seller = 4;
+}
+
+message Offers {
+    repeated Offer offers = 1;
+}
+
+message OfferFailure {
+    optional Offer offer = 1;
+    optional common.Failure failure = 2;
+}
+
+message OffersFailure {
+    optional Offers offers = 1;
+    optional common.Failure failure = 2;
+}
+
+message OffersSorting {
+    SortingMethod method = 1;
+    SortingBy by = 2;
+}

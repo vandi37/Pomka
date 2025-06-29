@@ -1,0 +1,1 @@
+protoc --go_out=./ForServices/protobuf --proto_path=./proto proto/<PATH_TO_FILE>

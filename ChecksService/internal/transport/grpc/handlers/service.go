@@ -6,23 +6,19 @@ import (
 	"protobuf/checks"
 	"protobuf/users"
 
+	"conn"
+
 	"github.com/jackc/pgx/v5/pgxpool"
-	"google.golang.org/grpc"
 )
 
 type Config struct {
 	WarnsBeforeBan int
 }
 
-type UserService interface {
-	SendTransaction(ctx context.Context, in *users.TransactionRequest, opts ...grpc.CallOption) (*users.TransactionResponse, error)
-	GetUser(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*users.User, error)
-}
-
 type ServiceChecks struct {
 	RepositoryChecks
 	db *pgxpool.Pool
-	UserService
+	conn.UserService
 	checks.UnimplementedChecksServer
 }
 
@@ -33,6 +29,6 @@ type RepositoryChecks interface {
 	GetCheckByKey(ctx context.Context, db postgres.DB, key string) (out *checks.Check, err error)
 }
 
-func NewServiceChecks(repo RepositoryChecks, db *pgxpool.Pool, users UserService) *ServiceChecks {
+func NewServiceChecks(repo RepositoryChecks, db *pgxpool.Pool, users conn.UserService) *ServiceChecks {
 	return &ServiceChecks{RepositoryChecks: repo, db: db, UserService: users}
 }

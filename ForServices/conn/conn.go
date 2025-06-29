@@ -3,6 +3,7 @@ package conn
 import (
 	"fmt"
 
+	"protobuf/commands"
 	"protobuf/users"
 
 	"google.golang.org/grpc"
@@ -12,6 +13,7 @@ import (
 type ClientsServices struct {
 	conn *grpc.ClientConn
 	users.UsersClient
+	commands.CommandsClient
 }
 
 func NewClientsServices(cfg Config) (*ClientsServices, error) {
@@ -22,9 +24,12 @@ func NewClientsServices(cfg Config) (*ClientsServices, error) {
 	}
 
 	clientUsers := users.NewUsersClient(conn)
+	clientCmds := commands.NewCommandsClient(conn)
+
 	return &ClientsServices{
 		conn,
 		clientUsers,
+		clientCmds,
 	}, nil
 }
 

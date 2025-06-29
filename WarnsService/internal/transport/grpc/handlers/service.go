@@ -7,24 +7,20 @@ import (
 
 	"postgres"
 
+	"conn"
+
 	"github.com/jackc/pgx/v5/pgxpool"
-	"google.golang.org/grpc"
 )
 
 type Config struct {
 	WarnsBeforeBan int
 }
 
-type UserService interface {
-	SendTransaction(ctx context.Context, in *users.TransactionRequest, opts ...grpc.CallOption) (*users.TransactionResponse, error)
-	GetUser(ctx context.Context, in *users.Id, opts ...grpc.CallOption) (*users.User, error)
-}
-
 type ServiceWarns struct {
 	repo  RepositoryWarns
 	db    *pgxpool.Pool
 	cfg   Config
-	users UserService
+	users conn.UserService
 	warns.UnimplementedWarnsServer
 }
 
@@ -43,6 +39,6 @@ type RepositoryWarns interface {
 	IsAlreadyBanned(ctx context.Context, db postgres.DB, in *users.Id) (b bool, err error)
 }
 
-func NewServiceWarns(repo RepositoryWarns, db *pgxpool.Pool, cfg Config, users UserService) *ServiceWarns {
+func NewServiceWarns(repo RepositoryWarns, db *pgxpool.Pool, cfg Config, users conn.UserService) *ServiceWarns {
 	return &ServiceWarns{repo: repo, db: db, cfg: cfg, users: users}
 }

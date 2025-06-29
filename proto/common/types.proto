@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package common;
 
-// option go_package = "./common"; // для Go
+option go_package = "./common"; // для Go
 
 enum Currency {
   NoneCurrency = 0;

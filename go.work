@@ -2,15 +2,16 @@ go 1.24.2
 
 use (
 	./ChecksService
+	./ForServices/config
+	./ForServices/conn
+	./ForServices/errors
+	./ForServices/logger
+	./ForServices/migrations
+	./ForServices/postgres
+	./ForServices/protobuf
+	./ForServices/server
+	./ForServices/utils
+	./MarketService
 	./PromosService
 	./WarnsService
-	./repeatable/config
-	./repeatable/conn
-	./repeatable/errors
-	./repeatable/logger
-	./repeatable/migrations
-	./repeatable/postgres
-	./repeatable/protobuf
-	./repeatable/server
-	./repeatable/utils
 )

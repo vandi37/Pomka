@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package commands;
+
+import "common/types.proto";
+option go_package = "./commands";
+
+// TEMP MOCK
+
+service Commands {
+    rpc ChangeOwner(common.Void) returns (common.Void);
+}
